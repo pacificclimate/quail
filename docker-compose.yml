@@ -1,10 +1,20 @@
-version: '3'
+version: '3.0'
 services:
-  wps:
-    build: .
-    image: nikola-rados/quail
+  quail-dev:
+    image: pcic/quail:latest
+    container_name: quail-dev
+    environment:
+      - PYWPS_CFG=/wps.cfg
     ports:
-      - "5005:5005"
+      - "30103:5005"
+    volumes:
+      - ./dev-component/wps.cfg:/wps.cfg
+    restart: always
+
+networks:
+  default:
+    external:
+      name: pcicbr0
 
 
 # docker-compose build
