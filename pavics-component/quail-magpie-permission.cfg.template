@@ -1,0 +1,15 @@
+permissions:
+  - service: quail
+    permission: getcapabilities
+    group: anonymous
+    action: create
+
+  - service: quail
+    permission: describeprocess
+    group: anonymous
+    action: create
+
+  - service: quail
+    permission: execute
+    group: anonymous
+    action: create
