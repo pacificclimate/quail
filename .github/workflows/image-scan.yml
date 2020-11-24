@@ -1,0 +1,21 @@
+name: Docker Image Scan
+
+on:
+  push:
+    branches:
+      - master
+      - '*security*'
+
+jobs:
+  scan:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Docker Build
+      run: docker build . --file Dockerfile --tag pcic/quail:test-image
+    - uses: anchore/scan-action@v2
+      with:
+        image: "pcic/quail:test-image"
+        fail-build: true
