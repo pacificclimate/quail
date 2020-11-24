@@ -19,3 +19,4 @@ jobs:
       with:
         image: "pcic/quail:test-image"
         fail-build: true
+        severity-cutoff: high
