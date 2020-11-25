@@ -1,33 +1,35 @@
 # vim:set ft=dockerfile:
-FROM continuumio/miniconda3
-MAINTAINER https://github.com/nikola-rados/quail
-LABEL Description="quail WPS" Vendor="Birdhouse" Version="0.1.0"
+FROM r-base:4.0.3
+MAINTAINER https://github.com/pacificclimate/chickadee
+LABEL Description="quail WPS" Vendor="pacificclimate" Version="0.1.0"
 
-# Update Debian system
-RUN apt-get update && apt-get install -y \
- build-essential \
-&& rm -rf /var/lib/apt/lists/*
+ENV PIP_INDEX_URL="https://pypi.pacificclimate.org/simple/"
 
-# Update conda
-RUN conda update -n base conda
+# Update system
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    libpq-dev \
+    python3.8 \
+    python3-pip \
+    python3-setuptools \
+    python3-dev \
+    python3-venv
 
-# Copy WPS project
 COPY . /opt/wps
 
 WORKDIR /opt/wps
 
-# Create conda environment with PyWPS
-RUN ["conda", "env", "create", "-n", "wps", "-f", "environment.yml"]
-
 # Install WPS
-RUN ["/bin/bash", "-c", "source activate wps && pip install -e ."]
+RUN pip3 install -e .
 
 # Start WPS service on port 5005 on 0.0.0.0
 EXPOSE 5005
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["source activate wps && exec quail start -b 0.0.0.0 -c /opt/wps/etc/demo.cfg"]
+ENTRYPOINT ["sh", "-c"]
+CMD ["exec quail start -b 0.0.0.0"]
 
-# docker build -t nikola-rados/quail .
-# docker run -p 5005:5005 nikola-rados/quail
+# docker build -t pcic/quail .
+# docker run -p 5005:5005 pcic/quail
 # http://localhost:5005/wps?request=GetCapabilities&service=WPS
 # http://localhost:5005/wps?request=DescribeProcess&service=WPS&identifier=all&version=1.0.0
