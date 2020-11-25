@@ -1,22 +1,25 @@
 # Configuration
 APP_ROOT := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 APP_NAME := quail
+VENV?=/tmp/quail-venv
+PYTHON=${VENV}/bin/python3
+PIP=${VENV}/bin/pip
+export PIP_INDEX_URL=https://pypi.pacificclimate.org/simple
 
-WPS_URL = http://localhost:5005
+# Notebook targets
+LOCAL_URL = http://localhost:5005
+DEV_PORT ?= $(shell bash -c 'read -ep "Target port: " port; echo $$port')
 
 # Used in target refresh-notebooks to make it looks like the notebooks have
 # been refreshed from the production server below instead of from the local dev
 # instance so the notebooks can also be used as tutorial notebooks.
-OUTPUT_URL = https://pavics.ouranos.ca/wpsoutputs
-
+OUTPUT_URL = https://docker-dev03.pcic.uvic.ca/wpsoutputs
 SANITIZE_FILE := https://github.com/Ouranosinc/PAVICS-e2e-workflow-tests/raw/master/notebooks/output-sanitize.cfg
 
 # end of configuration
 
-.DEFAULT_GOAL := help
-
 .PHONY: all
-all: help
+all: develop test clean-test test-notebooks-prod
 
 .PHONY: help
 help:
@@ -43,34 +46,34 @@ help:
 ## Build targets
 
 .PHONY: install
-install:
+install: venv
 	@echo "Installing application ..."
-	@-bash -c 'pip install -e .'
+	@-bash -c '${PIP} install -e .'
 	@echo "\nStart service with \`make start'"
 
 .PHONY: develop
-develop:
+develop: venv
 	@echo "Installing development requirements for tests and docs ..."
-	@-bash -c 'pip install -e ".[dev]"'
+	@-bash -c '${PIP} install -e ".[dev]"'
 
 .PHONY: start
-start:
+start: venv
 	@echo "Starting application ..."
-	@-bash -c "$(APP_NAME) start -d"
+	@-bash -c "${VENV}/bin/$(APP_NAME) start -d"
 
 .PHONY: stop
-stop:
+stop: venv
 	@echo "Stopping application ..."
-	@-bash -c "$(APP_NAME) stop"
+	@-bash -c "${VENV}/bin/$(APP_NAME) stop"
 
 .PHONY: restart
-restart: stop start
+restart: venv stop start
 	@echo "Restarting application ..."
 
 .PHONY: status
-status:
+status: venv
 	@echo "Showing status ..."
-	@-bash -c "$(APP_NAME) status"
+	@-bash -c "${VENV}/bin/$(APP_NAME) status"
 
 .PHONY: clean
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
@@ -106,17 +109,21 @@ clean-dist: clean
 	## do not use git clean -e/--exclude here, add them to .gitignore instead
 	@-git clean -dfx
 
+.PHONY: venv
+venv:
+	test -d $(VENV) || python3 -m venv $(VENV)
+
 ## Test targets
 
 .PHONY: test
-test:
+test: venv
 	@echo "Running tests (skip slow and online tests) ..."
-	@bash -c 'pytest -v -m "not slow and not online" tests/'
+	@bash -c '${PYTHON} -m pytest -v -m "not slow and not online" tests/'
 
 .PHONY: test-all
-test-all:
+test-all: venv
 	@echo "Running all tests (including slow and online tests) ..."
-	@bash -c 'pytest -v tests/'
+	@bash -c '${PYTHON} -m pytest -v tests/'
 
 .PHONY: notebook-sanitizer
 notebook-sanitizer:
@@ -126,12 +133,27 @@ notebook-sanitizer:
 .PHONY: test-notebooks
 test-notebooks: notebook-sanitizer
 	@echo "Running notebook-based tests"
-	@bash -c "env WPS_URL=$(WPS_URL) pytest --nbval --verbose $(CURDIR)/docs/source/notebooks/ --sanitize-with $(CURDIR)/docs/source/output-sanitize.cfg --ignore $(CURDIR)/docs/source/notebooks/.ipynb_checkpoints"
+	@bash -c "source $(VENV)/bin/activate && env LOCAL_URL=$(LOCAL_URL) pytest --nbval --verbose $(CURDIR)/docs/source/notebooks/ --sanitize-with $(CURDIR)/docs/source/output-sanitize.cfg --ignore $(CURDIR)/docs/source/notebooks/.ipynb_checkpoints"
+
+.PHONY: test-notebooks-prod
+test-notebooks-prod: notebook-sanitizer
+	@echo "Running notebook-based tests against production instance of quail"
+	@bash -c "source $(VENV)/bin/activate && pytest --nbval --verbose $(CURDIR)/docs/source/notebooks/ --sanitize-with $(CURDIR)/docs/source/output-sanitize.cfg --ignore $(CURDIR)/docs/source/notebooks/.ipynb_checkpoints"
+
+.PHONY: test-notebooks-dev
+test-notebooks-dev: notebook-sanitizer
+	@echo "Running notebook-based tests against development instance of quail"
+	@bash -c "source $(VENV)/bin/activate && env DEV_URL=http://docker-dev03.pcic.uvic.ca:30103/wps pytest --nbval --verbose $(CURDIR)/docs/source/notebooks/ --sanitize-with $(CURDIR)/docs/source/output-sanitize.cfg --ignore $(CURDIR)/docs/source/notebooks/.ipynb_checkpoints"
+
+.PHONY: test-notebooks-custom
+test-notebooks-custom: notebook-sanitizer
+	@echo "Running notebook-based tests against custom instance of quail"
+	@bash -c "source $(VENV)/bin/activate && env DEV_URL=http://docker-dev03.pcic.uvic.ca:$(DEV_PORT)/wps pytest --nbval --verbose $(CURDIR)/docs/source/notebooks/ --sanitize-with $(CURDIR)/docs/source/output-sanitize.cfg --ignore $(CURDIR)/docs/source/notebooks/.ipynb_checkpoints"
 
 .PHONY: lint
-lint:
-	@echo "Running flake8 code style checks ..."
-	@bash -c 'flake8'
+lint: venv
+	@echo "Running black code style checks ..."
+	@bash -c '${PYTHON} -m black . --check'
 
 .PHONY: refresh-notebooks
 refresh-notebooks:
