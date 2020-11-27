@@ -1,6 +1,6 @@
 ---
 name: Process request
-about: Add a wps process to quail
+about: Add a wps process for quail
 title: ''
 labels: process
 assignees: ''
