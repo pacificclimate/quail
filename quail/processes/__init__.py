@@ -1,5 +1,5 @@
-from .wps_say_hello import SayHello
+from .wps_climdex_su import ClimdexSU
 
 processes = [
-    SayHello(),
+    ClimdexSU(),
 ]
