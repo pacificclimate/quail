@@ -1,5 +1,6 @@
-from pywps import Process, LiteralInput, LiteralOutput
+from pywps import Process, LiteralInput, ComplexOutput, FORMATS
 from pywps.app.Common import Metadata
+import json
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -7,8 +8,19 @@ from quail.utils import get_package, logger
 
 
 class ClimdexSU(Process):
+    """
+    Takes a climdexInput object as input and computes the SU
+    (summer days) climdexindex:  that is,  the annual count of days where
+    daily maximum temperature exceeds 25 degreesCelsius
+    """
+
     def __init__(self):
-        self.status_percentage_steps = common_status_percentages
+        self.status_percentage_steps = dict(
+            common_status_percentages,
+            **{
+                "build_json": 90,
+            },
+        )
 
         inputs = [
             LiteralInput(
@@ -17,15 +29,21 @@ class ClimdexSU(Process):
                 abstract="R object Object of type climdexInput (file extension .rds)",
                 data_type="string",
             ),
+            LiteralInput(
+                "output_path",
+                "Output json File",
+                abstract="Filename to store the count of days where tmax > 25 degC for each year",
+                data_type="string",
+            ),
             log_level,
         ]
 
         outputs = [
-            LiteralOutput(
+            ComplexOutput(
                 "summer_days_file",
                 "Summer days output file",
                 abstract="A vector containing the number of summer days for each year",
-                data_type="string",
+                supported_formats=[FORMATS.JSON],
             ),
         ]
 
@@ -48,7 +66,9 @@ class ClimdexSU(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, loglevel = [input[0].data for input in request.inputs.values()]
+        climdex_input, output_path, loglevel = [
+            input[0].data for input in request.inputs.values()
+        ]
 
         log_handler(
             self,
@@ -74,10 +94,23 @@ class ClimdexSU(Process):
             process_step="process",
         )
         summer_days = climdex.climdex_su(ci)
-        summer_days_dict = {
-            base.names(summer_days)[index]: summer_days[index]
-            for index in range(len(summer_days))
-        }
+
+        log_handler(
+            self,
+            response,
+            "Saving summer days to json",
+            logger,
+            log_level=loglevel,
+            process_step="build_json",
+        )
+        with open(output_path, "w") as json_file:
+            json.dump(
+                {
+                    base.names(summer_days)[index]: summer_days[index]
+                    for index in range(len(summer_days))
+                },
+                json_file,
+            )
 
         log_handler(
             self,
@@ -88,7 +121,7 @@ class ClimdexSU(Process):
             process_step="build_output",
         )
 
-        response.outputs["summer_days_file"].data = summer_days_dict
+        response.outputs["summer_days_file"].file = output_path
 
         log_handler(
             self,
