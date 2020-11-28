@@ -31,7 +31,7 @@ class ClimdexSU(Process):
             ),
             LiteralInput(
                 "output_path",
-                "Output json File",
+                "Output file name",
                 abstract="Filename to store the count of days where tmax > 25 degC for each year",
                 data_type="string",
             ),
