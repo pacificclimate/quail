@@ -108,7 +108,7 @@ class ClimdexSU(Process):
             json.dump(
                 {
                     (base.names(summer_days)[index]): (
-                        0 if math.isnan(summer_days[index]) else summer_days[index]
+                        None if math.isnan(summer_days[index]) else summer_days[index]
                     )
                     for index in range(len(summer_days))
                 },
