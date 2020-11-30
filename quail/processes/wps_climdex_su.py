@@ -1,6 +1,7 @@
 from pywps import Process, LiteralInput, ComplexOutput, FORMATS
 from pywps.app.Common import Metadata
 import json
+import math
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -106,7 +107,9 @@ class ClimdexSU(Process):
         with open(output_path, "w") as json_file:
             json.dump(
                 {
-                    base.names(summer_days)[index]: summer_days[index]
+                    (base.names(summer_days)[index]): (
+                        0 if math.isnan(summer_days[index]) else summer_days[index]
+                    )
                     for index in range(len(summer_days))
                 },
                 json_file,
