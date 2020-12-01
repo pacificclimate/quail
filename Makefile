@@ -19,7 +19,7 @@ SANITIZE_FILE := https://github.com/Ouranosinc/PAVICS-e2e-workflow-tests/raw/mas
 # end of configuration
 
 .PHONY: all
-all: apt develop install-r-pkg test clean-test test-notebooks-prod
+all: apt develop install-r-pkg test-all clean-test test-notebooks-prod
 
 .PHONY: help
 help:
@@ -53,7 +53,7 @@ install: venv
 
 .PHONY: apt
 apt:
-	@echo "Installing libfontconfig1-dev libfribidi-dev libfontconfig1-dev..."
+	@echo "Installing libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev..."
 	@-bash -c "sudo apt-get install libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev"
 
 .PHONY: install-r-pkg

@@ -1,7 +1,8 @@
-from pywps import Process, LiteralInput, ComplexOutput, FORMATS
-from pywps.app.Common import Metadata
 import json
 import math
+import os
+from pywps import Process, LiteralInput, ComplexOutput, FORMATS
+from pywps.app.Common import Metadata
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -70,6 +71,7 @@ class ClimdexSU(Process):
         climdex_input, output_path, loglevel = [
             input[0].data for input in request.inputs.values()
         ]
+        os.path.join(self.workdir, output_path)
 
         log_handler(
             self,
