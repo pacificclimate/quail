@@ -3,6 +3,7 @@ from pywps.app.Common import Metadata
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
+from quail.utils import get_package, logger
 
 
 class ClimdexFD(Process):
@@ -57,6 +58,10 @@ class ClimdexFD(Process):
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
-        print(request.inputs["climdex_input"][0].stream)
+        base = get_package("base")
+        with open(climdex_input):
+            ci = base.load(file=request.inputs["climdex_input"][0].file)
+
+        print(ci)
 
         return response
