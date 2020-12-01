@@ -7,7 +7,7 @@ logger = logging.getLogger("PYWPS")
 logger.setLevel(logging.NOTSET)
 
 formatter = logging.Formatter(
-    "%(asctime)s %(levelname)s: chickadee: %(message)s", "%Y-%m-%d %H:%M:%S"
+    "%(asctime)s %(levelname)s: quail: %(message)s", "%Y-%m-%d %H:%M:%S"
 )
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
