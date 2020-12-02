@@ -4,8 +4,6 @@ from pywps.app.Common import Metadata
 from pywps.inout.formats import Format
 from tempfile import NamedTemporaryFile
 
-import magic
-
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger
@@ -46,7 +44,7 @@ class ClimdexSU(Process):
                 "summer_days_file",
                 "Summer days output file",
                 abstract="A vector containing the number of summer days for each year",
-                supported_formats=[Format("application/rds", extension=".rds")],
+                supported_formats=[Format("application/rda", extension=".rda")],
             ),
         ]
 
