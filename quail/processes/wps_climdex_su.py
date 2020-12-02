@@ -1,10 +1,9 @@
-import json
-import math
-import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS
 from pywps.app.Common import Metadata
 from pywps.inout.formats import Format
+
+import magic
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -31,7 +30,7 @@ class ClimdexSU(Process):
                 "climdex_input",
                 "climdexInput",
                 abstract="R Object of type climdexInput",
-                supported_formats=[Format("application/rds", extension=".rds")],
+                supported_formats=[Format("application/rda", extension=".rda")],
             ),
             LiteralInput(
                 "output_path",
@@ -47,7 +46,7 @@ class ClimdexSU(Process):
                 "summer_days_file",
                 "Summer days output file",
                 abstract="A vector containing the number of summer days for each year",
-                supported_formats=[Format("application/rda", extension=".rda")],
+                supported_formats=[Format("application/rds", extension=".rds")],
             ),
         ]
 
@@ -93,7 +92,12 @@ class ClimdexSU(Process):
             log_level=loglevel,
             process_step="process",
         )
-        ci = robjects.r("readRDS(file='{}')".format(climdex_input))
+        print(magic.from_file(climdex_input))
+        print(magic.from_file('/home/csanders/code/birds/quail/tests/data/climdexInput.rda'))
+
+        # First load the climdexInput object into the environment
+        # Then assign that object a name in the python environment
+        ci = robjects.r(robjects.r("load(file='{}')".format(climdex_input))[0])
         summer_days = climdex.climdex_su(ci)
 
         log_handler(
@@ -104,6 +108,8 @@ class ClimdexSU(Process):
             log_level=loglevel,
             process_step="build_rda",
         )
+
+        # Assign summer_days a name in the R environment
         robjects.r.assign("summer_days", summer_days)
         robjects.r("save(summer_days, file='{}')".format(output_path))
 
@@ -117,6 +123,9 @@ class ClimdexSU(Process):
         )
 
         response.outputs["summer_days_file"].file = output_path
+
+        # Clear R global env
+        robjects.r("rm(list=ls())")
 
         log_handler(
             self,
