@@ -2,6 +2,7 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS
 from pywps.app.Common import Metadata
 from pywps.inout.formats import Format
+from tempfile import NamedTemporaryFile
 
 import magic
 
@@ -24,7 +25,6 @@ class ClimdexSU(Process):
                 "build_rda": 90,
             },
         )
-
         inputs = [
             ComplexInput(
                 "climdex_input",
@@ -92,12 +92,11 @@ class ClimdexSU(Process):
             log_level=loglevel,
             process_step="process",
         )
-        print(magic.from_file(climdex_input))
-        print(magic.from_file('/home/csanders/code/birds/quail/tests/data/climdexInput.rda'))
 
         # First load the climdexInput object into the environment
         # Then assign that object a name in the python environment
         ci = robjects.r(robjects.r("load(file='{}')".format(climdex_input))[0])
+
         summer_days = climdex.climdex_su(ci)
 
         log_handler(
