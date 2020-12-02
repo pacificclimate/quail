@@ -14,5 +14,8 @@ def test_wps_climdex_su(climdex_input):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = f"climdex_input=@xlink:href={climdex_input};" f"output_path={out_file.name};"
+        datainputs = (
+            f"climdex_input=@xlink:href={climdex_input};"
+            f"output_path={out_file.name};"
+        )
         run_wps_process(ClimdexSU(), datainputs)
