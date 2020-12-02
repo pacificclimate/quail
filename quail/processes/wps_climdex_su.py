@@ -1,8 +1,10 @@
 import json
 import math
 import os
-from pywps import Process, LiteralInput, ComplexOutput, FORMATS
+from rpy2 import robjects
+from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS
 from pywps.app.Common import Metadata
+from pywps.inout.formats import Format
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -20,21 +22,21 @@ class ClimdexSU(Process):
         self.status_percentage_steps = dict(
             common_status_percentages,
             **{
-                "build_json": 90,
+                "build_rda": 90,
             },
         )
 
         inputs = [
-            LiteralInput(
+            ComplexInput(
                 "climdex_input",
                 "climdexInput",
-                abstract="R object Object of type climdexInput (file extension .rds)",
-                data_type="string",
+                abstract="R Object of type climdexInput",
+                supported_formats=[Format("application/rds", extension=".rds")],
             ),
             LiteralInput(
                 "output_path",
                 "Output file name",
-                abstract="Filename to store the count of days where tmax > 25 degC for each year",
+                abstract="Filename to store the count of days where tmax > 25 degC for each year (extension .rda)",
                 data_type="string",
             ),
             log_level,
@@ -45,7 +47,7 @@ class ClimdexSU(Process):
                 "summer_days_file",
                 "Summer days output file",
                 abstract="A vector containing the number of summer days for each year",
-                supported_formats=[FORMATS.JSON],
+                supported_formats=[Format("application/rda", extension=".rda")],
             ),
         ]
 
@@ -69,9 +71,8 @@ class ClimdexSU(Process):
 
     def _handler(self, request, response):
         climdex_input, output_path, loglevel = [
-            input[0].data for input in request.inputs.values()
+            arg[0] for arg in collect_args(request, self.workdir).values()
         ]
-        os.path.join(self.workdir, output_path)
 
         log_handler(
             self,
@@ -82,11 +83,7 @@ class ClimdexSU(Process):
             process_step="start",
         )
         climdex = get_package("climdex.pcic")
-
-        # Get climdexIndex R oject from file
         base = get_package("base")
-        with open(climdex_input):
-            ci = base.readRDS(climdex_input)
 
         log_handler(
             self,
@@ -96,26 +93,19 @@ class ClimdexSU(Process):
             log_level=loglevel,
             process_step="process",
         )
+        ci = robjects.r("readRDS(file='{}')".format(climdex_input))
         summer_days = climdex.climdex_su(ci)
 
         log_handler(
             self,
             response,
-            "Saving summer days to json",
+            "Saving summer days as R data file",
             logger,
             log_level=loglevel,
-            process_step="build_json",
+            process_step="build_rda",
         )
-        with open(output_path, "w") as json_file:
-            json.dump(
-                {
-                    (base.names(summer_days)[index]): (
-                        None if math.isnan(summer_days[index]) else summer_days[index]
-                    )
-                    for index in range(len(summer_days))
-                },
-                json_file,
-            )
+        robjects.r.assign("summer_days", summer_days)
+        robjects.r("save(summer_days, file='{}')".format(output_path))
 
         log_handler(
             self,
