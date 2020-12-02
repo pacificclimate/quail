@@ -44,7 +44,7 @@ class ClimdexSU(Process):
                 "summer_days_file",
                 "Summer days output file",
                 abstract="A vector containing the number of summer days for each year",
-                supported_formats=[Format("application/rda", extension=".rda")],
+                supported_formats=[Format("application/rda", extension=".rda", encoding='base64')],
             ),
         ]
 
