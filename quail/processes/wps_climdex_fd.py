@@ -1,5 +1,6 @@
-from pywps import Process, ComplexInput, ComplexOutput, FORMATS, Format
+from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS, Format
 from pywps.app.Common import Metadata
+from rpy2 import robjects
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -18,13 +19,21 @@ class ClimdexFD(Process):
 
         inputs = [
             ComplexInput(
-                "climdex_input",
-                "climdexInput",
-                abstract="R object Object of type climdexInput (file extension .rds)",
+                "ci_file",
+                "climdexInput file",
+                abstract="File that holds climdexInput object (recommended file extension .rda)",
                 supported_formats=[
                     Format("application/rds", extension=".rds"),
                     Format("application/rda", extension=".rda"),
                 ],
+            ),
+            LiteralInput(
+                "ci_name",
+                "climdexInput name",
+                abstract="Name of the climdexInput obejct",
+                min_occurs=0,
+                max_occurs=1,
+                data_type="string",
             ),
             log_level,
         ]
@@ -57,14 +66,18 @@ class ClimdexFD(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, loglevel = [
+        climdex_input, ci_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
-        base = get_package("base")
-        with open(climdex_input):
-            ci = base.load(file=request.inputs["climdex_input"][0].file)
+        if climdex_input.endswith(".rda"):
+            robjects.r(f"load(file='{climdex_input}')")
+        elif climdex_input.endswith(".rds"):
+            robjects.r(f"readRDS(file='{climdex_input}')")
 
-        print(ci)
+        ci = robjects.r(ci_name)
+
+        climdex = get_package("climdex.pcic")
+        climdex.climdex_fd(ci)
 
         return response
