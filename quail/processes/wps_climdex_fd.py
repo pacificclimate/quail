@@ -21,7 +21,10 @@ class ClimdexFD(Process):
                 "climdex_input",
                 "climdexInput",
                 abstract="R object Object of type climdexInput (file extension .rds)",
-                supported_formats=[Format("application/rds", extension=".rds")],
+                supported_formats=[
+                    Format("application/rds", extension=".rds"),
+                    Format("application/rda", extension=".rda"),
+                ],
             ),
             log_level,
         ]
