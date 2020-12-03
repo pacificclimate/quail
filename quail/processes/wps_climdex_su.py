@@ -28,7 +28,9 @@ class ClimdexSU(Process):
                 "climdex_input",
                 "climdexInput",
                 abstract="R Object of type climdexInput",
-                supported_formats=[Format("application/rda", extension=".rda", encoding="base64")],
+                supported_formats=[
+                    Format("application/rda", extension=".rda", encoding="base64")
+                ],
             ),
             LiteralInput(
                 "output_path",
