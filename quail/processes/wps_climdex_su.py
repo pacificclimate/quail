@@ -29,7 +29,7 @@ class ClimdexSU(Process):
                 "climdexInput",
                 abstract="R Object of type climdexInput",
                 supported_formats=[
-                    Format("application/rda", extension=".rda", encoding="base64")
+                    Format("application/x-gzip", extension=".rda", encoding="base64")
                 ],
             ),
             LiteralInput(
@@ -47,7 +47,7 @@ class ClimdexSU(Process):
                 "Summer days output file",
                 abstract="A vector containing the number of summer days for each year",
                 supported_formats=[
-                    Format("application/rda", extension=".rda", encoding="base64")
+                    Format("application/x-gzip", extension=".rda", encoding="base64")
                 ],
             ),
         ]
