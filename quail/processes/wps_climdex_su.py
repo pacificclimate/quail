@@ -27,7 +27,7 @@ class ClimdexSU(Process):
             ComplexInput(
                 "climdex_input",
                 "climdexInput",
-                abstract="R Object of type climdexInput",
+                abstract="Rdata (.rda) file containing R Object of type climdexInput",
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64")
                 ],
@@ -56,7 +56,7 @@ class ClimdexSU(Process):
             self._handler,
             identifier="climdex_su",
             title="Climdex Summer Days",
-            abstract="Computes the annual count of days where daily maximum temperature exceeds 25 degreesCelsius",
+            abstract="Computes the annual count of days where daily maximum temperature exceeds 25 degrees Celsius",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -97,7 +97,7 @@ class ClimdexSU(Process):
 
         # First load the climdexInput object into the environment
         # Then assign that object a name in the python environment
-        ci = robjects.r(robjects.r("load(file='{}')".format(climdex_input))[0])
+        ci = robjects.r(robjects.r(f"load(file='{climdex_input}')")[0])
 
         summer_days = climdex.climdex_su(ci)
 
@@ -112,7 +112,7 @@ class ClimdexSU(Process):
 
         # Assign summer_days a name in the R environment
         robjects.r.assign("summer_days", summer_days)
-        robjects.r("save(summer_days, file='{}')".format(output_path))
+        robjects.r(f"save(summer_days, file='{output_path}')")
 
         log_handler(
             self,
