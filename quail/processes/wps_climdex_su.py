@@ -20,7 +20,7 @@ class ClimdexSU(Process):
         self.status_percentage_steps = dict(
             common_status_percentages,
             **{
-                "build_rda": 90,
+                "build_rdata": 90,
             },
         )
         inputs = [
@@ -31,6 +31,14 @@ class ClimdexSU(Process):
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64")
                 ],
+            ),
+            LiteralInput(
+                "ci_name",
+                "climdexInput name",
+                abstract="Name of the climdexInput obejct",
+                min_occurs=1,
+                max_occurs=1,
+                data_type="string",
             ),
             LiteralInput(
                 "output_path",
@@ -71,7 +79,7 @@ class ClimdexSU(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, output_path, loglevel = [
+        climdex_input, ci_name, output_path, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -96,8 +104,9 @@ class ClimdexSU(Process):
         )
 
         # First load the climdexInput object into the environment
+        robjects.r(f"load(file='{climdex_input}')")
         # Then assign that object a name in the python environment
-        ci = robjects.r(robjects.r(f"load(file='{climdex_input}')")[0])
+        ci = robjects.r(ci_name)
 
         summer_days = climdex.climdex_su(ci)
 
@@ -107,7 +116,7 @@ class ClimdexSU(Process):
             "Saving summer days as R data file",
             logger,
             log_level=loglevel,
-            process_step="build_rda",
+            process_step="build_rdata",
         )
 
         # Assign summer_days a name in the R environment
