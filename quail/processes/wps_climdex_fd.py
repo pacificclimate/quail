@@ -134,7 +134,7 @@ class ClimdexFD(Process):
         )
 
         output_path = os.path.join(self.workdir, output_file)
-        save_rdata("frost_days", frost_days, output_path, self.workdir)
+        save_rdata(output_obj, frost_days, output_path, self.workdir)
 
         log_handler(
             self,
