@@ -49,7 +49,7 @@ class ClimdexSU(Process):
             LiteralInput(
                 "su_name",
                 "Summer days name",
-                abstract="Name for the summer days output obejct",
+                abstract="Name for the summer days output object",
                 default="summer_days",
                 min_occurs=0,
                 max_occurs=1,
