@@ -54,7 +54,7 @@ install: venv
 .PHONY: apt
 apt:
 	@echo "Installing libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev..."
-	@-bash -c -y "sudo apt-get install libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev"
+	@-bash -c "sudo apt-get -y install libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev"
 
 .PHONY: install-r-pkg
 install-r-pkg:

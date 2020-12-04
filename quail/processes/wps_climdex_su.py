@@ -46,6 +46,15 @@ class ClimdexSU(Process):
                 abstract="Filename to store the count of days where tmax > 25 degC for each year (extension .rda)",
                 data_type="string",
             ),
+            LiteralInput(
+                "su_name",
+                "Summer days name",
+                abstract="Name for the summer days output obejct",
+                default="summer_days",
+                min_occurs=0,
+                max_occurs=1,
+                data_type="string",
+            ),
             log_level,
         ]
 
@@ -79,7 +88,7 @@ class ClimdexSU(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_path, loglevel = [
+        climdex_input, ci_name, output_path, su_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -92,7 +101,6 @@ class ClimdexSU(Process):
             process_step="start",
         )
         climdex = get_package("climdex.pcic")
-        base = get_package("base")
 
         log_handler(
             self,
@@ -120,8 +128,8 @@ class ClimdexSU(Process):
         )
 
         # Assign summer_days a name in the R environment
-        robjects.r.assign("summer_days", summer_days)
-        robjects.r(f"save(summer_days, file='{output_path}')")
+        robjects.r.assign(su_name, summer_days)
+        robjects.r(f"save({su_name}, file='{output_path}')")
 
         log_handler(
             self,
