@@ -29,10 +29,9 @@ class ClimdexDays(Process):
             LiteralInput(
                 "days_type",
                 "Day type to compute",
-                abstract="Day type condition to compute",
-                allowed_values=["summer","icing"]
+                abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
+                allowed_values=["summer","icing"],
                 data_type="string",
-
             ),
             LiteralInput(
                 "vector_name",
@@ -48,7 +47,7 @@ class ClimdexDays(Process):
 
         outputs = [rda_output]
 
-        super(ClimdexI=Days, self).__init__(
+        super(ClimdexDays, self).__init__(
             self._handler,
             identifier="climdex_days",
             title="Climdex Days",
@@ -67,7 +66,7 @@ class ClimdexDays(Process):
         )
 
 
-    def days(days_type, ci):
+    def days(self, days_type, ci):
         climdex = get_package("climdex.pcic")
 
         if days_type == "summer":
@@ -76,7 +75,7 @@ class ClimdexDays(Process):
             return climdex.climdex_id(ci)
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_path, vector_name, loglevel = [
+        climdex_input, ci_name, output_path, days_type, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -93,13 +92,13 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            "Processing Summer Days",
+            f"Processing {days_type} Days",
             logger,
             log_level=loglevel,
             process_step="process",
         )
 
-        icing_days = climdex.climdex_id(ci)
+        count_days = self.days(days_type, ci)
 
         log_handler(
             self,
@@ -110,7 +109,7 @@ class ClimdexDays(Process):
             process_step="build_rdata",
         )
 
-        save_python_to_rdata(id_name, icing_days, output_path)
+        save_python_to_rdata(vector_name, count_days, output_path)
 
         log_handler(
             self,
