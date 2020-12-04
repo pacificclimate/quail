@@ -9,12 +9,18 @@ from quail.processes.wps_climdex_days import ClimdexDays
     ("climdex_input", "ci_name", "days_type", "vector_name"),
     [
         (
-            local_path("climdexInput.rda"), "ci", "summer", "summer_days",
+            local_path("climdexInput.rda"),
+            "ci",
+            "summer",
+            "summer_days",
         ),
         (
-            local_path("climdexInput.rda"), "ci", "icing", "icing_days",
+            local_path("climdexInput.rda"),
+            "ci",
+            "icing",
+            "icing_days",
         ),
-    ]
+    ],
 )
 def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
     with NamedTemporaryFile(

@@ -30,13 +30,13 @@ class ClimdexDays(Process):
                 "days_type",
                 "Day type to compute",
                 abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
-                allowed_values=["summer","icing"],
+                allowed_values=["summer", "icing"],
                 data_type="string",
             ),
             LiteralInput(
                 "vector_name",
                 "Output vector variable name",
-                abstract="Name to label the count vector R output object",
+                abstract="Name to label the output vector",
                 default="days",
                 min_occurs=0,
                 max_occurs=1,
@@ -64,7 +64,6 @@ class ClimdexDays(Process):
             store_supported=True,
             status_supported=True,
         )
-
 
     def days(self, days_type, ci):
         climdex = get_package("climdex.pcic")
@@ -103,7 +102,7 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            "Saving summer days as R data file",
+            f"Saving {days_type} days as R data file",
             logger,
             log_level=loglevel,
             process_step="build_rdata",
