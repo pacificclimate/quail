@@ -5,7 +5,7 @@ from pywps.inout.formats import Format
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
-from quail.utils import get_package, logger
+from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
 from quail.io import climdex_input, ci_name, output_path, rda_output
 
 
@@ -83,11 +83,7 @@ class ClimdexID(Process):
             process_step="process",
         )
 
-        # First load the climdexInput object into the environment
-        robjects.r(f"load(file='{climdex_input}')")
-        # Then assign that object a name in the python environment
-        ci = robjects.r(ci_name)
-
+        ci = load_rdata_to_python(climdex_input, ci_name)
         icing_days = climdex.climdex_id(ci)
 
         log_handler(
@@ -99,9 +95,7 @@ class ClimdexID(Process):
             process_step="build_rdata",
         )
 
-        # Assign summer_days a name in the R environment
-        robjects.r.assign(id_name, icing_days)
-        robjects.r(f"save({id_name}, file='{output_path}')")
+        save_python_to_rdata(id_name, icing_days, output_path)
 
         log_handler(
             self,
