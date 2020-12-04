@@ -5,6 +5,8 @@ climdex_input = ComplexInput(
     "climdex_input",
     "climdexInput",
     abstract="Rdata (.rda) file containing R Object of type climdexInput",
+    min_occurs=1,
+    max_occurs=1,
     supported_formats=[
         Format("application/x-gzip", extension=".rda", encoding="base64")
     ],
@@ -23,6 +25,8 @@ output_path = LiteralInput(
     "output_path",
     "Output file name",
     abstract="Filename to store the output Rdata (extension .rda)",
+    min_occurs=1,
+    max_occurs=1,
     data_type="string",
 )
 

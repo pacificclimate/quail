@@ -31,6 +31,8 @@ class ClimdexDays(Process):
                 "Day type to compute",
                 abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
                 allowed_values=["summer", "icing"],
+                min_occurs=1,
+                max_occurs=1,
                 data_type="string",
             ),
             LiteralInput(
