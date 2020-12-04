@@ -26,6 +26,7 @@ def load_rdata_to_python(r_file, r_object_name):
     robjects.r(f"load(file='{r_file}')")
     return robjects.r(r_object_name)
 
+
 def save_python_to_rdata(r_name, py_var, r_file):
     robjects.r.assign(r_name, py_var)
     robjects.r(f"save({r_name}, file='{r_file}')")
