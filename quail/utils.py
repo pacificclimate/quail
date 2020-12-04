@@ -1,5 +1,7 @@
 import logging
+import os
 from rpy2.robjects.packages import isinstalled, importr
+from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
 
 
@@ -19,3 +21,13 @@ def get_package(package):
         return importr(package)
     else:
         raise ProcessError(f"R package, {package}, is not installed")
+
+
+def load_rdata(input_file, obj_name):
+    robjects.r(f"load(file='{input_file}')")
+    return robjects.r(obj_name)
+
+
+def save_rdata(obj_name, obj, output_file, workdir):
+    robjects.r.assign(obj_name, obj)
+    robjects.r(f"save(frost_days, file='{os.path.join(workdir, output_file)}')")

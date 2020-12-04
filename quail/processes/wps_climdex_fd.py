@@ -4,7 +4,7 @@ from rpy2 import robjects
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
-from quail.utils import get_package, logger
+from quail.utils import get_package, load_rdata, save_rdata, logger
 
 
 class ClimdexFD(Process):
@@ -35,8 +35,12 @@ class ClimdexFD(Process):
                 "ci_name",
                 "climdexInput name",
                 abstract="Name of the climdexInput obejct",
-                min_occurs=0,
-                max_occurs=1,
+                data_type="string",
+            ),
+            LiteralInput(
+                "output_obj",
+                "Output object",
+                abstract="Name of the output object",
                 data_type="string",
             ),
             LiteralInput(
@@ -78,7 +82,7 @@ class ClimdexFD(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, loglevel = [
+        climdex_input, ci_name, output_obj, output_file, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -100,8 +104,7 @@ class ClimdexFD(Process):
             process_step="load_rdata",
         )
 
-        robjects.r(f"load(file='{climdex_input}')")
-        ci = robjects.r(ci_name)
+        ci = load_rdata(climdex_input, ci_name)
 
         log_handler(
             self,
@@ -124,8 +127,7 @@ class ClimdexFD(Process):
             process_step="build_rdata",
         )
 
-        robjects.r.assign("frost_days", frost_days)
-        robjects.r(f"save(frost_days, file='{output_file}')")
+        save_rdata(output_obj, frost_days, output_file, self.workdir)
 
         log_handler(
             self,
