@@ -5,6 +5,7 @@ from rpy2 import robjects
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, load_rdata, save_rdata, logger
+from quail.io import ci_file, ci_name, output_obj, output_file
 
 
 class ClimdexFD(Process):
@@ -22,41 +23,7 @@ class ClimdexFD(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            ComplexInput(
-                "ci_file",
-                "climdexInput file",
-                abstract="File that holds climdexInput object (recommended file extension .rda)",
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64")
-                ],
-            ),
-            LiteralInput(
-                "ci_name",
-                "climdexInput name",
-                abstract="Name of the climdexInput obejct",
-                data_type="string",
-            ),
-            LiteralInput(
-                "output_obj",
-                "Output object",
-                abstract="Name of the output object",
-                min_occurs=0,
-                max_occurs=1,
-                default="fd",
-                data_type="string",
-            ),
-            LiteralInput(
-                "output_file",
-                "Output file name",
-                abstract="Filename to store the output (recommended file extension .rda)",
-                min_occurs=0,
-                max_occurs=1,
-                default="output.rda",
-                data_type="string",
-            ),
-            log_level,
-        ]
+        inputs = [ci_file, ci_name, output_obj, output_file, log_level]
 
         outputs = [
             ComplexOutput(
