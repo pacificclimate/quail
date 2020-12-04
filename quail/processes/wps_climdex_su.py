@@ -35,7 +35,7 @@ class ClimdexSU(Process):
             LiteralInput(
                 "ci_name",
                 "climdexInput name",
-                abstract="Name of the climdexInput obejct",
+                abstract="Name of the climdexInput object",
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
