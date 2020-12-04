@@ -27,6 +27,6 @@ def load_rdata(input_file, obj_name):
     return robjects.r(obj_name)
 
 
-def save_rdata(obj_name, obj, output_path, workdir):
+def save_rdata(obj_name, obj, output_path):
     robjects.r.assign(obj_name, obj)
     robjects.r(f"save({obj_name}, file='{output_path}')")

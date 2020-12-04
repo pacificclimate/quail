@@ -19,9 +19,6 @@ output_obj = LiteralInput(
     "output_obj",
     "Output object",
     abstract="Name of the output object",
-    min_occurs=0,
-    max_occurs=1,
-    default="fd",
     data_type="string",
 )
 output_file = LiteralInput(
