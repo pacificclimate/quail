@@ -28,8 +28,7 @@ class ClimdexFD(Process):
                 "climdexInput file",
                 abstract="File that holds climdexInput object (recommended file extension .rda)",
                 supported_formats=[
-                    Format("application/rds", extension=".rds"),
-                    Format("application/rda", extension=".rda"),
+                    Format("application/x-gzip", extension=".rda", encoding="base64")
                 ],
             ),
             LiteralInput(
@@ -54,7 +53,9 @@ class ClimdexFD(Process):
                 "frost_days_file",
                 "Frost days output file",
                 abstract="A vector containing the number of frost days for each year",
-                supported_formats=[Format("application/rds", extension=".rds")],
+                supported_formats=[
+                    Format("application/x-gzip", extension=".rda", encoding="base64")
+                ],
             ),
         ]
 
