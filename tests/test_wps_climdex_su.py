@@ -7,16 +7,17 @@ from quail.processes.wps_climdex_su import ClimdexSU
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name"),
-    [(local_path("climdexInput.rda"), "ci")],
+    ("ci_file", "ci_name", "output_obj"),
+    [(local_path("climdexInput.rda"), "ci", "summer_days")],
 )
-def test_wps_climdex_su(climdex_input, ci_name):
+def test_wps_climdex_su(ci_file, ci_name, output_obj):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = (
-            f"climdex_input=@xlink:href={climdex_input};"
+            f"ci_file=@xlink:href={ci_file};"
             f"ci_name={ci_name};"
-            f"output_path={out_file.name};"
+            f"output_obj={output_obj};"
+            f"output_file={out_file.name};"
         )
         run_wps_process(ClimdexSU(), datainputs)

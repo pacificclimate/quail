@@ -17,7 +17,7 @@ def test_wps_climdex_fd(ci_file, ci_name, output_obj):
         datainputs = (
             f"ci_file=@xlink:href={ci_file};"
             f"ci_name={ci_name};"
-            f"output_obj={output_obj}"
+            f"output_obj={output_obj};"
             f"output_file={out_file.name};"
         )
         run_wps_process(ClimdexFD(), datainputs)
