@@ -1,12 +1,12 @@
 from rpy2 import robjects
-from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS
+from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
 from pywps.inout.formats import Format
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger
-from quail.io import climdex_input, ci_name, output_path
+from quail.io import climdex_input, ci_name, output_path, rda_output
 
 
 class ClimdexSU(Process):
@@ -39,16 +39,7 @@ class ClimdexSU(Process):
             log_level,
         ]
 
-        outputs = [
-            ComplexOutput(
-                "summer_days_file",
-                "Summer days output file",
-                abstract="A vector containing the number of summer days for each year",
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64")
-                ],
-            ),
-        ]
+        outputs = [rda_output]
 
         super(ClimdexSU, self).__init__(
             self._handler,
@@ -121,7 +112,7 @@ class ClimdexSU(Process):
             process_step="build_output",
         )
 
-        response.outputs["summer_days_file"].file = output_path
+        response.outputs["rda_output"].file = output_path
 
         # Clear R global env
         robjects.r("rm(list=ls())")
