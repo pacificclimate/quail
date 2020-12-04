@@ -8,11 +8,11 @@ from wps_tools.io import log_level
 from quail.utils import get_package, logger
 
 
-class ClimdexSU(Process):
+class ClimdexID(Process):
     """
-    Takes a climdexInput object as input and computes the SU
-    (summer days) climdexindex:  that is,  the annual count of days where
-    daily maximum temperature exceeds 25 degreesCelsius
+    Takes a climdexInput object as input and computes the ID (icing days)
+    climdex index:that is, the annual count of days where daily maximum
+    temperature is below 0 degrees Celsius.
     """
 
     def __init__(self):
@@ -46,10 +46,10 @@ class ClimdexSU(Process):
                 data_type="string",
             ),
             LiteralInput(
-                "su_name",
-                "Summer days name",
-                abstract="Name for the summer days output object",
-                default="summer_days",
+                "id_name",
+                "Icing days name",
+                abstract="Name for the icing days output object",
+                default="icing_days",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -59,8 +59,8 @@ class ClimdexSU(Process):
 
         outputs = [
             ComplexOutput(
-                "summer_days_file",
-                "Summer days output file",
+                "icing_days_file",
+                "Icing days output file",
                 abstract="A vector containing the number of summer days for each year",
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64")
@@ -68,11 +68,11 @@ class ClimdexSU(Process):
             ),
         ]
 
-        super(ClimdexSU, self).__init__(
+        super(ClimdexID, self).__init__(
             self._handler,
-            identifier="climdex_su",
-            title="Climdex Summer Days",
-            abstract="Computes the annual count of days where daily maximum temperature exceeds 25 degrees Celsius",
+            identifier="climdex_id",
+            title="Climdex ID Days",
+            abstract="Computes the annual count of days where daily maximum temperature is below 0 degrees Celsius",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -87,7 +87,7 @@ class ClimdexSU(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_path, su_name, loglevel = [
+        climdex_input, ci_name, output_path, id_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -115,7 +115,7 @@ class ClimdexSU(Process):
         # Then assign that object a name in the python environment
         ci = robjects.r(ci_name)
 
-        summer_days = climdex.climdex_su(ci)
+        icing_days = climdex.climdex_id(ci)
 
         log_handler(
             self,
@@ -127,8 +127,8 @@ class ClimdexSU(Process):
         )
 
         # Assign summer_days a name in the R environment
-        robjects.r.assign(su_name, summer_days)
-        robjects.r(f"save({su_name}, file='{output_path}')")
+        robjects.r.assign(id_name, icing_days)
+        robjects.r(f"save({id_name}, file='{output_path}')")
 
         log_handler(
             self,
@@ -139,7 +139,7 @@ class ClimdexSU(Process):
             process_step="build_output",
         )
 
-        response.outputs["summer_days_file"].file = output_path
+        response.outputs["icing_days_file"].file = output_path
 
         # Clear R global env
         robjects.r("rm(list=ls())")
