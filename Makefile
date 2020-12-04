@@ -19,7 +19,7 @@ SANITIZE_FILE := https://github.com/Ouranosinc/PAVICS-e2e-workflow-tests/raw/mas
 # end of configuration
 
 .PHONY: all
-all: develop test clean-test test-notebooks-prod
+all: apt develop install-r-pkg test-all clean-test test-notebooks-prod
 
 .PHONY: help
 help:
@@ -50,6 +50,16 @@ install: venv
 	@echo "Installing application ..."
 	@-bash -c '${PIP} install -e .'
 	@echo "\nStart service with \`make start'"
+
+.PHONY: apt
+apt:
+	@echo "Installing libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev..."
+	@-bash -c "sudo apt-get -y install libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev"
+
+.PHONY: install-r-pkg
+install-r-pkg:
+	@echo "Installing R packages ..."
+	@-bash -c 'Rscript install_pkgs.R r_requirements.txt'
 
 .PHONY: develop
 develop: venv
