@@ -11,12 +11,17 @@ class ClimdexFD(Process):
     """
     Takes a climdexInput object as input and computes the FD
     (frost days) climdexindex:  that is,  the annual count of days when
-    daily minimum temperature is lower than 0 degrees Celsius
+    daily minimum temperature is below 0 degrees Celsius
     """
 
     def __init__(self):
-        self.status_percentage_steps = common_status_percentages
-
+        self.status_percentage_steps = dict(
+            common_status_percentages,
+            **{
+                "load_rdata": 10,
+                "save_rdata": 90,
+            },
+        )
         inputs = [
             ComplexInput(
                 "ci_file",
@@ -35,6 +40,12 @@ class ClimdexFD(Process):
                 max_occurs=1,
                 data_type="string",
             ),
+            LiteralInput(
+                "output_file",
+                "Output file name",
+                abstract="Filename to store the output (recommended file extension .rda)",
+                data_type="string",
+            ),
             log_level,
         ]
 
@@ -51,7 +62,7 @@ class ClimdexFD(Process):
             self._handler,
             identifier="climdex_fd",
             title="Climdex Frost Days",
-            abstract="Computes the annual count of days when daily minimum temperature is lower than 0 degrees Celsius",
+            abstract="Computes the annual count of days when daily minimum temperature is below 0 degrees Celsius",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -66,18 +77,76 @@ class ClimdexFD(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, loglevel = [
+        climdex_input, ci_name, output_file, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
-        if climdex_input.endswith(".rda"):
-            robjects.r(f"load(file='{climdex_input}')")
-        elif climdex_input.endswith(".rds"):
-            robjects.r(f"readRDS(file='{climdex_input}')")
+        log_handler(
+            self,
+            response,
+            "Starting Process",
+            logger,
+            log_level=loglevel,
+            process_step="start",
+        )
 
+        log_handler(
+            self,
+            response,
+            "Loading climdexInput from R data file",
+            logger,
+            log_level=loglevel,
+            process_step="load_rdata",
+        )
+
+        robjects.r(f"load(file='{climdex_input}')")
         ci = robjects.r(ci_name)
 
+        log_handler(
+            self,
+            response,
+            "Processing Frost Days",
+            logger,
+            log_level=loglevel,
+            process_step="process",
+        )
+
         climdex = get_package("climdex.pcic")
-        climdex.climdex_fd(ci)
+        frost_days = climdex.climdex_fd(ci)
+
+        log_handler(
+            self,
+            response,
+            "Saving frost days to R data file",
+            logger,
+            log_level=loglevel,
+            process_step="build_rdata",
+        )
+
+        robjects.r.assign("frost_days", frost_days)
+        robjects.r(f"save(frost_days, file='{output_file}')")
+
+        log_handler(
+            self,
+            response,
+            "Building final output",
+            logger,
+            log_level=loglevel,
+            process_step="build_output",
+        )
+
+        response.outputs["summer_days_file"].file = output_file
+
+        # Clear R global env
+        robjects.r("rm(list=ls())")
+
+        log_handler(
+            self,
+            response,
+            "Process Complete",
+            logger,
+            log_level=loglevel,
+            process_step="complete",
+        )
 
         return response
