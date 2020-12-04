@@ -6,6 +6,7 @@ from pywps.inout.formats import Format
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger
+from quail.io import climdex_input, ci_name, output_path
 
 
 class ClimdexID(Process):
@@ -23,28 +24,9 @@ class ClimdexID(Process):
             },
         )
         inputs = [
-            ComplexInput(
-                "climdex_input",
-                "climdexInput",
-                abstract="Rdata (.rda) file containing R Object of type climdexInput",
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64")
-                ],
-            ),
-            LiteralInput(
-                "ci_name",
-                "climdexInput name",
-                abstract="Name of the climdexInput object",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "output_path",
-                "Output file name",
-                abstract="Filename to store the count of days where tmax > 25 degC for each year (extension .rda)",
-                data_type="string",
-            ),
+            climdex_input,
+            ci_name,
+            output_path,
             LiteralInput(
                 "id_name",
                 "Icing days name",
