@@ -1,7 +1,7 @@
+import os
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS, Format
 from pywps.app.Common import Metadata
 from rpy2 import robjects
-
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, load_rdata, save_rdata, logger
@@ -41,12 +41,18 @@ class ClimdexFD(Process):
                 "output_obj",
                 "Output object",
                 abstract="Name of the output object",
+                min_occurs=0,
+                max_occurs=1,
+                default="fd",
                 data_type="string",
             ),
             LiteralInput(
                 "output_file",
                 "Output file name",
                 abstract="Filename to store the output (recommended file extension .rda)",
+                min_occurs=0,
+                max_occurs=1,
+                default="output.rda",
                 data_type="string",
             ),
             log_level,
@@ -124,10 +130,11 @@ class ClimdexFD(Process):
             "Saving frost days to R data file",
             logger,
             log_level=loglevel,
-            process_step="build_rdata",
+            process_step="save_rdata",
         )
 
-        save_rdata(output_obj, frost_days, output_file, self.workdir)
+        output_path = os.path.join(self.workdir, output_file)
+        save_rdata("frost_days", frost_days, output_path, self.workdir)
 
         log_handler(
             self,
@@ -138,7 +145,7 @@ class ClimdexFD(Process):
             process_step="build_output",
         )
 
-        response.outputs["summer_days_file"].file = output_file
+        response.outputs["frost_days_file"].file = output_path
 
         # Clear R global env
         robjects.r("rm(list=ls())")

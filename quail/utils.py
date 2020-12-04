@@ -1,5 +1,4 @@
 import logging
-import os
 from rpy2.robjects.packages import isinstalled, importr
 from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
@@ -28,6 +27,6 @@ def load_rdata(input_file, obj_name):
     return robjects.r(obj_name)
 
 
-def save_rdata(obj_name, obj, output_file, workdir):
+def save_rdata(obj_name, obj, output_path, workdir):
     robjects.r.assign(obj_name, obj)
-    robjects.r(f"save(frost_days, file='{os.path.join(workdir, output_file)}')")
+    robjects.r(f"save({obj_name}, file='{output_path}')")
