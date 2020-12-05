@@ -44,7 +44,7 @@ def test_rda_output(url, vector_name, expected_file, expected_vector_name):
     output_vector = robjects.r(vector_name)
 
     robjects.r(
-        "load(file='{}')".format(resource_filename("tests",f"data/{expected_file}"))
+        "load(file='{}')".format(resource_filename("tests", f"data/{expected_file}"))
     )
     expected_vector = robjects.r(expected_vector_name)
 
