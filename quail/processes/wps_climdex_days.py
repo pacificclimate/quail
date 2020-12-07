@@ -1,12 +1,16 @@
+import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
-from pywps.inout.formats import Format
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
+<<<<<<< HEAD
 from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
+=======
+from quail.io import climdex_input, ci_name, output_file, rda_output
+>>>>>>> master
 
 
 class ClimdexDays(Process):
@@ -19,7 +23,8 @@ class ClimdexDays(Process):
         self.status_percentage_steps = dict(
             common_status_percentages,
             **{
-                "build_rdata": 90,
+                "load_rdata": 10,
+                "save_rdata": 90,
             },
         )
         inputs = [
@@ -31,7 +36,7 @@ class ClimdexDays(Process):
                 "days_type",
                 "Day type to compute",
                 abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
-                allowed_values=["summer", "icing"],
+                allowed_values=["summer", "icing", "frost"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -66,6 +71,8 @@ class ClimdexDays(Process):
             return climdex.climdex_su(ci)
         elif days_type == "icing":
             return climdex.climdex_id(ci)
+        elif days_type == "frost":
+            return climdex.climdex_fd(ci)
 
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
@@ -80,6 +87,15 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="start",
         )
+
+        log_handler(
+            self,
+            response,
+            "Loading climdexInput from R data file",
+            logger,
+            log_level=loglevel,
+            process_step="load_rdata",
+        )
         ci = load_rdata_to_python(climdex_input, ci_name)
 
         log_handler(
@@ -90,7 +106,6 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="process",
         )
-
         count_days = self.days(days_type, ci)
 
         log_handler(
@@ -99,10 +114,10 @@ class ClimdexDays(Process):
             f"Saving {days_type} days as R data file",
             logger,
             log_level=loglevel,
-            process_step="build_rdata",
+            process_step="save_rdata",
         )
-
-        save_python_to_rdata(vector_name, count_days, output_file)
+        output_path = os.path.join(self.workdir, output_file)
+        save_python_to_rdata(vector_name, count_days, output_path)
 
         log_handler(
             self,
@@ -112,8 +127,7 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="build_output",
         )
-
-        response.outputs["rda_output"].file = output_file
+        response.outputs["rda_output"].file = output_path
 
         # Clear R global env
         robjects.r("rm(list=ls())")
@@ -126,5 +140,4 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="complete",
         )
-
         return response

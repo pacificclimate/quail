@@ -20,6 +20,12 @@ from quail.processes.wps_climdex_days import ClimdexDays
             "icing",
             "icing_days",
         ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "frost",
+            "frost_days",
+        ),
     ],
 )
 def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
