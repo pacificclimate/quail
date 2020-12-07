@@ -37,6 +37,6 @@ def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
             f"ci_name={ci_name};"
             f"days_type={days_type};"
             f"vector_name={vector_name};"
-            f"output_path={out_file.name};"
+            f"output_file={out_file.name};"
         )
         run_wps_process(ClimdexDays(), datainputs)
