@@ -1,21 +1,19 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, FORMATS
+from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
 from pywps.inout.formats import Format
-from tempfile import NamedTemporaryFile
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
-from quail.utils import get_package, load_rdata, save_rdata, logger
-from quail.io import ci_file, ci_name, output_obj, output_file
+from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
+from quail.io import climdex_input, ci_name, output_path, rda_output
 
 
-class ClimdexSU(Process):
+class ClimdexDays(Process):
     """
-    Takes a climdexInput object as input and computes the SU
-    (summer days) climdexindex:  that is,  the annual count of days where
-    daily maximum temperature exceeds 25 degreesCelsius
+    Takes a climdexInput object as input and computes the annual count
+    of days where daily maximum temperature satisfies some condition
     """
 
     def __init__(self):
@@ -25,24 +23,38 @@ class ClimdexSU(Process):
                 "build_rdata": 90,
             },
         )
-        inputs = [ci_file, ci_name, output_obj, output_file, log_level]
-
-        outputs = [
-            ComplexOutput(
-                "summer_days_file",
-                "Summer days output file",
-                abstract="A vector containing the number of summer days for each year",
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64")
-                ],
+        inputs = [
+            climdex_input,
+            ci_name,
+            output_path,
+            LiteralInput(
+                "days_type",
+                "Day type to compute",
+                abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
+                allowed_values=["summer", "icing"],
+                min_occurs=1,
+                max_occurs=1,
+                data_type="string",
             ),
+            LiteralInput(
+                "vector_name",
+                "Output vector variable name",
+                abstract="Name to label the output vector",
+                default="days",
+                min_occurs=0,
+                max_occurs=1,
+                data_type="string",
+            ),
+            log_level,
         ]
 
-        super(ClimdexSU, self).__init__(
+        outputs = [rda_output]
+
+        super(ClimdexDays, self).__init__(
             self._handler,
-            identifier="climdex_su",
-            title="Climdex Summer Days",
-            abstract="Computes the annual count of days where daily maximum temperature exceeds 25 degrees Celsius",
+            identifier="climdex_days",
+            title="Climdex Days",
+            abstract="Computes the annual count of days where daily maximum temperature satisfies some condition",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -56,8 +68,16 @@ class ClimdexSU(Process):
             status_supported=True,
         )
 
+    def days(self, days_type, ci):
+        climdex = get_package("climdex.pcic")
+
+        if days_type == "summer":
+            return climdex.climdex_su(ci)
+        elif days_type == "icing":
+            return climdex.climdex_id(ci)
+
     def _handler(self, request, response):
-        climdex_input, ci_name, su_name, output_file, loglevel = [
+        climdex_input, ci_name, output_path, days_type, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -69,31 +89,29 @@ class ClimdexSU(Process):
             log_level=loglevel,
             process_step="start",
         )
-        climdex = get_package("climdex.pcic")
+        ci = load_rdata_to_python(climdex_input, ci_name)
 
         log_handler(
             self,
             response,
-            "Processing Summer Days",
+            f"Processing {days_type} Days",
             logger,
             log_level=loglevel,
             process_step="process",
         )
 
-        ci = load_rdata(climdex_input, ci_name)
-        summer_days = climdex.climdex_su(ci)
+        count_days = self.days(days_type, ci)
 
         log_handler(
             self,
             response,
-            "Saving summer days as R data file",
+            f"Saving {days_type} days as R data file",
             logger,
             log_level=loglevel,
             process_step="build_rdata",
         )
 
-        output_path = os.path.join(self.workdir, output_file)
-        save_rdata(su_name, summer_days, output_path)
+        save_python_to_rdata(vector_name, count_days, output_path)
 
         log_handler(
             self,
@@ -104,7 +122,7 @@ class ClimdexSU(Process):
             process_step="build_output",
         )
 
-        response.outputs["summer_days_file"].file = output_path
+        response.outputs["rda_output"].file = output_path
 
         # Clear R global env
         robjects.r("rm(list=ls())")

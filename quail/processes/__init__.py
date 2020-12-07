@@ -1,7 +1,5 @@
-from .wps_climdex_fd import ClimdexFD
-from .wps_climdex_su import ClimdexSU
+from .wps_climdex_days import ClimdexDays
 
 processes = [
-    ClimdexFD(),
-    ClimdexSU(),
+    ClimdexDays(),
 ]
