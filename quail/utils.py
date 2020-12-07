@@ -1,6 +1,7 @@
 import logging
 from rpy2 import robjects
 from rpy2.robjects.packages import isinstalled, importr
+from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename

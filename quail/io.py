@@ -1,5 +1,4 @@
-from pywps import LiteralInput, ComplexInput, ComplexOutput
-from pywps.inout.formats import Format
+from pywps import LiteralInput, ComplexInput, ComplexOutput, Format
 
 climdex_input = ComplexInput(
     "climdex_input",
@@ -21,12 +20,13 @@ ci_name = LiteralInput(
     data_type="string",
 )
 
-output_path = LiteralInput(
-    "output_path",
+output_file = LiteralInput(
+    "output_file",
     "Output file name",
     abstract="Filename to store the output Rdata (extension .rda)",
-    min_occurs=1,
+    min_occurs=0,
     max_occurs=1,
+    default="output.rda",
     data_type="string",
 )
 
