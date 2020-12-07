@@ -21,8 +21,8 @@ ci_name = LiteralInput(
     data_type="string",
 )
 
-output_path = LiteralInput(
-    "output_path",
+output_file = LiteralInput(
+    "output_file",
     "Output file name",
     abstract="Filename to store the output Rdata (extension .rda)",
     min_occurs=1,
@@ -38,3 +38,13 @@ rda_output = ComplexOutput(
         Format("application/x-gzip", extension=".rda", encoding="base64")
     ],
 )
+
+vector_name = LiteralInput(
+    "vector_name",
+    "Output vector variable name",
+    abstract="Name to label the output vector",
+    default="days",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+),
