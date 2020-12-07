@@ -68,12 +68,14 @@ class ClimdexInput(Process):
             LiteralInput(
                 "data_columns",
                 "data columns",
+                default='list(tmin = "tmin", tmax = "tmax", prec = "prec")',
                 abstract="Column names for tmin, tmax, and prec data.",
                 data_type="string",
             ),
             LiteralInput(
                 "base_range",
                 "basline range",
+                default="c(1961, 1990)",
                 abstract="Years to use for the baseline",
                 data_type="string",
             ),
@@ -88,6 +90,7 @@ class ClimdexInput(Process):
             LiteralInput(
                 "cal",
                 "calendar type",
+                default="gregorian",
                 abstract="The calendar type used in the input files.",
                 data_type="string",
             ),
@@ -106,12 +109,14 @@ class ClimdexInput(Process):
             LiteralInput(
                 "n",
                 "number of days",
+                default=5,
                 abstract="Number of days to use as window for daily quantiles.",
                 data_type="integer",
             ),
             LiteralInput(
                 "northern_hemisphere",
                 "number of days",
+                default=True,
                 abstract="Number of days to use as window for daily quantiles.",
                 data_type="boolean",
             ),
@@ -126,24 +131,28 @@ class ClimdexInput(Process):
             LiteralInput(
                 "temp_qtiles",
                 "precipitation quantiles",
+                default="c(0.1, 0.9)",
                 abstract="Quantiles to calculate for temperature variables",
                 data_type="string",
             ),
             LiteralInput(
                 "prec_qtiles",
                 "temperature quantiles",
+                default="c(0.95, 0.99)",
                 abstract="Quantiles to calculate for precipitation",
                 data_type="string",
             ),
             LiteralInput(
                 "max_missing_days",
                 "maximum missing days",
+                default="c(annual = 15, monthly =3)",
                 abstract="Vector containing thresholds for number of days allowed missing per year (annual) and per month (monthly).",
                 data_type="string",
             ),
             LiteralInput(
                 "min_base_data_fraction_present",
                 "minimum fraction of base data",
+                default=0.1,
                 abstract="Minimum fraction of base data that must be present for quantile to be calculated for a particular day",
                 data_type="float",
             ),
