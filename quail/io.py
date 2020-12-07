@@ -47,4 +47,4 @@ vector_name = LiteralInput(
     min_occurs=0,
     max_occurs=1,
     data_type="string",
-),
+)

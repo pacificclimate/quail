@@ -6,11 +6,7 @@ from pywps.app.Common import Metadata
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-<<<<<<< HEAD
 from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
-=======
-from quail.io import climdex_input, ci_name, output_file, rda_output
->>>>>>> master
 
 
 class ClimdexDays(Process):
@@ -31,7 +27,6 @@ class ClimdexDays(Process):
             climdex_input,
             ci_name,
             output_file,
-            vector_name,
             LiteralInput(
                 "days_type",
                 "Day type to compute",
@@ -41,6 +36,7 @@ class ClimdexDays(Process):
                 max_occurs=1,
                 data_type="string",
             ),
+            vector_name,
             log_level,
         ]
 
