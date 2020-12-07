@@ -12,7 +12,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 class ClimdexGSL(Process):
     """
     Computes the growing season length (GSL): Growing season length
-    is the number of days between the startof the first spell of warm days
+    is the number of days between the start of the first spell of warm days
     in the first half of the year, defined as six or more days with mean
     temperature above 5 degrees Celsius, and the start of the first spell
     of cold days in the second half of the year, defined as six or more days
@@ -35,7 +35,7 @@ class ClimdexGSL(Process):
             LiteralInput(
                 "gsl_mode",
                 "GSL mode",
-                abstract="Growing season length method to use. The three alternate modes provided ('GSL_first', 'GSL_max', and 'GSL_sum') are for testing pur-poses only.",
+                abstract="Growing season length method to use. The three alternate modes provided ('GSL_first', 'GSL_max', and 'GSL_sum') are for testing purposes only.",
                 default="GSL",
                 min_occurs=0,
                 max_occurs=1,
