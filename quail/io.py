@@ -20,13 +20,6 @@ ci_name = LiteralInput(
     data_type="string",
 )
 
-output_obj = LiteralInput(
-    "output_obj",
-    "Output object",
-    abstract="Name of the output object",
-    data_type="string",
-)
-
 output_file = LiteralInput(
     "output_file",
     "Output file name",
