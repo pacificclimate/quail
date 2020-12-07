@@ -25,6 +25,8 @@ class ClimdexInput(Process):
                 "tmax_file",
                 "daily maximum temperature data file",
                 abstract="Name of file containing daily maximum temperature data.",
+                min_occurs=0,
+                max_occurs=1,
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
@@ -34,6 +36,8 @@ class ClimdexInput(Process):
                 "tmin_file",
                 "daily minimum temperature data file",
                 abstract="Name of file containing daily minimum temperature data.",
+                min_occurs=0,
+                max_occurs=1,
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
@@ -43,6 +47,19 @@ class ClimdexInput(Process):
                 "prec_file",
                 "daily total precipitation data file",
                 abstract="Name of file containing daily total precipitation data.",
+                min_occurs=0,
+                max_occurs=1,
+                supported_formats=[
+                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("text/csv", extension=".csv"),
+                ],
+            ),
+            ComplexInput(
+                "tvag_file",
+                "mean temperature data file",
+                abstract="Name of file containing daily mean temperature data.",
+                min_occurs=0,
+                max_occurs=1,
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
@@ -64,6 +81,8 @@ class ClimdexInput(Process):
                 "na_strings",
                 "NA strings",
                 abstract="Strings used for NA values",
+                min_occurs=0,
+                max_occurs=1,
                 data_type="string",
             ),
             LiteralInput(
@@ -73,9 +92,15 @@ class ClimdexInput(Process):
                 data_type="string",
             ),
             LiteralInput(
-                "date_types",
-                "date types",
-                abstract="Column names for tmin, tmax, and prec data (see notes).",
+                "date_fields",
+                "date fields",
+                abstract="Vector of names consisting of the columns to be concatenated together with spaces.",
+                data_type="string",
+            ),
+            LiteralInput(
+                "date_format",
+                "date format",
+                abstract="Date format as taken by strptime.",
                 data_type="string",
             ),
             LiteralInput(
@@ -90,19 +115,12 @@ class ClimdexInput(Process):
                 abstract="Number of days to use as window for daily quantiles.",
                 data_type="boolean",
             ),
-            ComplexInput(
-                "tvag_file",
-                "mean temperature data file",
-                abstract="Name of file containing daily mean temperature data.",
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
-                    Format("text/csv", extension=".csv"),
-                ],
-            ),
             LiteralInput(
                 "quantiles",
                 "threshold quantiles",
                 abstract="Threshold quantiles for supplied variables.",
+                min_occurs=0,
+                max_occurs=1,
                 data_type="string",
             ),
             LiteralInput(
