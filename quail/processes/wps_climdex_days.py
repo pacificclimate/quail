@@ -6,7 +6,7 @@ from pywps.app.Common import Metadata
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-from quail.io import climdex_input, ci_name, output_path, rda_output
+from quail.io import climdex_input, ci_name, output_file, rda_output
 
 
 class ClimdexDays(Process):
@@ -26,7 +26,7 @@ class ClimdexDays(Process):
         inputs = [
             climdex_input,
             ci_name,
-            output_path,
+            output_file,
             LiteralInput(
                 "days_type",
                 "Day type to compute",
@@ -79,7 +79,7 @@ class ClimdexDays(Process):
             return climdex.climdex_fd(ci)
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_path, days_type, vector_name, loglevel = [
+        climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -120,6 +120,7 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="save_rdata",
         )
+        output_path = os.path.join(self.workdir, output_file)
         save_python_to_rdata(vector_name, count_days, output_path)
 
         log_handler(
@@ -131,6 +132,7 @@ class ClimdexDays(Process):
             process_step="build_output",
         )
         response.outputs["rda_output"].file = output_path
+
         # Clear R global env
         robjects.r("rm(list=ls())")
 
