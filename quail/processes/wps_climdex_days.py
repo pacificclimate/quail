@@ -1,6 +1,7 @@
 import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
+from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
@@ -12,7 +13,15 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 class ClimdexDays(Process):
     """
     Takes a climdexInput object as input and computes the annual count
-    of days where daily maximum temperature satisfies some condition
+    of days where daily temperature satisfies some condition.
+    - "summer": the annual count of days where daily maximum temperature
+    exceeds 25 degreesCelsius
+    - "icing": the annual count of days where daily maximum temperature
+    was below 0 degrees Celsius
+    - "frost": the annual count of days where daily minimum temperature
+    was below 0 degrees Celsius
+    - "tropical nights": the annual count of days where daily minimum
+    temperature stays above 20 degrees Celsius
     """
 
     def __init__(self):
@@ -30,8 +39,13 @@ class ClimdexDays(Process):
             LiteralInput(
                 "days_type",
                 "Day type to compute",
-                abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
-                allowed_values=["summer", "icing", "frost"],
+                abstract="Day type condition to compute",
+                allowed_values=[
+                    "summer days",
+                    "icing days",
+                    "frost days",
+                    "tropical nights",
+                ],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -46,7 +60,17 @@ class ClimdexDays(Process):
             self._handler,
             identifier="climdex_days",
             title="Climdex Days",
-            abstract="Computes the annual count of days where daily maximum temperature satisfies some condition",
+            abstract="""
+                Takes a climdexInput object as input and computes the annual count of days where daily temperature satisfies some condition.
+                "summer": the annual count of days where daily maximum temperature
+                exceeds 25 degreesCelsius
+                "icing": the annual count of days where daily maximum temperature
+                was below 0 degrees Celsius
+                "frost": the annual count of days where daily minimum temperature
+                was below 0 degrees Celsius
+                "tropical nights": the annual count of days where daily minimum
+                temperature stays above 20 degrees Celsius
+            """,
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -63,12 +87,16 @@ class ClimdexDays(Process):
     def days(self, days_type, ci):
         climdex = get_package("climdex.pcic")
 
-        if days_type == "summer":
+        if days_type == "summer days":
             return climdex.climdex_su(ci)
-        elif days_type == "icing":
+        elif days_type == "icing days":
             return climdex.climdex_id(ci)
-        elif days_type == "frost":
+        elif days_type == "frost days":
             return climdex.climdex_fd(ci)
+        elif days_type == "tropical nights":
+            return climdex.climdex_tr(ci)
+        else:
+            raise ProcessError("invalid days_type")
 
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
@@ -97,7 +125,7 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            f"Processing {days_type} Days",
+            f"Processing {days_type} count",
             logger,
             log_level=loglevel,
             process_step="process",
@@ -107,7 +135,7 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            f"Saving {days_type} days as R data file",
+            f"Saving {days_type} count as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
