@@ -11,20 +11,26 @@ from quail.processes.wps_climdex_days import ClimdexDays
         (
             local_path("climdexInput.rda"),
             "ci",
-            "summer",
+            "summer days",
             "summer_days",
         ),
         (
             local_path("climdexInput.rda"),
             "ci",
-            "icing",
+            "icing days",
             "icing_days",
         ),
         (
             local_path("climdexInput.rda"),
             "ci",
-            "frost",
+            "frost days",
             "frost_days",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "tropical nights",
+            "tropical_nights",
         ),
     ],
 )
