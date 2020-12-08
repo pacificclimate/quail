@@ -1,5 +1,19 @@
 Changes
 *******
+0.2.0 (2020-12-04)
+==================
+
+* Add summer days process (#_36)
+* Add frost days to wps_climdex_days process (#_37)
+* Add icing days to wps_climdex_days process (#_38)
+* Add wps_climdex_gsl process (#_40)
+* Add tropical nights to wps_climdex_days process (#_41)
+
+.. _36: https://github.com/pacificclimate/quail/pull/36
+.. _37: https://github.com/pacificclimate/quail/pull/37
+.. _38: https://github.com/pacificclimate/quail/pull/38
+.. _40: https://github.com/pacificclimate/quail/pull/40
+.. _41: https://github.com/pacificclimate/quail/pull/41
 
 0.1.0 (2020-11-24)
 ==================
