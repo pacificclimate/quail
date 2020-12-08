@@ -17,7 +17,8 @@ class ClimdexInput(Process):
         self.status_percentage_steps = dict(
             common_status_percentages,
             **{
-                "build_rdata": 90,
+                "load_rdata": 10,
+                "save_rdata": 90,
             },
         )
         inputs = [
@@ -97,12 +98,16 @@ class ClimdexInput(Process):
             LiteralInput(
                 "date_fields",
                 "date fields",
+                min_occurs=1,
+                max_occurs=1,
                 abstract="Vector of names consisting of the columns to be concatenated together with spaces.",
                 data_type="string",
             ),
             LiteralInput(
                 "date_format",
                 "date format",
+                min_occurs=1,
+                max_occurs=1,
                 abstract="Date format as taken by strptime.",
                 data_type="string",
             ),
@@ -124,8 +129,7 @@ class ClimdexInput(Process):
                 "quantiles",
                 "threshold quantiles",
                 abstract="Threshold quantiles for supplied variables.",
-                min_occurs=0,
-                max_occurs=1,
+                default="NULL",
                 data_type="string",
             ),
             LiteralInput(
@@ -189,5 +193,7 @@ class ClimdexInput(Process):
         )
 
     def _handler(self, request, response):
+        args = collect_args(request, self.workdir)
+        print(args)
 
         return response
