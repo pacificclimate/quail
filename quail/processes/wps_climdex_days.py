@@ -39,7 +39,12 @@ class ClimdexDays(Process):
                 "days_type",
                 "Day type to compute",
                 abstract="Day type condition to compute",
-                allowed_values=["summer days", "icing days", "frost days", "tropical nights"],
+                allowed_values=[
+                    "summer days",
+                    "icing days",
+                    "frost days",
+                    "tropical nights",
+                ],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
