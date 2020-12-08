@@ -9,10 +9,14 @@ from quail.utils import get_package, logger, load_rdata_to_python, save_python_t
 from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
 
 
-class ClimdexDays(Process):
+class ClimdexGSL(Process):
     """
-    Takes a climdexInput object as input and computes the annual count
-    of days where daily maximum temperature satisfies some condition
+    Computes the growing season length (GSL): Growing season length
+    is the number of days between the start of the first spell of warm days
+    in the first half of the year, defined as six or more days with mean
+    temperature above 5 degrees Celsius, and the start of the first spell
+    of cold days in the second half of the year, defined as six or more days
+    with a mean temperature below 5 degrees Celsius
     """
 
     def __init__(self):
@@ -27,26 +31,27 @@ class ClimdexDays(Process):
             climdex_input,
             ci_name,
             output_file,
+            vector_name,
             LiteralInput(
-                "days_type",
-                "Day type to compute",
-                abstract="Day type condition to compute: summer > 25 degC ; icing < 0 degC",
-                allowed_values=["summer", "icing", "frost"],
-                min_occurs=1,
+                "gsl_mode",
+                "GSL mode",
+                abstract="Growing season length method to use. The three alternate modes provided ('GSL_first', 'GSL_max', and 'GSL_sum') are for testing purposes only.",
+                default="GSL",
+                min_occurs=0,
                 max_occurs=1,
+                allowed_values=["GSL", "GSL_first", "GSL_max", "GSL_sum"],
                 data_type="string",
             ),
-            vector_name,
             log_level,
         ]
 
         outputs = [rda_output]
 
-        super(ClimdexDays, self).__init__(
+        super(ClimdexGSL, self).__init__(
             self._handler,
-            identifier="climdex_days",
-            title="Climdex Days",
-            abstract="Computes the annual count of days where daily maximum temperature satisfies some condition",
+            identifier="climdex_gsl",
+            title="Climdex Growing Seasonal Length",
+            abstract="Computes the growing season length (GSL)",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -60,18 +65,8 @@ class ClimdexDays(Process):
             status_supported=True,
         )
 
-    def days(self, days_type, ci):
-        climdex = get_package("climdex.pcic")
-
-        if days_type == "summer":
-            return climdex.climdex_su(ci)
-        elif days_type == "icing":
-            return climdex.climdex_id(ci)
-        elif days_type == "frost":
-            return climdex.climdex_fd(ci)
-
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
+        climdex_input, ci_name, output_file, vector_name, gsl_mode, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -97,23 +92,24 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            f"Processing {days_type} Days",
+            "Processing growing seasonal length",
             logger,
             log_level=loglevel,
             process_step="process",
         )
-        count_days = self.days(days_type, ci)
+        climdex = get_package("climdex.pcic")
+        gsl = climdex.climdex_gsl(ci, gsl_mode)
 
         log_handler(
             self,
             response,
-            f"Saving {days_type} days as R data file",
+            "Saving gsl as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, count_days, output_path)
+        save_python_to_rdata(vector_name, gsl, output_path)
 
         log_handler(
             self,
