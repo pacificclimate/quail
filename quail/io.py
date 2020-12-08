@@ -38,3 +38,13 @@ rda_output = ComplexOutput(
         Format("application/x-gzip", extension=".rda", encoding="base64")
     ],
 )
+
+vector_name = LiteralInput(
+    "vector_name",
+    "Output vector variable name",
+    abstract="Name to label the output vector",
+    default="days",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
