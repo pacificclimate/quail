@@ -84,8 +84,7 @@ class ClimdexInput(Process):
                 "na_strings",
                 "NA strings",
                 abstract="Strings used for NA values",
-                min_occurs=0,
-                max_occurs=1,
+                default="NULL",
                 data_type="string",
             ),
             LiteralInput(
@@ -98,16 +97,14 @@ class ClimdexInput(Process):
             LiteralInput(
                 "date_fields",
                 "date fields",
-                min_occurs=1,
-                max_occurs=1,
+                default="c('year'', 'jday')",
                 abstract="Vector of names consisting of the columns to be concatenated together with spaces.",
                 data_type="string",
             ),
             LiteralInput(
                 "date_format",
                 "date format",
-                min_occurs=1,
-                max_occurs=1,
+                default="%Y %j",
                 abstract="Date format as taken by strptime.",
                 data_type="string",
             ),
@@ -192,8 +189,28 @@ class ClimdexInput(Process):
             status_supported=True,
         )
 
+    def collect_literal_inputs(self, request):
+        return [
+            arg[0] for arg in list(collect_args(request, self.workdir).values())[-14:]
+        ]
+
     def _handler(self, request, response):
-        args = collect_args(request, self.workdir)
-        print(args)
+        (
+            data_columns,
+            base_range,
+            na_strings,
+            cal,
+            date_fields,
+            date_format,
+            n,
+            northern_hemisphere,
+            quantiles,
+            temp_qtiles,
+            prec_qtiles,
+            max_missing_days,
+            min_base_data_fraction_present,
+            loglevel,
+        ) = self.collect_literal_inputs(request)
+        print(data_columns)
 
         return response
