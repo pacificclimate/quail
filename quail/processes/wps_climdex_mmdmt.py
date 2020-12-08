@@ -41,7 +41,7 @@ class ClimdexMMDMT(Process):
                 "Frequency",
                 abstract="Time frequency to aggregate to",
                 allowed_values=["monthly", "annual"],
-                default="monthly"
+                default="monthly",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -73,7 +73,7 @@ class ClimdexMMDMT(Process):
     def MMDMT_type(self, month_type, ci, freq):
         climdex = get_package("climdex.pcic")
 
-        if days_type == "txx":
+        if month_type == "txx":
             return climdex.climdex_txx(ci, freq)
         else:
             raise ValueError("invalid month_type")
@@ -105,24 +105,23 @@ class ClimdexMMDMT(Process):
         log_handler(
             self,
             response,
-            f"Processing {days_type} count",
+            f"Processing {month_type}",
             logger,
             log_level=loglevel,
             process_step="process",
         )
-        temp = self.days(days_type, ci, freq)
-        print(temp)
+        temps = self.MMDMT_type(month_type, ci, freq)
 
         log_handler(
             self,
             response,
-            f"Saving {days_type} count as R data file",
+            f"Saving {month_type} vector to R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, temp, output_path)
+        save_python_to_rdata(vector_name, temps, output_path)
 
         log_handler(
             self,
