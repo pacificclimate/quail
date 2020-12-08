@@ -2,6 +2,7 @@ import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
+from pywps.app.exceptions import ProcessError
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -56,7 +57,7 @@ class ClimdexMMDMT(Process):
             self._handler,
             identifier="climdex_mmdmt",
             title="Climdex MMDMT",
-            abstract="Monthly or Annual Maximumof Daily Maximum Temperature",
+            abstract="Monthly or Annual Maximum of Daily Maximum Temperature",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -76,7 +77,7 @@ class ClimdexMMDMT(Process):
         if month_type == "txx":
             return climdex.climdex_txx(ci, freq)
         else:
-            raise ValueError("invalid month_type")
+            raise ProcessError("invalid month_type")
 
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, month_type, freq, vector_name, loglevel = [
