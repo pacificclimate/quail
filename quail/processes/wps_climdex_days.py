@@ -1,6 +1,7 @@
 import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
+from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
@@ -59,7 +60,17 @@ class ClimdexDays(Process):
             self._handler,
             identifier="climdex_days",
             title="Climdex Days",
-            abstract="Computes the annual count of days where daily maximum temperature satisfies some condition",
+            abstract="""
+                Takes a climdexInput object as input and computes the annual count of days where daily temperature satisfies some condition.
+                "summer": the annual count of days where daily maximum temperature
+                exceeds 25 degreesCelsius
+                "icing": the annual count of days where daily maximum temperature
+                was below 0 degrees Celsius
+                "frost": the annual count of days where daily minimum temperature
+                was below 0 degrees Celsius
+                "tropical nights": the annual count of days where daily minimum
+                temperature stays above 20 degrees Celsius
+            """,
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -85,7 +96,7 @@ class ClimdexDays(Process):
         elif days_type == "tropical nights":
             return climdex.climdex_tr(ci)
         else:
-            raise ValueError("invalid days_type")
+            raise ProcessError("invalid days_type")
 
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
