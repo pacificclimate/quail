@@ -8,18 +8,8 @@ from quail.processes.wps_climdex_mmdmt import ClimdexMMDMT
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "month_type", "freq"),
     [
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "txx",
-            "monthly"
-        ),
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "txx",
-            "annual"
-        ),
+        (local_path("climdexInput.rda"), "ci", "txx", "monthly"),
+        (local_path("climdexInput.rda"), "ci", "txx", "annual"),
     ],
 )
 def test_wps_climdex_mmdmt(climdex_input, ci_name, month_type, freq):
