@@ -98,7 +98,7 @@ cal = LiteralInput(
 date_fields = LiteralInput(
     "date_fields",
     "date fields",
-    default="c('year'', 'jday')",
+    default="c('year', 'jday')",
     abstract="Vector of names consisting of the columns to be concatenated together with spaces.",
     data_type="string",
 )
@@ -106,7 +106,7 @@ date_fields = LiteralInput(
 date_format = LiteralInput(
     "date_format",
     "date format",
-    default="%Y %j",
+    default="'%Y %j'",
     abstract="Date format as taken by strptime.",
     data_type="string",
 )

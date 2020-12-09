@@ -22,6 +22,7 @@ from quail.io import (
     prec_qtiles,
     max_missing_days,
     min_base_data_fraction_present,
+    output_file,
 )
 
 
@@ -46,7 +47,6 @@ class ClimdexInputCSV(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
                 ],
             ),
@@ -57,7 +57,6 @@ class ClimdexInputCSV(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
                 ],
             ),
@@ -68,7 +67,6 @@ class ClimdexInputCSV(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
                 ],
             ),
@@ -79,7 +77,6 @@ class ClimdexInputCSV(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
                     Format("text/csv", extension=".csv"),
                 ],
             ),
@@ -98,6 +95,7 @@ class ClimdexInputCSV(Process):
             prec_qtiles,
             max_missing_days,
             min_base_data_fraction_present,
+            output_file,
             log_level,
         ]
 
@@ -132,7 +130,7 @@ class ClimdexInputCSV(Process):
 
     def collect_literal_inputs(self, request):
         return [
-            arg[0] for arg in list(collect_args(request, self.workdir).values())[-20:]
+            arg[0] for arg in list(collect_args(request, self.workdir).values())[-17:]
         ]
 
     def _handler(self, request, response):
@@ -152,6 +150,7 @@ class ClimdexInputCSV(Process):
             prec_qtiles,
             max_missing_days,
             min_base_data_fraction_present,
+            output_file,
             loglevel,
         ) = self.collect_literal_inputs(request)
 

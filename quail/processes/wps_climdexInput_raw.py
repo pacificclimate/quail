@@ -1,3 +1,4 @@
+import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
@@ -5,7 +6,7 @@ from tempfile import NamedTemporaryFile
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
-from quail.utils import get_package, logger, load_rdata_to_python
+from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -22,6 +23,7 @@ from quail.io import (
     prec_qtiles,
     max_missing_days,
     min_base_data_fraction_present,
+    output_file,
 )
 
 
@@ -122,6 +124,7 @@ class ClimdexInputRaw(Process):
             prec_qtiles,
             max_missing_days,
             min_base_data_fraction_present,
+            output_file,
             log_level,
         ]
 
@@ -156,8 +159,16 @@ class ClimdexInputRaw(Process):
 
     def collect_literal_inputs(self, request):
         return [
-            arg[0] for arg in list(collect_args(request, self.workdir).values())[-20:]
+            arg[0] for arg in list(collect_args(request, self.workdir).values())[-21:]
         ]
+
+    def generate_dates(
+        self, request, filename, obj_name, date_fields, date_format, cal
+    ):
+        load_rdata_to_python(filename, obj_name)
+        return robjects.r(
+            f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format={date_format}, cal={cal})"
+        )
 
     def _handler(self, request, response):
         (
@@ -180,7 +191,41 @@ class ClimdexInputRaw(Process):
             prec_qtiles,
             max_missing_days,
             min_base_data_fraction_present,
+            output_file,
             loglevel,
         ) = self.collect_literal_inputs(request)
+
+        climdex = get_package("climdex.pcic")
+        robjects.r("library(PCICt)")
+
+        tmax_file = collect_args(request, self.workdir)["tmax_file"][0]
+        tmin_file = collect_args(request, self.workdir)["tmin_file"][0]
+        prec_file = collect_args(request, self.workdir)["prec_file"][0]
+
+        tmax_dates = self.generate_dates(
+            request, tmax_file, tmax_name, date_fields, date_format, cal
+        )
+        tmin_dates = self.generate_dates(
+            request, tmin_file, tmin_name, date_fields, date_format, cal
+        )
+        prec_dates = self.generate_dates(
+            request, prec_file, prec_name, date_fields, date_format, cal
+        )
+
+        tmax = robjects.r(f"{tmax_name}${tmax_column}")
+        tmin = robjects.r(f"{tmin_name}${tmin_column}")
+        prec = robjects.r(f"{prec_name}${prec_column}")
+
+        ci = climdex.climdexInput_raw(
+            tmax, tmin, prec, tmax_dates, tmin_dates, prec_dates
+        )
+
+        output_path = os.path.join(self.workdir, output_file)
+        save_python_to_rdata("ci", ci, output_path)
+
+        response.outputs["climdexInput"].file = output_path
+
+        # Clear R global env
+        robjects.r("rm(list=ls())")
 
         return response
