@@ -71,14 +71,6 @@ class ClimdexMMDMT(Process):
             status_supported=True,
         )
 
-    def MMDMT_type(self, month_type, ci, freq):
-        climdex = get_package("climdex.pcic")
-
-        if month_type == "txx":
-            return climdex.climdex_txx(ci, freq)
-        else:
-            raise ProcessError("invalid month_type")
-
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, month_type, freq, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
@@ -92,6 +84,7 @@ class ClimdexMMDMT(Process):
             log_level=loglevel,
             process_step="start",
         )
+        climdex = get_package("climdex.pcic")
 
         log_handler(
             self,
@@ -111,7 +104,8 @@ class ClimdexMMDMT(Process):
             log_level=loglevel,
             process_step="process",
         )
-        temps = self.MMDMT_type(month_type, ci, freq)
+
+        temps = robjects.r(f"climdex.{month_type}(ci, freq='{freq}')")
 
         log_handler(
             self,
