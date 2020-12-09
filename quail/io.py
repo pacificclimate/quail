@@ -79,14 +79,6 @@ base_range = LiteralInput(
     data_type="string",
 )
 
-na_strings = LiteralInput(
-    "na_strings",
-    "NA strings",
-    abstract="Strings used for NA values",
-    default="NULL",
-    data_type="string",
-)
-
 cal = LiteralInput(
     "cal",
     "calendar type",

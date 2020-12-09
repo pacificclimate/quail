@@ -12,7 +12,6 @@ from quail.io import (
     tmin_column,
     prec_column,
     base_range,
-    na_strings,
     cal,
     date_fields,
     date_format,
@@ -113,7 +112,6 @@ class ClimdexInputRaw(Process):
             tmin_column,
             prec_column,
             base_range,
-            na_strings,
             cal,
             date_fields,
             date_format,
@@ -159,7 +157,7 @@ class ClimdexInputRaw(Process):
 
     def collect_literal_inputs(self, request):
         return [
-            arg[0] for arg in list(collect_args(request, self.workdir).values())[-21:]
+            arg[0] for arg in list(collect_args(request, self.workdir).values())[-20:]
         ]
 
     def generate_dates(
@@ -169,6 +167,41 @@ class ClimdexInputRaw(Process):
         return robjects.r(
             f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format={date_format}, cal={cal})"
         )
+
+    def prepare_parameters(
+        self,
+        request,
+        tmax_name,
+        tmin_name,
+        prec_name,
+        tmax_column,
+        tmin_column,
+        prec_column,
+        date_fields,
+        date_format,
+        cal,
+    ):
+        args = collect_args(request, self.workdir)
+        tmax_file = args["tmax_file"][0]
+        tmin_file = args["tmin_file"][0]
+        prec_file = args["prec_file"][0]
+
+        tmax_dates = self.generate_dates(
+            request, tmax_file, tmax_name, date_fields, date_format, cal
+        )
+        tmin_dates = self.generate_dates(
+            request, tmin_file, tmin_name, date_fields, date_format, cal
+        )
+        prec_dates = self.generate_dates(
+            request, prec_file, prec_name, date_fields, date_format, cal
+        )
+
+        print(f"{tmax_name}${tmax_column}")
+        tmax = robjects.r(f"{tmax_name}${tmax_column}")
+        tmin = robjects.r(f"{tmin_name}${tmin_column}")
+        prec = robjects.r(f"{prec_name}${prec_column}")
+
+        return tmax, tmin, prec, tmax_dates, tmin_dates, prec_dates
 
     def _handler(self, request, response):
         (
@@ -180,7 +213,6 @@ class ClimdexInputRaw(Process):
             tmin_column,
             prec_column,
             base_range,
-            na_strings,
             cal,
             date_fields,
             date_format,
@@ -195,29 +227,40 @@ class ClimdexInputRaw(Process):
             loglevel,
         ) = self.collect_literal_inputs(request)
 
+        log_handler(
+            self,
+            response,
+            "Starting Process",
+            logger,
+            log_level=loglevel,
+            process_step="start",
+        )
         climdex = get_package("climdex.pcic")
         robjects.r("library(PCICt)")
 
-        tmax_file = collect_args(request, self.workdir)["tmax_file"][0]
-        tmin_file = collect_args(request, self.workdir)["tmin_file"][0]
-        prec_file = collect_args(request, self.workdir)["prec_file"][0]
-
-        tmax_dates = self.generate_dates(
-            request, tmax_file, tmax_name, date_fields, date_format, cal
+        params = self.prepare_parameters(
+            request,
+            tmax_name,
+            tmin_name,
+            prec_name,
+            tmax_column,
+            tmin_column,
+            prec_column,
+            date_fields,
+            date_format,
+            cal,
         )
-        tmin_dates = self.generate_dates(
-            request, tmin_file, tmin_name, date_fields, date_format, cal
-        )
-        prec_dates = self.generate_dates(
-            request, prec_file, prec_name, date_fields, date_format, cal
-        )
-
-        tmax = robjects.r(f"{tmax_name}${tmax_column}")
-        tmin = robjects.r(f"{tmin_name}${tmin_column}")
-        prec = robjects.r(f"{prec_name}${prec_column}")
 
         ci = climdex.climdexInput_raw(
-            tmax, tmin, prec, tmax_dates, tmin_dates, prec_dates
+            *params,
+            base_range=robjects.r(base_range),
+            n=n,
+            northern_hemisphere=northern_hemisphere,
+            quantiles=robjects.r(quantiles),
+            temp_qtiles=robjects.r(temp_qtiles),
+            prec_qtiles=robjects.r(prec_qtiles),
+            max_missing_days=robjects.r(max_missing_days),
+            min_base_data_fraction_present=min_base_data_fraction_present,
         )
 
         output_path = os.path.join(self.workdir, output_file)
