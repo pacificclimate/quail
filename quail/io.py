@@ -82,7 +82,7 @@ base_range = LiteralInput(
 cal = LiteralInput(
     "cal",
     "calendar type",
-    default="gregorian",
+    default="'gregorian'",
     abstract="The calendar type used in the input files.",
     data_type="string",
 )
