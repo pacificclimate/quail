@@ -6,7 +6,7 @@ SERVICES['node']['monitoring'].update({
     },
     'Quail': {
         'request': {
-            'url': 'http://${PAVICS_FQDN}:8102/wps?service=WPS&version=1.0.0&request=GetCapabilities'
+            'url': 'http://${PAVICS_FQDN}:8103/wps?service=WPS&version=1.0.0&request=GetCapabilities'
         }
     },
 })
