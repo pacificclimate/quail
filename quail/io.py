@@ -123,7 +123,7 @@ quantiles = LiteralInput(
     "quantiles",
     "threshold quantiles",
     abstract="Threshold quantiles for supplied variables.",
-    default="NULL",
+    default=None,
     data_type="string",
 )
 

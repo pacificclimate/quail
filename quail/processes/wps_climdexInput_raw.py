@@ -36,7 +36,7 @@ class ClimdexInputRaw(Process):
         self.status_percentage_steps = dict(
             common_status_percentages,
             **{
-                "load_rdata": 10,
+                "prepare_params": 10,
                 "save_rdata": 90,
             },
         )
@@ -91,21 +91,21 @@ class ClimdexInputRaw(Process):
             LiteralInput(
                 "tmin_name",
                 "daily minimum temperature data file",
-                default="tmax",
+                default="tmin",
                 abstract="Name of R object containing daily minimum temperature data.",
                 data_type="string",
             ),
             LiteralInput(
                 "prec_name",
                 "daily total precipitation data file",
-                default="tmax",
+                default="prec",
                 abstract="Name of R object containing daily mean temperature data.",
                 data_type="string",
             ),
             LiteralInput(
                 "tavg_name",
                 "mean temperature data file",
-                default="tmax",
+                default="tavg",
                 abstract="Name of R object containing daily total precipitation data.",
                 data_type="string",
             ),
@@ -193,6 +193,7 @@ class ClimdexInputRaw(Process):
         prec = robjects.r(f"{prec_name}${prec_column}")
 
         if "tavg_file" in args.keys():
+            # use tavg data if provided
             tavg_file = args["tavg_file"][0]
             tavg_dates = self.generate_dates(
                 request, tavg_file, tavg_name, date_fields, date_format, cal
@@ -207,6 +208,7 @@ class ClimdexInputRaw(Process):
             }
 
         elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
+            # use tmax and tmin data if tavg is not provided
             tmax_file = args["tmax_file"][0]
             tmin_file = args["tmin_file"][0]
 
@@ -265,6 +267,14 @@ class ClimdexInputRaw(Process):
         climdex = get_package("climdex.pcic")
         robjects.r("library(PCICt)")
 
+        log_handler(
+            self,
+            response,
+            "Prepare parameters for climdexInput.raw",
+            logger,
+            log_level=loglevel,
+            process_step="prepare_params",
+        )
         params = self.prepare_parameters(
             request,
             tmax_name,
@@ -280,6 +290,14 @@ class ClimdexInputRaw(Process):
             cal,
         )
 
+        log_handler(
+            self,
+            response,
+            f"Processing climdexInput.raw",
+            logger,
+            log_level=loglevel,
+            process_step="process",
+        )
         ci = climdex.climdexInput_raw(
             **params,
             base_range=robjects.r(base_range),
@@ -292,9 +310,25 @@ class ClimdexInputRaw(Process):
             min_base_data_fraction_present=min_base_data_fraction_present,
         )
 
+        log_handler(
+            self,
+            response,
+            f"Saving climdexInput as R data file",
+            logger,
+            log_level=loglevel,
+            process_step="save_rdata",
+        )
         output_path = os.path.join(self.workdir, output_file)
         save_python_to_rdata("ci", ci, output_path)
 
+        log_handler(
+            self,
+            response,
+            "Building final output",
+            logger,
+            log_level=loglevel,
+            process_step="build_output",
+        )
         response.outputs["climdexInput"].file = output_path
 
         # Clear R global env
