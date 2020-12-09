@@ -24,6 +24,7 @@ from quail.io import (
     max_missing_days,
     min_base_data_fraction_present,
     output_file,
+    vector_name,
 )
 
 
@@ -125,6 +126,7 @@ class ClimdexInputRaw(Process):
             max_missing_days,
             min_base_data_fraction_present,
             output_file,
+            vector_name,
             log_level,
         ]
 
@@ -159,7 +161,7 @@ class ClimdexInputRaw(Process):
 
     def collect_literal_inputs(self, request):
         return [
-            arg[0] for arg in list(collect_args(request, self.workdir).values())[-21:]
+            arg[0] for arg in list(collect_args(request, self.workdir).values())[-22:]
         ]
 
     def generate_dates(
@@ -253,6 +255,7 @@ class ClimdexInputRaw(Process):
             max_missing_days,
             min_base_data_fraction_present,
             output_file,
+            vector_name,
             loglevel,
         ) = self.collect_literal_inputs(request)
 
@@ -319,7 +322,7 @@ class ClimdexInputRaw(Process):
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata("ci", ci, output_path)
+        save_python_to_rdata(vector_name, ci, output_path)
 
         log_handler(
             self,
