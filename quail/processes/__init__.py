@@ -4,6 +4,5 @@ from .wps_climdexInput_raw import ClimdexInputRaw
 
 processes = [
     ClimdexDays(),
-    ClimdexInputCSV(),
     ClimdexInputRaw(),
 ]
