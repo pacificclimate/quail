@@ -1,7 +1,6 @@
 import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
-from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
@@ -10,18 +9,14 @@ from quail.utils import get_package, logger, load_rdata_to_python, save_python_t
 from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
 
 
-class ClimdexDays(Process):
+class ClimdexGSL(Process):
     """
-    Takes a climdexInput object as input and computes the annual count
-    of days where daily temperature satisfies some condition.
-    - "summer": the annual count of days where daily maximum temperature
-    exceeds 25 degreesCelsius
-    - "icing": the annual count of days where daily maximum temperature
-    was below 0 degrees Celsius
-    - "frost": the annual count of days where daily minimum temperature
-    was below 0 degrees Celsius
-    - "tropical nights": the annual count of days where daily minimum
-    temperature stays above 20 degrees Celsius
+    Computes the growing season length (GSL): Growing season length
+    is the number of days between the start of the first spell of warm days
+    in the first half of the year, defined as six or more days with mean
+    temperature above 5 degrees Celsius, and the start of the first spell
+    of cold days in the second half of the year, defined as six or more days
+    with a mean temperature below 5 degrees Celsius
     """
 
     def __init__(self):
@@ -36,41 +31,27 @@ class ClimdexDays(Process):
             climdex_input,
             ci_name,
             output_file,
+            vector_name,
             LiteralInput(
-                "days_type",
-                "Day type to compute",
-                abstract="Day type condition to compute",
-                allowed_values=[
-                    "summer days",
-                    "icing days",
-                    "frost days",
-                    "tropical nights",
-                ],
-                min_occurs=1,
+                "gsl_mode",
+                "GSL mode",
+                abstract="Growing season length method to use. The three alternate modes provided ('GSL_first', 'GSL_max', and 'GSL_sum') are for testing purposes only.",
+                default="GSL",
+                min_occurs=0,
                 max_occurs=1,
+                allowed_values=["GSL", "GSL_first", "GSL_max", "GSL_sum"],
                 data_type="string",
             ),
-            vector_name,
             log_level,
         ]
 
         outputs = [rda_output]
 
-        super(ClimdexDays, self).__init__(
+        super(ClimdexGSL, self).__init__(
             self._handler,
-            identifier="climdex_days",
-            title="Climdex Days",
-            abstract="""
-                Takes a climdexInput object as input and computes the annual count of days where daily temperature satisfies some condition.
-                "summer": the annual count of days where daily maximum temperature
-                exceeds 25 degreesCelsius
-                "icing": the annual count of days where daily maximum temperature
-                was below 0 degrees Celsius
-                "frost": the annual count of days where daily minimum temperature
-                was below 0 degrees Celsius
-                "tropical nights": the annual count of days where daily minimum
-                temperature stays above 20 degrees Celsius
-            """,
+            identifier="climdex_gsl",
+            title="Climdex Growing Seasonal Length",
+            abstract="Computes the growing season length (GSL)",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -84,22 +65,8 @@ class ClimdexDays(Process):
             status_supported=True,
         )
 
-    def days(self, days_type, ci):
-        climdex = get_package("climdex.pcic")
-
-        if days_type == "summer days":
-            return climdex.climdex_su(ci)
-        elif days_type == "icing days":
-            return climdex.climdex_id(ci)
-        elif days_type == "frost days":
-            return climdex.climdex_fd(ci)
-        elif days_type == "tropical nights":
-            return climdex.climdex_tr(ci)
-        else:
-            raise ProcessError("invalid days_type")
-
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
+        climdex_input, ci_name, output_file, vector_name, gsl_mode, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -125,23 +92,24 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            f"Processing {days_type} count",
+            "Processing growing seasonal length",
             logger,
             log_level=loglevel,
             process_step="process",
         )
-        count_days = self.days(days_type, ci)
+        climdex = get_package("climdex.pcic")
+        gsl = climdex.climdex_gsl(ci, gsl_mode)
 
         log_handler(
             self,
             response,
-            f"Saving {days_type} count as R data file",
+            "Saving gsl as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, count_days, output_path)
+        save_python_to_rdata(vector_name, gsl, output_path)
 
         log_handler(
             self,

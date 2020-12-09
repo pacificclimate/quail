@@ -158,3 +158,13 @@ min_base_data_fraction_present = LiteralInput(
     abstract="Minimum fraction of base data that must be present for quantile to be calculated for a particular day",
     data_type="float",
 )
+
+vector_name = LiteralInput(
+    "vector_name",
+    "Output vector variable name",
+    abstract="Name to label the output vector",
+    default="days",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
