@@ -11,6 +11,7 @@ from quail.io import (
     tmax_column,
     tmin_column,
     prec_column,
+    tavg_column,
     base_range,
     cal,
     date_fields,
@@ -64,7 +65,7 @@ class ClimdexInputRaw(Process):
                 "prec_file",
                 "daily total precipitation data file",
                 abstract="Name of file containing daily total precipitation data.",
-                min_occurs=0,
+                min_occurs=1,
                 max_occurs=1,
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64"),
@@ -111,6 +112,7 @@ class ClimdexInputRaw(Process):
             tmax_column,
             tmin_column,
             prec_column,
+            tavg_column,
             base_range,
             cal,
             date_fields,
@@ -157,7 +159,7 @@ class ClimdexInputRaw(Process):
 
     def collect_literal_inputs(self, request):
         return [
-            arg[0] for arg in list(collect_args(request, self.workdir).values())[-20:]
+            arg[0] for arg in list(collect_args(request, self.workdir).values())[-21:]
         ]
 
     def generate_dates(
@@ -174,34 +176,58 @@ class ClimdexInputRaw(Process):
         tmax_name,
         tmin_name,
         prec_name,
+        tavg_name,
         tmax_column,
         tmin_column,
         prec_column,
+        tavg_column,
         date_fields,
         date_format,
         cal,
     ):
         args = collect_args(request, self.workdir)
-        tmax_file = args["tmax_file"][0]
-        tmin_file = args["tmin_file"][0]
         prec_file = args["prec_file"][0]
-
-        tmax_dates = self.generate_dates(
-            request, tmax_file, tmax_name, date_fields, date_format, cal
-        )
-        tmin_dates = self.generate_dates(
-            request, tmin_file, tmin_name, date_fields, date_format, cal
-        )
         prec_dates = self.generate_dates(
             request, prec_file, prec_name, date_fields, date_format, cal
         )
-
-        print(f"{tmax_name}${tmax_column}")
-        tmax = robjects.r(f"{tmax_name}${tmax_column}")
-        tmin = robjects.r(f"{tmin_name}${tmin_column}")
         prec = robjects.r(f"{prec_name}${prec_column}")
 
-        return tmax, tmin, prec, tmax_dates, tmin_dates, prec_dates
+        if "tavg_file" in args.keys():
+            tavg_file = args["tavg_file"][0]
+            tavg_dates = self.generate_dates(
+                request, tavg_file, tavg_name, date_fields, date_format, cal
+            )
+            tavg = robjects.r(f"{tavg_name}${tavg_column}")
+
+            return {
+                "tavg": tavg,
+                "prec": prec,
+                "tavg_dates": tavg_dates,
+                "prec_dates": prec_dates,
+            }
+
+        elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
+            tmax_file = args["tmax_file"][0]
+            tmin_file = args["tmin_file"][0]
+
+            tmax_dates = self.generate_dates(
+                request, tmax_file, tmax_name, date_fields, date_format, cal
+            )
+            tmin_dates = self.generate_dates(
+                request, tmin_file, tmin_name, date_fields, date_format, cal
+            )
+
+            tmax = robjects.r(f"{tmax_name}${tmax_column}")
+            tmin = robjects.r(f"{tmin_name}${tmin_column}")
+
+            return {
+                "tmax": tmax,
+                "tmin": tmin,
+                "prec": prec,
+                "tmax_dates": tmax_dates,
+                "tmin_dates": tmin_dates,
+                "prec_dates": prec_dates,
+            }
 
     def _handler(self, request, response):
         (
@@ -212,6 +238,7 @@ class ClimdexInputRaw(Process):
             tmax_column,
             tmin_column,
             prec_column,
+            tavg_column,
             base_range,
             cal,
             date_fields,
@@ -243,16 +270,18 @@ class ClimdexInputRaw(Process):
             tmax_name,
             tmin_name,
             prec_name,
+            tavg_name,
             tmax_column,
             tmin_column,
             prec_column,
+            tavg_column,
             date_fields,
             date_format,
             cal,
         )
 
         ci = climdex.climdexInput_raw(
-            *params,
+            **params,
             base_range=robjects.r(base_range),
             n=n,
             northern_hemisphere=northern_hemisphere,
