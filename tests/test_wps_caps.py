@@ -10,7 +10,4 @@ def test_wps_caps():
     names = resp.xpath_text(
         "/wps:Capabilities" "/wps:ProcessOfferings" "/wps:Process" "/ows:Identifier"
     )
-    assert sorted(names.split()) == [
-        "climdex_days",
-        "climdex_gsl",
-    ]
+    assert sorted(names.split()) == ["climdex_days", "climdex_gsl", "climdex_mmdmt"]
