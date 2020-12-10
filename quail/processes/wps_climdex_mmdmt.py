@@ -32,7 +32,7 @@ class ClimdexMMDMT(Process):
                 "month_type",
                 "Month type to compute",
                 abstract="Min/ max daily temperature type to compute",
-                allowed_values=["txx"],
+                allowed_values=["txx", "tnx"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
