@@ -12,8 +12,10 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 
 class ClimdexMMDMT(Process):
     """
-    This process wraps climdex function
+    This process wraps climdex functions
     - climdex.txx: Monthly (or annual) Maximum of Daily Maximum Temperature
+    - climdex.tnx: Monthly (or annual) Maximum of Daily Minimum Temperature
+    - climdex.txn: Monthly (or annual) Minimum of Daily Maximum Temperature
     """
 
     def __init__(self):
@@ -32,7 +34,7 @@ class ClimdexMMDMT(Process):
                 "month_type",
                 "Month type to compute",
                 abstract="Min/ max daily temperature type to compute",
-                allowed_values=["txx", "tnx"],
+                allowed_values=["txx", "tnx", "txn"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -57,7 +59,11 @@ class ClimdexMMDMT(Process):
             self._handler,
             identifier="climdex_mmdmt",
             title="Climdex MMDMT",
-            abstract="Monthly or Annual Maximum of Daily Maximum Temperature",
+            abstract=""" climdex_mmdmt includes the functions:
+                - climdex.txx: Monthly (or annual) Maximum of Daily Maximum Temperature
+                - climdex.tnx: Monthly (or annual) Maximum of Daily Minimum Temperature
+                - climdex.txn: Monthly (or annual) Minimum of Daily Maximum Temperature",
+            """,
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
