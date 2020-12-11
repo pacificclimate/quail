@@ -7,7 +7,6 @@ dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE);
 .libPaths(Sys.getenv('R_LIBS_USER'));
 
 # Install devtools and its dependencies
-install.packages('xml2')
 install.packages('devtools', dependencies=TRUE);
 
 # Install packages from requirements list
