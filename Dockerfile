@@ -14,11 +14,12 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
-    libpq-dev \
     python3.8 \
     python3-pip \
     python3-setuptools \
     python3-dev \
+    libpq-dev \
+    libgit2-dev \
     libxml2-dev \
     libfreetype6-dev \
     libpng-dev \
