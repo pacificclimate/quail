@@ -51,3 +51,6 @@ def test_rda_output(url, vector_name, expected_file, expected_vector_name):
 
     for index in range(len(expected_vector)):
         assert str(output_vector[index]) == str(expected_vector[index])
+
+    # Clear R global env
+    robjects.r("rm(list=ls())")
