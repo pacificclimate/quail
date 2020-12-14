@@ -1,5 +1,21 @@
 Changes
 *******
+
+0.3.0 (2020-12-09)
+==================
+
+* Create wps_climdex_mmdmt with climdex.txx(#_42)
+* Add climdex.tnx to wps_climdex_mmdmt(#_44)
+* Add climdex.txn to wps_climdex_mmdmt(#_46)
+* Create wps_climdexInput_raw(#_49)
+* Add climdex.tnn to wps_climdex_mmdmt(#_50)
+
+.. _42: https://github.com/pacificclimate/quail/pull/42
+.. _44: https://github.com/pacificclimate/quail/pull/44
+.. _46: https://github.com/pacificclimate/quail/pull/46
+.. _49: https://github.com/pacificclimate/quail/pull/49
+.. _50: https://github.com/pacificclimate/quail/pull/50
+
 0.2.0 (2020-12-04)
 ==================
 
