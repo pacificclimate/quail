@@ -14,4 +14,5 @@ def test_wps_caps():
         "climdex_days",
         "climdex_gsl",
         "climdex_input_raw",
+        "climdex_mmdmt",
     ]
