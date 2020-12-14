@@ -13,4 +13,5 @@ def test_wps_caps():
     assert sorted(names.split()) == [
         "climdex_days",
         "climdex_gsl",
+        "climdex_input_raw",
     ]
