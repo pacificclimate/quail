@@ -16,7 +16,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install Python dependencies
       env:
         PIP_INDEX_URL: https://pypi.pacificclimate.org/simple
       run: |
