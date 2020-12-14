@@ -12,6 +12,10 @@ from quail.processes.wps_climdex_mmdmt import ClimdexMMDMT
         (local_path("climdexInput.rda"), "ci", "txx", "annual"),
         (local_path("climdexInput.rda"), "ci", "tnx", "monthly"),
         (local_path("climdexInput.rda"), "ci", "tnx", "annual"),
+        (local_path("climdexInput.rda"), "ci", "txn", "monthly"),
+        (local_path("climdexInput.rda"), "ci", "txn", "annual"),
+        (local_path("climdexInput.rda"), "ci", "tnn", "monthly"),
+        (local_path("climdexInput.rda"), "ci", "tnn", "annual"),
     ],
 )
 def test_wps_climdex_mmdmt(climdex_input, ci_name, month_type, freq):

@@ -54,3 +54,37 @@ def test_rda_output(url, vector_name, expected_file, expected_vector_name):
 
     # Clear R global env
     robjects.r("rm(list=ls())")
+
+def test_ci_output(url, vector_name, expected_file, expected_vector_name):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="tmp_copy", dir="/tmp", delete=True
+    ) as tmp_file:
+        urlretrieve(url, tmp_file.name)
+        robjects.r(f"load(file='{tmp_file.name}')")
+
+    slots = [
+        "data",
+        "namasks",
+        "dates",
+        "jdays",
+        "base.range",
+        "date.factors",
+        "northern.hemisphere",
+        "max.missing.days",
+    ]
+
+    for slot in slots:
+        output_slot = robjects.r(f"{vector_name}@{slot}")
+
+        robjects.r(
+            "load(file='{}')".format(
+                resource_filename("tests", f"data/{expected_file}")
+            )
+        )
+        expected_slot = robjects.r(f"{expected_vector_name}@{slot}")
+
+        for index in range(len(expected_slot)):
+            assert str(output_slot[index]) == str(expected_slot[index])
+
+    # Clear R global env
+    robjects.r("rm(list=ls())")
