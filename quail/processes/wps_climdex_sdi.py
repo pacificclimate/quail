@@ -49,7 +49,7 @@ class ClimdexSDI(Process):
                 "Spells can span years",
                 abstract="Specifies whether spells can cross year boundaries",
                 default=False,
-                data_type="boolean"
+                data_type="boolean",
             ),
             vector_name,
             log_level,

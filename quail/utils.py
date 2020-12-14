@@ -55,6 +55,7 @@ def test_rda_output(url, vector_name, expected_file, expected_vector_name):
     # Clear R global env
     robjects.r("rm(list=ls())")
 
+
 def test_ci_output(url, vector_name, expected_file, expected_vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="tmp_copy", dir="/tmp", delete=True
