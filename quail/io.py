@@ -168,3 +168,14 @@ vector_name = LiteralInput(
     max_occurs=1,
     data_type="string",
 )
+
+ci_output = (
+    ComplexOutput(
+        "climdexInput",
+        "generated climdexInput",
+        abstract="Output R data file for generated climdexInput",
+        supported_formats=[
+            Format("application/x-gzip", extension=".rda", encoding="base64")
+        ],
+    ),
+)

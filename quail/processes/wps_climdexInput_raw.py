@@ -25,6 +25,7 @@ from quail.io import (
     min_base_data_fraction_present,
     output_file,
     vector_name,
+    ci_output,
 )
 
 
@@ -130,16 +131,7 @@ class ClimdexInputRaw(Process):
             log_level,
         ]
 
-        outputs = [
-            ComplexOutput(
-                "climdexInput",
-                "generated climdexInput",
-                abstract="Output R data file for generated climdexInput",
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64")
-                ],
-            ),
-        ]
+        outputs = [ci_output]
 
         super(ClimdexInputRaw, self).__init__(
             self._handler,
