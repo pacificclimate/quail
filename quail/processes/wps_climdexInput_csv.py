@@ -156,20 +156,20 @@ class ClimdexInputCSV(Process):
         args = collect_args(request, self.workdir)
         prec_file = args["prec_file"][0]
         data_types = robjects.r(
-            f"list(list(fields={date_fields}, format={date_format})))"
+            f"list(list(fields={date_fields}, format={date_format}))"
         )
 
         if "tavg_file" in args.keys():
             # use tavg data if provided
             tavg_file = prec_file = args["tavg_file"][0]
             date_columns = robjects.r(
-                f"list(tavg = {tavg_column}, prec = {prec_column})"
+                f"list(tavg = '{tavg_column}', prec = '{prec_column}')"
             )
             return {
                 "tavg_file": tavg_file,
                 "prec_file": prec_file,
-                "date_columns": date_columns,
-                "data_types": data_types,
+                "data_columns": date_columns,
+                "date_types": data_types,
             }
 
         elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
@@ -177,14 +177,14 @@ class ClimdexInputCSV(Process):
             tmax_file = args["tmax_file"][0]
             tmin_file = args["tmin_file"][0]
             date_columns = robjects.r(
-                f"list(tmax = {tmax_column}, tmin = {tmin_column}, prec = {prec_column})"
+                f"list(tmax = '{tmax_column}', tmin = '{tmin_column}', prec = '{prec_column}')"
             )
             return {
                 "tmax_file": tmax_file,
                 "tmin_file": tmin_file,
                 "prec_file": prec_file,
-                "date_columns": date_columns,
-                "data_types": data_types,
+                "data_columns": date_columns,
+                "date_types": data_types,
             }
 
     def _handler(self, request, response):
