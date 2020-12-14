@@ -88,7 +88,6 @@ class ClimdexSDI(Process):
             log_level=loglevel,
             process_step="start",
         )
-        climdex = get_package("climdex.pcic")
 
         log_handler(
             self,
@@ -109,10 +108,8 @@ class ClimdexSDI(Process):
             process_step="process",
         )
 
-        if span_years:
-            spells = robjects.r(f"climdex.{func}(ci, T)")
-        else:
-            spells = robjects.r(f"climdex.{func}(ci)")
+        robjects.r.assign("span_years", span_years)
+        spells = robjects.r(f"climdex.{func}(ci, span_years)")
 
         log_handler(
             self,
