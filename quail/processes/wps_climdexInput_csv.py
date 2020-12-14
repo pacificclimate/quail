@@ -156,7 +156,7 @@ class ClimdexInputCSV(Process):
         args = collect_args(request, self.workdir)
         prec_file = args["prec_file"][0]
         data_types = robjects.r(
-            f"list(list(fields={date_fields}, format={date_format}))"
+            f"list(list(fields={date_fields}, format='{date_format}'))"
         )
 
         if "tavg_file" in args.keys():
@@ -251,7 +251,7 @@ class ClimdexInputCSV(Process):
             **params,
             base_range=robjects.r(base_range),
             na_strings=na_strings,
-            cal=cal,
+            cal=robjects.r(f"'{cal}'"),
             n=n,
             northern_hemisphere=northern_hemisphere,
             quantiles=robjects.r(quantiles),

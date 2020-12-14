@@ -169,7 +169,7 @@ class ClimdexInputRaw(Process):
     ):
         load_rdata_to_python(filename, obj_name)
         return robjects.r(
-            f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format={date_format}, cal={cal})"
+            f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"
         )
 
     def prepare_parameters(
