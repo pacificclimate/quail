@@ -14,8 +14,8 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
-    libpq-dev \
     libgit2-dev \
+    libpq-dev \
     python3.8 \
     python3-pip \
     python3-setuptools \
