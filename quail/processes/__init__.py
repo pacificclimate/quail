@@ -3,7 +3,7 @@ from .wps_climdex_gsl import ClimdexGSL
 from .wps_climdexInput_csv import ClimdexInputCSV
 from .wps_climdexInput_raw import ClimdexInputRaw
 from .wps_climdex_mmdmt import ClimdexMMDMT
-from .wps_climdex_sdi import ClimdexSDI
+from .wps_climdex_spells import ClimdexSpells
 
 processes = [
     ClimdexDays(),
@@ -11,5 +11,5 @@ processes = [
     ClimdexInputCSV(),
     ClimdexInputRaw(),
     ClimdexMMDMT(),
-    ClimdexSDI(),
+    ClimdexSpells(),
 ]
