@@ -12,15 +12,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 
 class ClimdexSpells(Process):
     """
-    Cold or warm spell duration index
-
-    The warm spell duration index is defined as the number
-    of days each year which are part of a "warmspell". A
-    "warm spell" is defined as a sequence of 6 or more days
-    in which the daily maximumtemperature exceeds the 90th
-    percentile of daily maximum temperature for a 5-day
-    running window surrounding this day during the baseline
-    period.
+    Cold or warm spell duration index and maximum consecutive dry or wet days
     """
 
     def __init__(self):
@@ -39,7 +31,7 @@ class ClimdexSpells(Process):
                 "func",
                 "Function to compute",
                 abstract="Compute climdex.wsdi (Warm spell duration index)",
-                allowed_values=["wsdi", "csdi"],
+                allowed_values=["wsdi", "csdi", "cdd"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -61,7 +53,7 @@ class ClimdexSpells(Process):
             self._handler,
             identifier="climdex_spells",
             title="Climdex Spells",
-            abstract="Cold or warm spell duration index",
+            abstract="Cold or warm spell duration index and maximum consecutive dry or wet days",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
