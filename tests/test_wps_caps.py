@@ -16,4 +16,5 @@ def test_wps_caps():
         "climdex_input_csv",
         "climdex_input_raw",
         "climdex_mmdmt",
+        "climdex_sdi",
     ]
