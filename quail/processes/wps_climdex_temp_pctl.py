@@ -105,8 +105,7 @@ class ClimdexTempPctl(Process):
             process_step="process",
         )
 
-        robjects.r.assign("freq", freq)
-        mothly_pct = robjects.r(f"climdex.{func}(ci, freq)")
+        mothly_pct = robjects.r(f"climdex.{func}(ci, '{freq}')")
 
         log_handler(
             self,
