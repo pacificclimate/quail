@@ -35,9 +35,9 @@ from quail.io import (
 )
 
 
-class ClimdexInputRaw(Process):
+class ClimdexInputCSV(Process):
     """
-    Process for creating climdexInput object from data already ingested into R
+    Process for creating climdexInput object from CSV files
     """
 
     def __init__(self):
@@ -56,7 +56,7 @@ class ClimdexInputRaw(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("text/csv", extension=".csv"),
                 ],
             ),
             ComplexInput(
@@ -66,7 +66,7 @@ class ClimdexInputRaw(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("text/csv", extension=".csv"),
                 ],
             ),
             ComplexInput(
@@ -76,7 +76,7 @@ class ClimdexInputRaw(Process):
                 min_occurs=1,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("text/csv", extension=".csv"),
                 ],
             ),
             ComplexInput(
@@ -86,35 +86,14 @@ class ClimdexInputRaw(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("text/csv", extension=".csv"),
                 ],
             ),
             LiteralInput(
-                "tmax_name",
-                "daily maximum temperature object name",
-                default="tmax",
-                abstract="Name of R object containing daily maximum temperature data.",
-                data_type="string",
-            ),
-            LiteralInput(
-                "tmin_name",
-                "daily minimum temperature data file",
-                default="tmin",
-                abstract="Name of R object containing daily minimum temperature data.",
-                data_type="string",
-            ),
-            LiteralInput(
-                "prec_name",
-                "daily total precipitation data file",
-                default="prec",
-                abstract="Name of R object containing daily mean temperature data.",
-                data_type="string",
-            ),
-            LiteralInput(
-                "tavg_name",
-                "mean temperature data file",
-                default="tavg",
-                abstract="Name of R object containing daily total precipitation data.",
+                "na_strings",
+                "climdexInput name",
+                abstract="Strings used for NA values; passed to read.csv",
+                default="NULL",
                 data_type="string",
             ),
             tmax_column,
@@ -139,11 +118,11 @@ class ClimdexInputRaw(Process):
 
         outputs = [ci_output]
 
-        super(ClimdexInputRaw, self).__init__(
+        super(ClimdexInputCSV, self).__init__(
             self._handler,
-            identifier="climdex_input_raw",
-            title="climdexInput generator (raw)",
-            abstract="Process for creating climdexInput object from data already ingested into R",
+            identifier="climdex_input_csv",
+            title="climdexInput generator (CSV)",
+            abstract="Process for creating climdexInput object from CSV files",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -157,81 +136,53 @@ class ClimdexInputRaw(Process):
             status_supported=True,
         )
 
-    def generate_dates(
-        self, request, filename, obj_name, date_fields, date_format, cal
-    ):
-        load_rdata_to_python(filename, obj_name)
-        return robjects.r(
-            f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"
-        )
-
     def prepare_parameters(
         self,
         request,
-        tmax_name,
-        tmin_name,
-        prec_name,
-        tavg_name,
+        date_fields,
+        date_format,
         tmax_column,
         tmin_column,
         prec_column,
         tavg_column,
-        date_fields,
-        date_format,
-        cal,
     ):
         args = collect_args(request, self.workdir)
         prec_file = args["prec_file"][0]
-        prec_dates = self.generate_dates(
-            request, prec_file, prec_name, date_fields, date_format, cal
+        data_types = robjects.r(
+            f"list(list(fields={date_fields}, format='{date_format}'))"
         )
-        prec = robjects.r(f"{prec_name}${prec_column}")
 
         if "tavg_file" in args.keys():
             # use tavg data if provided
-            tavg_file = args["tavg_file"][0]
-            tavg_dates = self.generate_dates(
-                request, tavg_file, tavg_name, date_fields, date_format, cal
+            tavg_file = prec_file = args["tavg_file"][0]
+            date_columns = robjects.r(
+                f"list(tavg = '{tavg_column}', prec = '{prec_column}')"
             )
-            tavg = robjects.r(f"{tavg_name}${tavg_column}")
-
             return {
-                "tavg": tavg,
-                "prec": prec,
-                "tavg_dates": tavg_dates,
-                "prec_dates": prec_dates,
+                "tavg_file": tavg_file,
+                "prec_file": prec_file,
+                "data_columns": date_columns,
+                "date_types": data_types,
             }
 
         elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
             # use tmax and tmin data if tavg is not provided
             tmax_file = args["tmax_file"][0]
             tmin_file = args["tmin_file"][0]
-
-            tmax_dates = self.generate_dates(
-                request, tmax_file, tmax_name, date_fields, date_format, cal
+            date_columns = robjects.r(
+                f"list(tmax = '{tmax_column}', tmin = '{tmin_column}', prec = '{prec_column}')"
             )
-            tmin_dates = self.generate_dates(
-                request, tmin_file, tmin_name, date_fields, date_format, cal
-            )
-
-            tmax = robjects.r(f"{tmax_name}${tmax_column}")
-            tmin = robjects.r(f"{tmin_name}${tmin_column}")
-
             return {
-                "tmax": tmax,
-                "tmin": tmin,
-                "prec": prec,
-                "tmax_dates": tmax_dates,
-                "tmin_dates": tmin_dates,
-                "prec_dates": prec_dates,
+                "tmax_file": tmax_file,
+                "tmin_file": tmin_file,
+                "prec_file": prec_file,
+                "data_columns": date_columns,
+                "date_types": data_types,
             }
 
     def _handler(self, request, response):
         (
-            tmax_name,
-            tmin_name,
-            prec_name,
-            tavg_name,
+            na_strings,
             tmax_column,
             tmin_column,
             prec_column,
@@ -266,37 +217,34 @@ class ClimdexInputRaw(Process):
         log_handler(
             self,
             response,
-            "Prepare parameters for climdexInput.raw",
+            "Prepare parameters for climdexInput.csv",
             logger,
             log_level=loglevel,
             process_step="prepare_params",
         )
         params = self.prepare_parameters(
             request,
-            tmax_name,
-            tmin_name,
-            prec_name,
-            tavg_name,
+            date_fields,
+            date_format,
             tmax_column,
             tmin_column,
             prec_column,
             tavg_column,
-            date_fields,
-            date_format,
-            cal,
         )
 
         log_handler(
             self,
             response,
-            f"Processing climdexInput.raw",
+            f"Processing climdexInput.csv",
             logger,
             log_level=loglevel,
             process_step="process",
         )
-        ci = climdex.climdexInput_raw(
+        ci = climdex.climdexInput_csv(
             **params,
             base_range=robjects.r(base_range),
+            na_strings=na_strings,
+            cal=robjects.r(f"'{cal}'"),
             n=n,
             northern_hemisphere=northern_hemisphere,
             quantiles=robjects.r(quantiles),
