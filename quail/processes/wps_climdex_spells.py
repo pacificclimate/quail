@@ -10,7 +10,7 @@ from quail.utils import get_package, logger, load_rdata_to_python, save_python_t
 from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
 
 
-class ClimdexSDI(Process):
+class ClimdexSpells(Process):
     """
     Cold or warm spell duration index
 
@@ -19,7 +19,7 @@ class ClimdexSDI(Process):
     "warm spell" is defined as a sequence of 6 or more days
     in which the daily maximumtemperature exceeds the 90th
     percentile of daily maximum temperature for a 5-day
-    running windowsurrounding this day during the baseline
+    running window surrounding this day during the baseline
     period.
     """
 
@@ -39,7 +39,7 @@ class ClimdexSDI(Process):
                 "func",
                 "Function to compute",
                 abstract="Compute climdex.wsdi (Warm spell duration index)",
-                allowed_values=["wsdi"],
+                allowed_values=["wsdi", "csdi"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -57,10 +57,10 @@ class ClimdexSDI(Process):
 
         outputs = [rda_output]
 
-        super(ClimdexSDI, self).__init__(
+        super(ClimdexSpells, self).__init__(
             self._handler,
-            identifier="climdex_sdi",
-            title="Climdex SDI",
+            identifier="climdex_spells",
+            title="Climdex Spells",
             abstract="Cold or warm spell duration index",
             metadata=[
                 Metadata("NetCDF processing"),
@@ -88,6 +88,7 @@ class ClimdexSDI(Process):
             log_level=loglevel,
             process_step="start",
         )
+        robjects.r("library(climdex.pcic)")
 
         log_handler(
             self,

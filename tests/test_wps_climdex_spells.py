@@ -2,7 +2,7 @@ import pytest
 from tempfile import NamedTemporaryFile
 
 from wps_tools.testing import run_wps_process, local_path
-from quail.processes.wps_climdex_sdi import ClimdexSDI
+from quail.processes.wps_climdex_spells import ClimdexSpells
 
 
 @pytest.mark.parametrize(
@@ -10,9 +10,11 @@ from quail.processes.wps_climdex_sdi import ClimdexSDI
     [
         (local_path("climdexInput.rda"), "ci", "wsdi", False),
         (local_path("climdexInput.rda"), "ci", "wsdi", True),
+        (local_path("climdexInput.rda"), "ci", "csdi", False),
+        (local_path("climdexInput.rda"), "ci", "csdi", True),
     ],
 )
-def test_wps_climdex_sdi(climdex_input, ci_name, func, span_years):
+def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
@@ -23,4 +25,4 @@ def test_wps_climdex_sdi(climdex_input, ci_name, func, span_years):
             f"span_years={span_years};"
             f"output_file={out_file.name};"
         )
-        run_wps_process(ClimdexSDI(), datainputs)
+        run_wps_process(ClimdexSpells(), datainputs)
