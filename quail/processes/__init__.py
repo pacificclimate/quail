@@ -4,6 +4,7 @@ from .wps_climdexInput_csv import ClimdexInputCSV
 from .wps_climdexInput_raw import ClimdexInputRaw
 from .wps_climdex_mmdmt import ClimdexMMDMT
 from .wps_climdex_spells import ClimdexSpells
+from .wps_climdex_temp_pctl import ClimdexTempPctl
 
 processes = [
     ClimdexDays(),
@@ -12,4 +13,5 @@ processes = [
     ClimdexInputRaw(),
     ClimdexMMDMT(),
     ClimdexSpells(),
+    ClimdexTempPctl(),
 ]
