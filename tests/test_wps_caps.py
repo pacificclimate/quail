@@ -17,4 +17,5 @@ def test_wps_caps():
         "climdex_input_raw",
         "climdex_mmdmt",
         "climdex_spells",
+        "climdex_temp_pctl",
     ]
