@@ -12,6 +12,8 @@ from quail.processes.wps_climdex_spells import ClimdexSpells
         (local_path("climdexInput.rda"), "ci", "wsdi", True),
         (local_path("climdexInput.rda"), "ci", "csdi", False),
         (local_path("climdexInput.rda"), "ci", "csdi", True),
+        (local_path("climdexInput.rda"), "ci", "cdd", False),
+        (local_path("climdexInput.rda"), "ci", "cdd", True),
     ],
 )
 def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
