@@ -31,7 +31,7 @@ class ClimdexSpells(Process):
                 "func",
                 "Function to compute",
                 abstract="Compute climdex.wsdi (Warm spell duration index)",
-                allowed_values=["wsdi", "csdi", "cdd"],
+                allowed_values=["wsdi", "csdi", "cdd", "cwd"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -53,7 +53,7 @@ class ClimdexSpells(Process):
             self._handler,
             identifier="climdex_spells",
             title="Climdex Spells",
-            abstract="Cold or warm spell duration index and maximum consecutive dry or wet days",
+            abstract="Cold (csdi) or warm (wsdi) spell duration index and maximum consecutive dry (cdd) or wet (cwd) days",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
