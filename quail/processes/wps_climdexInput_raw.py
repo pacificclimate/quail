@@ -6,7 +6,13 @@ from tempfile import NamedTemporaryFile
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
-from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
+from quail.utils import (
+    get_package,
+    logger,
+    load_rdata_to_python,
+    save_python_to_rdata,
+    collect_literal_inputs,
+)
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -151,11 +157,6 @@ class ClimdexInputRaw(Process):
             status_supported=True,
         )
 
-    def collect_literal_inputs(self, request):
-        return [
-            arg[0] for arg in list(collect_args(request, self.workdir).values())[-22:]
-        ]
-
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
@@ -249,7 +250,7 @@ class ClimdexInputRaw(Process):
             output_file,
             vector_name,
             loglevel,
-        ) = self.collect_literal_inputs(request)
+        ) = collect_literal_inputs(request)
 
         log_handler(
             self,

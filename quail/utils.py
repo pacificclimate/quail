@@ -83,3 +83,12 @@ def test_ci_output(url, vector_name, expected_file, expected_vector_name):
 
         for index in range(len(expected_slot)):
             assert str(output_slot[index]) == str(expected_slot[index])
+
+
+def collect_literal_inputs(request):
+    literal_inputs = [
+        request.inputs[k][0].data
+        for k in request.inputs.keys()
+        if "data_type" in vars(request.inputs[k][0]).keys()
+    ]
+    return literal_inputs
