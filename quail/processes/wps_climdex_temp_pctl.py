@@ -44,7 +44,7 @@ class ClimdexTempPctl(Process):
                 "freq",
                 "Time frequency",
                 abstract="Time frequency to aggregate to",
-                default="c('monthly', 'annual')",
+                allowed_values=["monthly", "annual"],
                 data_type="string",
             ),
             vector_name,
