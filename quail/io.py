@@ -177,3 +177,14 @@ ci_output = ComplexOutput(
         Format("application/x-gzip", extension=".rda", encoding="base64")
     ],
 )
+
+freq = LiteralInput(
+    "freq",
+    "Frequency",
+    abstract="Time frequency to aggregate to",
+    allowed_values=["monthly", "annual"],
+    default="monthly",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
