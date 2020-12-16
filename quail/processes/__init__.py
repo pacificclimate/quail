@@ -6,6 +6,7 @@ from .wps_climdex_mmdmt import ClimdexMMDMT
 from .wps_climdex_rmm import ClimdexRMM
 from .wps_climdex_spells import ClimdexSpells
 from .wps_climdex_temp_pctl import ClimdexTempPctl
+from .wps_climdex_dtr import ClimdexDTR
 
 processes = [
     ClimdexDays(),
@@ -16,4 +17,5 @@ processes = [
     ClimdexRMM(),
     ClimdexSpells(),
     ClimdexTempPctl(),
+    ClimdexDTR(),
 ]
