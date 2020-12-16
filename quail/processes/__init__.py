@@ -13,7 +13,7 @@ processes = [
     ClimdexInputCSV(),
     ClimdexInputRaw(),
     ClimdexMMDMT(),
-    ClimdexRMM()
+    ClimdexRMM(),
     ClimdexSpells(),
     ClimdexTempPctl(),
 ]
