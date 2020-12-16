@@ -35,7 +35,7 @@ class ClimdexTempPctl(Process):
                 "func",
                 "Function to compute",
                 abstract="Percentile function to compute",
-                allowed_values=["tn10p", "tn90p"],
+                allowed_values=["tn10p", "tn90p", "tx10p"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
