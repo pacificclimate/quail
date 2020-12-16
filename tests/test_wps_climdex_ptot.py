@@ -9,6 +9,7 @@ from quail.processes.wps_climdex_ptot import ClimdexPtot
     ("climdex_input", "ci_name", "threshold"),
     [
         (local_path("climdexInput.rda"), "ci", 95),
+        (local_path("climdexInput.rda"), "ci", 99),
     ],
 )
 def test_wps_climdex_spells(climdex_input, ci_name, threshold):
