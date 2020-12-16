@@ -32,7 +32,7 @@ class ClimdexPtot(Process):
                 "threshold",
                 "Threshold",
                 abstract="Daily precipitation threshold",
-                allowed_values=[95],
+                allowed_values=[95, 99],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="integer",
