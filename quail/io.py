@@ -82,7 +82,7 @@ base_range = LiteralInput(
 cal = LiteralInput(
     "cal",
     "calendar type",
-    default="'gregorian'",
+    default="gregorian",
     abstract="The calendar type used in the input files.",
     data_type="string",
 )
@@ -98,7 +98,7 @@ date_fields = LiteralInput(
 date_format = LiteralInput(
     "date_format",
     "date format",
-    default="'%Y %j'",
+    default="%Y %j",
     abstract="Date format as taken by strptime.",
     data_type="string",
 )
@@ -167,4 +167,13 @@ vector_name = LiteralInput(
     min_occurs=0,
     max_occurs=1,
     data_type="string",
+)
+
+ci_output = ComplexOutput(
+    "climdexInput",
+    "generated climdexInput",
+    abstract="Output R data file for generated climdexInput",
+    supported_formats=[
+        Format("application/x-gzip", extension=".rda", encoding="base64")
+    ],
 )
