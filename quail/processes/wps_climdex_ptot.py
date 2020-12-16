@@ -13,7 +13,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 class ClimdexPtot(Process):
     """
     Computes the annual sum of precipitation in days where daily precipitation
-    exceeds the of daily precipitation threshold in the base period.
+    exceeds the daily precipitation threshold in the base period.
     """
 
     def __init__(self):
