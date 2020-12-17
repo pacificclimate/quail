@@ -33,7 +33,7 @@ class ClimdexRxnday(Process):
             LiteralInput(
                 "num_days",
                 "Number of days of precipitation",
-                abstract="Compute rx1day or rx5day",
+                abstract="Compute rx[1]day or rx[5]day",
                 allowed_values=[1,5],
                 data_type="positiveInteger",
             ),
