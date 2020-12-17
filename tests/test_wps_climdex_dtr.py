@@ -12,7 +12,7 @@ from quail.processes.wps_climdex_dtr import ClimdexDTR
         (local_path("climdexInput.rda"), "ci", "annual"),
     ],
 )
-def test_wps_climdex_dtr(climdex_input, ci_name, freq):
+def test_wps_climdex_mmdmt(climdex_input, ci_name, freq):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:

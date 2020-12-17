@@ -19,7 +19,6 @@ def test_wps_caps():
         "climdex_mmdmt",
         "climdex_ptot",
         "climdex_rmm",
-        "climdex_sdii",
         "climdex_spells",
         "climdex_temp_pctl",
     ]
