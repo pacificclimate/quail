@@ -33,10 +33,10 @@ class ClimdexRxnday(Process):
             LiteralInput(
                 "num_days",
                 "Number of days of precipitation",
-                "Compute rx1day or rx5day",
+                abstract="Compute rx1day or rx5day",
                 allowed_values=[1,5],
-                data_type=["positiveInteger"],
-            )
+                data_type="positiveInteger",
+            ),
             log_level,
         ]
 
@@ -73,7 +73,7 @@ class ClimdexRxnday(Process):
             log_level=loglevel,
             process_step="start",
         )
-        robjects.r("load(climdex.pcic)")
+        robjects.r("library(climdex.pcic)")
 
         log_handler(
             self,
