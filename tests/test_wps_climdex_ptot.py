@@ -13,7 +13,7 @@ from quail.processes.wps_climdex_ptot import ClimdexPtot
         (local_path("climdexInput.rda"), "ci", 99),
     ],
 )
-def test_wps_climdex_spells(climdex_input, ci_name, threshold):
+def test_wps_climdex_ptot(climdex_input, ci_name, threshold):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
