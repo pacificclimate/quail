@@ -1,12 +1,18 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput, LiteralOutput, ComplexOutput
+from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
-from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
+from quail.utils import (
+    get_package,
+    logger,
+    load_rdata_to_python,
+    save_python_to_rdata,
+    collect_literal_inputs,
+)
 from quail.io import output_file, rda_output, vector_name
 
 
@@ -24,25 +30,27 @@ class ClimdexQuantile(Process):
             },
         )
         inputs = [
-            LiteralInput(
+            ComplexInput(
                 "data_file",
                 "Data File",
                 abstract="Path to the file containing data to compute quantiles on",
-                min_occurs=1,
-                max_occurs=0,
-                data_type="string",
+                min_occurs=0,
+                max_occurs=1,
+                supported_formats=[
+                    Format("application/x-gzip", extension=".rda", encoding="base64")
+                ],
             ),
             LiteralInput(
                 "data_vector",
                 "Data Vector",
-                abstract="Name of the R double vector data to compute quantiles on",
+                abstract="R double vector data to compute quantiles on",
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
             ),
             LiteralInput(
-                "quantiles",
-                "Quantiles",
+                "quantiles_vector",
+                "Quantiles_vector",
                 abstract="Quantiles to be computed",
                 min_occurs=1,
                 max_occurs=1,
@@ -82,9 +90,17 @@ class ClimdexQuantile(Process):
         )
 
     def _handler(self, request, response):
-        data_file, data_vector, quantiles, output_file, vector_name, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
+        (
+            data_vector,
+            quantiles_vector,
+            output_file,
+            vector_name,
+            loglevel,
+        ) = collect_literal_inputs(request)
+        if "data_file" in collect_args(request, self.workdir).keys():
+            data_file = collect_args(request, self.workdir)["data_file"][0]
+        else:
+            data_file = None
 
         log_handler(
             self,
@@ -94,7 +110,7 @@ class ClimdexQuantile(Process):
             log_level=loglevel,
             process_step="start",
         )
-        robjects.r("library(climdex.pcic)")
+        climdex = get_package("climdex.pcic")
 
         log_handler(
             self,
@@ -104,7 +120,11 @@ class ClimdexQuantile(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        data = load_rdata_to_python(data_file, data_vector)
+
+        if data_file:
+            data = load_rdata_to_python(data_file, data_vector)
+        else:
+            data = robjects.r(data_vector)
 
         log_handler(
             self,
@@ -114,8 +134,8 @@ class ClimdexQuantile(Process):
             log_level=loglevel,
             process_step="process",
         )
-
-        quantile_vector = robjects.r(f"climdex.quantile(data, {quantiles})")
+        quantiles = robjects.r(quantiles_vector)
+        quantile_vector = climdex.climdex_quantile(data, quantiles)
 
         log_handler(
             self,
@@ -137,7 +157,7 @@ class ClimdexQuantile(Process):
             process_step="build_output",
         )
         response.outputs["rda_output"].file = output_path
-        response.outputs["rda_output"].data = str(quantile_vector)
+        response.outputs["output_vector"].data = str(quantile_vector)
 
         # Clear R global env
         robjects.r("rm(list=ls())")
