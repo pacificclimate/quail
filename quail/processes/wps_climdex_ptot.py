@@ -37,7 +37,7 @@ class ClimdexPtot(Process):
                 allowed_values=[95, 99],
                 min_occurs=0,
                 max_occurs=1,
-                data_type="string",
+                data_type="integer",
             ),
             vector_name,
             log_level,
