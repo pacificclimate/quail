@@ -78,11 +78,17 @@ class ClimdexRxnday(Process):
         elif num_days == 5:
             return climdex.climdex_rx5day(ci, freq, center_mean_on_last_day)
 
-
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, vector_name, freq, num_days, center_mean_on_last_day, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
+        (
+            climdex_input,
+            ci_name,
+            output_file,
+            vector_name,
+            freq,
+            num_days,
+            center_mean_on_last_day,
+            loglevel,
+        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
 
         log_handler(
             self,
