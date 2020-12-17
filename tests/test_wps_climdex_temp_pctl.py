@@ -18,7 +18,7 @@ from quail.processes.wps_climdex_temp_pctl import ClimdexTempPctl
         (local_path("climdexInput.rda"), "ci", "tx90p", "annual"),
     ],
 )
-def test_wps_climdex_mmdmt(climdex_input, ci_name, func, freq):
+def test_wps_climdex_temp_pctl(climdex_input, ci_name, func, freq):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
