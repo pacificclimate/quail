@@ -95,15 +95,20 @@ class ClimdexGetAvailableIndices(Process):
         "cwd": "climdex_spells",
         "r95ptot": "climdex_ptot",
         "r99ptot": "climdex_ptot",
-        "prcptot": "",
+        "prcptot": "climdex_ptot",
         "gsl": "climdex_gsl",
         "dtr": "climdex_dtr",
     }
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, vector_name, get_function_names, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
+        (
+            climdex_input,
+            ci_name,
+            output_file,
+            vector_name,
+            get_function_names,
+            loglevel,
+        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
 
         log_handler(
             self,
