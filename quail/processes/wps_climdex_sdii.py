@@ -12,7 +12,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 class ClimdexSDII(Process):
     """
     computes the climdex index SDII, or Simple Precipitation Intensity Index.
-    This isdefined as the sum of precipitation in wet days (days with
+    This is defined as the sum of precipitation in wet days (days with
     preciptitation over 1mm) during the year divided by the number of wet days
     in the year.
     """
