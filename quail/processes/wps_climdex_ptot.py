@@ -34,7 +34,8 @@ class ClimdexPtot(Process):
                 "threshold",
                 "Threshold",
                 abstract="Daily precipitation threshold",
-                allowed_values=[95, 99],
+                allowed_values=[0, 95, 99],
+                default=0,
                 min_occurs=0,
                 max_occurs=1,
                 data_type="integer",
@@ -63,14 +64,18 @@ class ClimdexPtot(Process):
             status_supported=True,
         )
 
+    def get_func(self, threshold):
+        if threshold == 0:
+            return "prc"
+        else:
+            return f"r{threshold}"
+
     def _handler(self, request, response):
-        args = [arg[0] for arg in collect_args(request, self.workdir).values()]
-        if len(args) == 6:
-            climdex_input, ci_name, output_file, threshold, vector_name, loglevel = args
-            func = f"r{threshold}"
-        elif len(args) == 5:
-            climdex_input, ci_name, output_file, vector_name, loglevel = args
-            func = "prc"
+        climdex_input, ci_name, output_file, threshold, vector_name, loglevel = [
+            arg[0] for arg in collect_args(request, self.workdir).values()
+        ]
+
+        func = self.get_func(threshold)
 
         log_handler(
             self,
