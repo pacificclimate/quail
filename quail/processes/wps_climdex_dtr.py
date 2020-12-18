@@ -2,7 +2,6 @@ import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
-from pywps.app.exceptions import ProcessError
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
@@ -10,13 +9,9 @@ from quail.utils import get_package, logger, load_rdata_to_python, save_python_t
 from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name, freq
 
 
-class ClimdexMMDMT(Process):
+class ClimdexDTR(Process):
     """
-    This process wraps climdex functions
-    - climdex.txx: Monthly (or annual) Maximum of Daily Maximum Temperature
-    - climdex.tnx: Monthly (or annual) Maximum of Daily Minimum Temperature
-    - climdex.txn: Monthly (or annual) Minimum of Daily Maximum Temperature
-    - climdex.tnn: Monthly (or annual) Minimum of Daily Minimum Temperature
+    Computes the mean daily diurnal temperature range.
     """
 
     def __init__(self):
@@ -31,32 +26,18 @@ class ClimdexMMDMT(Process):
             climdex_input,
             ci_name,
             output_file,
-            LiteralInput(
-                "month_type",
-                "Month type to compute",
-                abstract="Min/ max daily temperature type to compute",
-                allowed_values=["txx", "tnx", "txn", "tnn"],
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            freq,
             vector_name,
+            freq,
             log_level,
         ]
 
         outputs = [rda_output]
 
-        super(ClimdexMMDMT, self).__init__(
+        super(ClimdexDTR, self).__init__(
             self._handler,
-            identifier="climdex_mmdmt",
-            title="Climdex MMDMT",
-            abstract=""" climdex_mmdmt includes the functions:
-                - climdex.txx: Monthly (or annual) Maximum of Daily Maximum Temperature
-                - climdex.tnx: Monthly (or annual) Maximum of Daily Minimum Temperature
-                - climdex.txn: Monthly (or annual) Minimum of Daily Maximum Temperature
-                - climdex.tnn: Monthly (or annual) Minimum of Daily Minimum Temperature
-            """,
+            identifier="climdex_dtr",
+            title="Climdex Mean Diurnal Temperature Range",
+            abstract="Computes the mean daily diurnal temperature range.",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -71,7 +52,7 @@ class ClimdexMMDMT(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, month_type, freq, vector_name, loglevel = [
+        climdex_input, ci_name, output_file, vector_name, freq, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -98,24 +79,24 @@ class ClimdexMMDMT(Process):
         log_handler(
             self,
             response,
-            f"Processing {month_type}",
+            "Processing the mean daily diurnal temperature range",
             logger,
             log_level=loglevel,
             process_step="process",
         )
 
-        temps = robjects.r(f"climdex.{month_type}(ci, freq='{freq}')")
+        dtr = climdex.climdex_dtr(ci, freq)
 
         log_handler(
             self,
             response,
-            f"Saving {month_type} vector to R data file",
+            "Saving dtr vector to R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, temps, output_path)
+        save_python_to_rdata(vector_name, dtr, output_path)
 
         log_handler(
             self,

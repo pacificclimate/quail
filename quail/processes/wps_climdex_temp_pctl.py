@@ -7,7 +7,7 @@ from pywps.app.exceptions import ProcessError
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
+from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name, freq
 
 
 class ClimdexTempPctl(Process):
@@ -35,18 +35,12 @@ class ClimdexTempPctl(Process):
                 "func",
                 "Function to compute",
                 abstract="Percentile function to compute",
-                allowed_values=["tn10p", "tn90p"],
+                allowed_values=["tn10p", "tn90p", "tx10p", "tx90p"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
             ),
-            LiteralInput(
-                "freq",
-                "Time frequency",
-                abstract="Time frequency to aggregate to",
-                allowed_values=["monthly", "annual"],
-                data_type="string",
-            ),
+            freq,
             vector_name,
             log_level,
         ]

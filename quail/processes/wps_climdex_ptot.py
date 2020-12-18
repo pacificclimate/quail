@@ -7,16 +7,13 @@ from pywps.app.exceptions import ProcessError
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name, freq
+from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
 
 
-class ClimdexMMDMT(Process):
+class ClimdexPtot(Process):
     """
-    This process wraps climdex functions
-    - climdex.txx: Monthly (or annual) Maximum of Daily Maximum Temperature
-    - climdex.tnx: Monthly (or annual) Maximum of Daily Minimum Temperature
-    - climdex.txn: Monthly (or annual) Minimum of Daily Maximum Temperature
-    - climdex.tnn: Monthly (or annual) Minimum of Daily Minimum Temperature
+    Computes the annual sum of precipitation in days where daily precipitation
+    exceeds the daily precipitation threshold in the base period.
     """
 
     def __init__(self):
@@ -32,31 +29,25 @@ class ClimdexMMDMT(Process):
             ci_name,
             output_file,
             LiteralInput(
-                "month_type",
-                "Month type to compute",
-                abstract="Min/ max daily temperature type to compute",
-                allowed_values=["txx", "tnx", "txn", "tnn"],
+                "threshold",
+                "Threshold",
+                abstract="Daily precipitation threshold",
+                allowed_values=[95, 99],
                 min_occurs=1,
                 max_occurs=1,
-                data_type="string",
+                data_type="integer",
             ),
-            freq,
             vector_name,
             log_level,
         ]
 
         outputs = [rda_output]
 
-        super(ClimdexMMDMT, self).__init__(
+        super(ClimdexPtot, self).__init__(
             self._handler,
-            identifier="climdex_mmdmt",
-            title="Climdex MMDMT",
-            abstract=""" climdex_mmdmt includes the functions:
-                - climdex.txx: Monthly (or annual) Maximum of Daily Maximum Temperature
-                - climdex.tnx: Monthly (or annual) Maximum of Daily Minimum Temperature
-                - climdex.txn: Monthly (or annual) Minimum of Daily Maximum Temperature
-                - climdex.tnn: Monthly (or annual) Minimum of Daily Minimum Temperature
-            """,
+            identifier="climdex_ptot",
+            title="Climdex Temperature Percentiles",
+            abstract="Total daily precipitation exceeding threshold",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -71,7 +62,7 @@ class ClimdexMMDMT(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, month_type, freq, vector_name, loglevel = [
+        climdex_input, ci_name, output_file, threshold, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
 
@@ -83,7 +74,7 @@ class ClimdexMMDMT(Process):
             log_level=loglevel,
             process_step="start",
         )
-        climdex = get_package("climdex.pcic")
+        robjects.r("library(climdex.pcic)")
 
         log_handler(
             self,
@@ -98,24 +89,24 @@ class ClimdexMMDMT(Process):
         log_handler(
             self,
             response,
-            f"Processing {month_type}",
+            f"Processing climdex.r{str(threshold)}ptot",
             logger,
             log_level=loglevel,
             process_step="process",
         )
 
-        temps = robjects.r(f"climdex.{month_type}(ci, freq='{freq}')")
+        mothly_pct = robjects.r(f"climdex.r{str(threshold)}ptot(ci)")
 
         log_handler(
             self,
             response,
-            f"Saving {month_type} vector to R data file",
+            f"Saving r{str(threshold)}ptot as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, temps, output_path)
+        save_python_to_rdata(vector_name, mothly_pct, output_path)
 
         log_handler(
             self,
