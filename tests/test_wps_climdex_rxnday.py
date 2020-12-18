@@ -10,6 +10,8 @@ from quail.processes.wps_climdex_rxnday import ClimdexRxnday
     [
         (local_path("climdexInput.rda"), "ci", "monthly", 1),
         (local_path("climdexInput.rda"), "ci", "annual", 1),
+        (local_path("climdexInput.rda"), "ci", "monthly", 5),
+        (local_path("climdexInput.rda"), "ci", "annual", 5),
     ],
 )
 def test_wps_climdex_rxnday(climdex_input, ci_name, freq, num_days):

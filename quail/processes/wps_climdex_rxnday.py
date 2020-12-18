@@ -37,6 +37,15 @@ class ClimdexRxnday(Process):
                 allowed_values=[1, 5],
                 data_type="positiveInteger",
             ),
+            LiteralInput(
+                "center_mean_on_last_day",
+                "Center mean on last day",
+                abstract="Whether to center the 5-day running mean on the last day of the window, insteadof the center day.",
+                min_occurs=0,
+                max_occurs=1,
+                default=False,
+                data_type="boolean",
+            ),
             log_level,
         ]
 
@@ -60,10 +69,26 @@ class ClimdexRxnday(Process):
             status_supported=True,
         )
 
+    def rxnday_func(self, ci, num_days, freq, center_mean_on_last_day):
+        climdex = get_package("climdex.pcic")
+
+        if num_days == 1:
+            return climdex.climdex_rx1day(ci, freq)
+
+        elif num_days == 5:
+            return climdex.climdex_rx5day(ci, freq, center_mean_on_last_day)
+
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, vector_name, freq, num_days, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
+        (
+            climdex_input,
+            ci_name,
+            output_file,
+            vector_name,
+            freq,
+            num_days,
+            center_mean_on_last_day,
+            loglevel,
+        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
 
         log_handler(
             self,
@@ -73,7 +98,6 @@ class ClimdexRxnday(Process):
             log_level=loglevel,
             process_step="start",
         )
-        robjects.r("library(climdex.pcic)")
 
         log_handler(
             self,
@@ -94,7 +118,7 @@ class ClimdexRxnday(Process):
             process_step="process",
         )
 
-        rxnday = robjects.r(f"climdex.rx{num_days}day(ci, '{freq}')")
+        rxnday = self.rxnday_func(ci, num_days, freq, center_mean_on_last_day)
 
         log_handler(
             self,
