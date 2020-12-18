@@ -89,18 +89,24 @@ class ClimdexQuantile(Process):
             status_supported=True,
         )
 
+    def collect_args_wrapper(self, request):
+        literal_inputs = collect_literal_inputs(request)
+        if "data_file" in collect_args(request, self.workdir).keys():
+            data_file = collect_args(request, self.workdir)["data_file"][0]
+        else:
+            data_file = None
+
+        return [data_file] + literal_inputs
+
     def _handler(self, request, response):
         (
+            data_file,
             data_vector,
             quantiles_vector,
             output_file,
             vector_name,
             loglevel,
-        ) = collect_literal_inputs(request)
-        if "data_file" in collect_args(request, self.workdir).keys():
-            data_file = collect_args(request, self.workdir)["data_file"][0]
-        else:
-            data_file = None
+        ) = self.collect_args_wrapper(request)
 
         log_handler(
             self,
