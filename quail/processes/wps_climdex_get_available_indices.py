@@ -1,4 +1,4 @@
-import os, sys, inspect, re
+import os, sys, inspect, re, collections
 from rpy2 import robjects
 from pywps import Process, LiteralInput, LiteralOutput
 from pywps.app.Common import Metadata
@@ -30,24 +30,14 @@ class GetIndices(Process):
             ci_name,
             output_file,
             vector_name,
-            LiteralInput(
-                "get_function_names",
-                "Get function names",
-                abstract="Whether to return function names",
-                default=True,
-                min_occurs=0,
-                max_occurs=1,
-                data_type="boolean",
-            ),
             log_level,
         ]
 
         outputs = [
-            rda_output,
             LiteralOutput(
                 "avail_processes",
                 "Available processes dictionary",
-                abstract="Available climdex indices (keys) and the processes to use to compute them (values)",
+                abstract="Available climdex indices (values) and the processes to use to compute them (keys)",
                 data_type="string",
             ),
         ]
@@ -70,19 +60,22 @@ class GetIndices(Process):
             status_supported=True,
         )
 
-    def available_processes(self):
-        processes = {}
-        for mod in sys.modules:
-            if re.search("quail.processes.*", mod):
-                classes = inspect.getmembers(
-                    sys.modules[mod],
-                    lambda member: inspect.isclass(member) and member.__module__ == mod,
-                )
-                for name, class_ in classes:
-                    indices = re.compile('climdex\.([a-zA-Z0-9]*)')
-                    processes[mod.split(".")[-1]] = indices.findall(class_.__doc__)
+    def available_processes(self, avail_indices):
+        processes = collections.defaultdict(list)
+        indices = re.compile("climdex\.([a-zA-Z0-9]*)")
 
-        return processes
+        for mod in filter(lambda mod: re.search("quail.processes.*", mod), sys.modules):
+            for name, class_ in inspect.getmembers(
+                sys.modules[mod],
+                lambda member: inspect.isclass(member) and member.__module__ == mod,
+            ):
+                [
+                    processes[mod.split(".")[-1]].append(index)
+                    for index in indices.findall(class_.__doc__)
+                    if index in avail_indices
+                ]
+
+        return dict(processes)
 
     def _handler(self, request, response):
         (
@@ -90,7 +83,6 @@ class GetIndices(Process):
             ci_name,
             output_file,
             vector_name,
-            get_function_names,
             loglevel,
         ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
 
@@ -123,23 +115,8 @@ class GetIndices(Process):
             process_step="process",
         )
 
-        indices = climdex.climdex_get_available_indices(ci, get_function_names)
-
-        avail_processes = {
-            index.split(".")[-1]: self.processes[index.split(".")[-1]]
-            for index in indices
-        }
-
-        log_handler(
-            self,
-            response,
-            "Saving indices to R data file",
-            logger,
-            log_level=loglevel,
-            process_step="save_rdata",
-        )
-        output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, indices, output_path)
+        avail_indices = climdex.climdex_get_available_indices(ci, False)
+        avail_processes = self.available_processes(avail_indices)
 
         log_handler(
             self,
@@ -149,7 +126,6 @@ class GetIndices(Process):
             log_level=loglevel,
             process_step="build_output",
         )
-        response.outputs["rda_output"].file = output_path
         response.outputs["avail_processes"].data = avail_processes
 
         # Clear R global env

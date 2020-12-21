@@ -12,8 +12,8 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 class ClimdexRxnday(Process):
     """
     Wraps
-    Rx1day: monthly or annual maximum 1-day precipitation
-    Rx5day: monthly or annual maximum 5-day consecutive precipitation.
+    climdex.rx1day: monthly or annual maximum 1-day precipitation
+    climdex.rx5day: monthly or annual maximum 5-day consecutive precipitation.
     """
 
     def __init__(self):
