@@ -8,18 +8,22 @@ from quail.processes.wps_climdex_ptot import ClimdexPtot
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold"),
     [
+        (local_path("climdexInput.rda"), "ci", None),
         (local_path("climdexInput.rda"), "ci", 95),
         (local_path("climdexInput.rda"), "ci", 99),
     ],
 )
-def test_wps_climdex_spells(climdex_input, ci_name, threshold):
+def test_wps_climdex_ptot(climdex_input, ci_name, threshold):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = (
             f"climdex_input=@xlink:href={climdex_input};"
             f"ci_name={ci_name};"
-            f"threshold={threshold};"
             f"output_file={out_file.name};"
         )
+
+        if threshold:
+            datainputs += f"threshold={threshold};"
+
         run_wps_process(ClimdexPtot(), datainputs)

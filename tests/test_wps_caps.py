@@ -19,6 +19,7 @@ def test_wps_caps():
         "climdex_input_raw",
         "climdex_mmdmt",
         "climdex_ptot",
+        "climdex_quantile",
         "climdex_rmm",
         "climdex_rxnday",
         "climdex_sdii",

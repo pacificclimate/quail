@@ -14,6 +14,8 @@ class ClimdexPtot(Process):
     """
     Computes the annual sum of precipitation in days where daily precipitation
     exceeds the daily precipitation threshold in the base period.
+    If threshold is not given, annual sum of precipitation in wet days (> 1mm)
+    will be calculated.
     """
 
     def __init__(self):
@@ -32,8 +34,9 @@ class ClimdexPtot(Process):
                 "threshold",
                 "Threshold",
                 abstract="Daily precipitation threshold",
-                allowed_values=[95, 99],
-                min_occurs=1,
+                allowed_values=[0, 95, 99],
+                default=0,
+                min_occurs=0,
                 max_occurs=1,
                 data_type="integer",
             ),
@@ -61,10 +64,18 @@ class ClimdexPtot(Process):
             status_supported=True,
         )
 
+    def get_func(self, threshold):
+        if threshold == 0:
+            return "prc"
+        else:
+            return f"r{threshold}"
+
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, threshold, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
+
+        func = self.get_func(threshold)
 
         log_handler(
             self,
@@ -89,18 +100,18 @@ class ClimdexPtot(Process):
         log_handler(
             self,
             response,
-            f"Processing climdex.r{str(threshold)}ptot",
+            f"Processing climdex.{func}ptot",
             logger,
             log_level=loglevel,
             process_step="process",
         )
 
-        mothly_pct = robjects.r(f"climdex.r{str(threshold)}ptot(ci)")
+        mothly_pct = robjects.r(f"climdex.{func}ptot(ci)")
 
         log_handler(
             self,
             response,
-            f"Saving r{str(threshold)}ptot as R data file",
+            f"Saving {func}ptot as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
