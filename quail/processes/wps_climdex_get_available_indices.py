@@ -1,4 +1,4 @@
-import os
+import os, sys, inspect, re
 from rpy2 import robjects
 from pywps import Process, LiteralInput, LiteralOutput
 from pywps.app.Common import Metadata
@@ -52,7 +52,7 @@ class GetIndices(Process):
             ),
         ]
 
-        super(ClimdexGetAvailableIndices, self).__init__(
+        super(GetIndices, self).__init__(
             self._handler,
             identifier="climdex_get_available_indices",
             title="Climdex Get Available Indices",
@@ -70,35 +70,19 @@ class GetIndices(Process):
             status_supported=True,
         )
 
-    processes = {
-        "su": "climdex_days",
-        "id": "climdex_days",
-        "txx": "climdex_mmdmt",
-        "txn": "climdex_mmdmt",
-        "tx10p": "climdex_temp_pctl",
-        "tx90p": "climdex_temp_pctl",
-        "wsdi": "climdex_spells",
-        "fd": "climdex_days",
-        "tr": "climdex_days",
-        "tnx": "climdex_mmdmt",
-        "tnn": "climdex_mmdmt",
-        "tn10p": "climdex_temp_pctl",
-        "tn90p": "climdex_temp_pctl",
-        "csdi": "climdex_spells",
-        "rx1day": "climdex_rxnday",
-        "rx5day": "climdex_rxnday",
-        "sdii": "sdii",
-        "r10mm": "climdex_rmm",
-        "r20mm": "climdex_rmm",
-        "rnnmm": "climdex_rmm",
-        "cdd": "climdex_spells",
-        "cwd": "climdex_spells",
-        "r95ptot": "climdex_ptot",
-        "r99ptot": "climdex_ptot",
-        "prcptot": "climdex_ptot",
-        "gsl": "climdex_gsl",
-        "dtr": "climdex_dtr",
-    }
+    def available_processes(self):
+        processes = {}
+        for mod in sys.modules:
+            if re.search("quail.processes.*", mod):
+                classes = inspect.getmembers(
+                    sys.modules[mod],
+                    lambda member: inspect.isclass(member) and member.__module__ == mod,
+                )
+                for name, class_ in classes:
+                    indices = re.compile('climdex\.([a-zA-Z0-9]*)')
+                    processes[mod.split(".")[-1]] = indices.findall(class_.__doc__)
+
+        return processes
 
     def _handler(self, request, response):
         (

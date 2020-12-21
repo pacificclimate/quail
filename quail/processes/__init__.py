@@ -22,7 +22,7 @@ processes = [
     ClimdexRMM(),
     ClimdexSpells(),
     ClimdexTempPctl(),
-    ClimdexGetAvailableIndices(),
+    GetIndices(),
     ClimdexDTR(),
     ClimdexPtot(),
     ClimdexQuantile(),
