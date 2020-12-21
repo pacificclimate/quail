@@ -10,7 +10,7 @@ from quail.utils import get_package, logger, load_rdata_to_python, save_python_t
 from quail.io import climdex_input, ci_name, output_file, vector_name, rda_output
 
 
-class ClimdexGetAvailableIndices(Process):
+class GetIndices(Process):
     """
     Takes a climdexInput object as input and returns the names of all the
     indices which may be computed or, if get_function_names is True (the

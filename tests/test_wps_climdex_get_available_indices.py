@@ -2,7 +2,7 @@ import pytest
 from tempfile import NamedTemporaryFile
 
 from wps_tools.testing import run_wps_process, local_path
-from quail.processes.wps_climdex_get_available_indices import ClimdexGetAvailableIndices
+from quail.processes.wps_climdex_get_available_indices import GetIndices
 
 
 @pytest.mark.parametrize(
@@ -22,4 +22,4 @@ def test_wps_get_available_indices(climdex_input, ci_name, get_function_names):
             f"get_function_names={get_function_names};"
             f"output_file={out_file.name};"
         )
-        run_wps_process(ClimdexGetAvailableIndices(), datainputs)
+        run_wps_process(GetIndices(), datainputs)

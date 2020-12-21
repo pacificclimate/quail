@@ -12,6 +12,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 
 class ClimdexPtot(Process):
     """
+    Wraps climdex.r95ptot, climdex.r99ptot and climdex.prcptot
     Computes the annual sum of precipitation in days where daily precipitation
     exceeds the daily precipitation threshold in the base period.
     If threshold is not given, annual sum of precipitation in wet days (> 1mm)
