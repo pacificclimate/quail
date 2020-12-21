@@ -12,9 +12,9 @@ from quail.io import climdex_input, ci_name, output_file, vector_name, rda_outpu
 
 class GetIndices(Process):
     """
-    Takes a climdexInput object as input and returns the names of all the
-    indices which may be computed or, if get_function_names is True (the
-    default), the names of the functions corresponding to the indices
+    Takes a climdexInput object as input and returns a dictionary
+    with the names of all the indices which may be computed as values
+    and which processes they are accessible by as keys
     """
 
     def __init__(self):
@@ -58,10 +58,16 @@ class GetIndices(Process):
         )
 
     def available_processes(self, avail_indices):
+        """
+        Returns a dictionary containing the processes in quail (keys) which
+        mention available indices (values) in their docstrings
+        """
         processes = collections.defaultdict(list)
         indices = re.compile("climdex\.([a-zA-Z0-9]*)")
 
-        for mod in filter(lambda mod: re.search("quail.processes.*", mod), sys.modules):
+        for mod in filter(
+            lambda mod: re.search("quail.processes.wps_*", mod), sys.modules
+        ):
             for name, class_ in inspect.getmembers(
                 sys.modules[mod],
                 lambda member: inspect.isclass(member) and member.__module__ == mod,
