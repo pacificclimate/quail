@@ -65,9 +65,9 @@ class GetIndices(Process):
         processes = collections.defaultdict(list)
         indices = re.compile("climdex\.([a-zA-Z0-9]*)")
 
-        for mod in filter(
-            lambda mod: re.search("quail.processes.wps_*", mod), sys.modules
-        ):
+        for mod in [
+            module for module in sys.modules if re.search("quail.processes.wps_*", module)
+        ]:
             for name, class_ in inspect.getmembers(
                 sys.modules[mod],
                 lambda member: inspect.isclass(member) and member.__module__ == mod,
