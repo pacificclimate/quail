@@ -13,6 +13,11 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 class ClimdexSpells(Process):
     """
     Cold or warm spell duration index and maximum consecutive dry or wet days
+    Wraps
+    - climdex.cdd
+    - climdex.csdi
+    - climdex.cwd
+    - climdex.wsdi
     """
 
     def __init__(self):

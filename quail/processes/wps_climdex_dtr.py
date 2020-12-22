@@ -11,6 +11,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 
 class ClimdexDTR(Process):
     """
+    Wraps climdex.dtr
     Computes the mean daily diurnal temperature range.
     """
 

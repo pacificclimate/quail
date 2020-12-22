@@ -14,13 +14,13 @@ class ClimdexDays(Process):
     """
     Takes a climdexInput object as input and computes the annual count
     of days where daily temperature satisfies some condition.
-    - "summer": the annual count of days where daily maximum temperature
+    - climdex.su "summer": the annual count of days where daily maximum temperature
     exceeds 25 degreesCelsius
-    - "icing": the annual count of days where daily maximum temperature
+    - climdex.id "icing": the annual count of days where daily maximum temperature
     was below 0 degrees Celsius
-    - "frost": the annual count of days where daily minimum temperature
+    - climdex.fd "frost": the annual count of days where daily minimum temperature
     was below 0 degrees Celsius
-    - "tropical nights": the annual count of days where daily minimum
+    - climdex.tr "tropical nights": the annual count of days where daily minimum
     temperature stays above 20 degrees Celsius
     """
 

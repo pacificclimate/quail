@@ -18,6 +18,7 @@ from quail.io import output_file, rda_output, vector_name
 
 class ClimdexQuantile(Process):
     """
+    Wraps climdex.quantile
     This function implements R’s type=8 in a more efficient manner.
     """
 

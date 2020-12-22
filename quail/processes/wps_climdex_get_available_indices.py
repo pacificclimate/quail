@@ -1,61 +1,49 @@
-import os
+import os, sys, inspect, re, collections
 from rpy2 import robjects
-from pywps import Process, LiteralInput
+from pywps import Process, LiteralInput, LiteralOutput
 from pywps.app.Common import Metadata
+from pywps.app.exceptions import ProcessError
 
 from wps_tools.utils import log_handler, collect_args, common_status_percentages
 from wps_tools.io import log_level
 from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name, freq
+from quail.io import climdex_input, ci_name, output_file, vector_name, rda_output
 
 
-class ClimdexRxnday(Process):
+class GetIndices(Process):
     """
-    Wraps
-    climdex.rx1day: monthly or annual maximum 1-day precipitation
-    climdex.rx5day: monthly or annual maximum 5-day consecutive precipitation.
+    Takes a climdexInput object as input and returns a dictionary
+    with the names of all the indices which may be computed as values
+    and which processes they are accessible by as keys
     """
 
     def __init__(self):
         self.status_percentage_steps = dict(
             common_status_percentages,
-            **{
-                "load_rdata": 10,
-                "save_rdata": 90,
-            },
+            **{"load_rdata": 10},
         )
         inputs = [
             climdex_input,
             ci_name,
             output_file,
             vector_name,
-            freq,
-            LiteralInput(
-                "num_days",
-                "Number of days of precipitation",
-                abstract="Compute rx[1]day or rx[5]day",
-                allowed_values=[1, 5],
-                data_type="positiveInteger",
-            ),
-            LiteralInput(
-                "center_mean_on_last_day",
-                "Center mean on last day",
-                abstract="Whether to center the 5-day running mean on the last day of the window, insteadof the center day.",
-                min_occurs=0,
-                max_occurs=1,
-                default=False,
-                data_type="boolean",
-            ),
             log_level,
         ]
 
-        outputs = [rda_output]
+        outputs = [
+            LiteralOutput(
+                "avail_processes",
+                "Available processes dictionary",
+                abstract="Available climdex indices (values) and the processes to use to compute them (keys)",
+                data_type="string",
+            ),
+        ]
 
-        super(ClimdexRxnday, self).__init__(
+        super(GetIndices, self).__init__(
             self._handler,
-            identifier="climdex_rxnday",
-            title="Climdex Monthly Maximum n (1 or 5) day Precipitation",
-            abstract="Computes the mean daily diurnal temperature range.",
+            identifier="climdex_get_available_indices",
+            title="Climdex Get Available Indices",
+            abstract="Returns the names of all the indices which may be computed or, if get_function_names is TRUE, the names of the functions corresponding to the indices.",
             metadata=[
                 Metadata("NetCDF processing"),
                 Metadata("Climate Data Operations"),
@@ -69,14 +57,30 @@ class ClimdexRxnday(Process):
             status_supported=True,
         )
 
-    def rxnday_func(self, ci, num_days, freq, center_mean_on_last_day):
-        climdex = get_package("climdex.pcic")
+    def available_processes(self, avail_indices):
+        """
+        Returns a dictionary containing the processes in quail (keys) which
+        mention available indices (values) in their docstrings
+        """
+        processes = collections.defaultdict(list)
+        indices = re.compile("climdex\.([a-zA-Z0-9]*)")
 
-        if num_days == 1:
-            return climdex.climdex_rx1day(ci, freq)
+        for mod in [
+            module
+            for module in sys.modules
+            if re.search("quail.processes.wps_*", module)
+        ]:
+            for name, class_ in inspect.getmembers(
+                sys.modules[mod],
+                lambda member: inspect.isclass(member) and member.__module__ == mod,
+            ):
+                [
+                    processes[mod.split(".")[-1]].append(index)
+                    for index in indices.findall(class_.__doc__)
+                    if index in avail_indices
+                ]
 
-        elif num_days == 5:
-            return climdex.climdex_rx5day(ci, freq, center_mean_on_last_day)
+        return dict(processes)
 
     def _handler(self, request, response):
         (
@@ -84,9 +88,6 @@ class ClimdexRxnday(Process):
             ci_name,
             output_file,
             vector_name,
-            freq,
-            num_days,
-            center_mean_on_last_day,
             loglevel,
         ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
 
@@ -98,6 +99,7 @@ class ClimdexRxnday(Process):
             log_level=loglevel,
             process_step="start",
         )
+        climdex = get_package("climdex.pcic")
 
         log_handler(
             self,
@@ -112,24 +114,14 @@ class ClimdexRxnday(Process):
         log_handler(
             self,
             response,
-            f"Processing Monthly Maximum {num_days}-day Precipitation",
+            f"Processing climdex_get_available_indices",
             logger,
             log_level=loglevel,
             process_step="process",
         )
 
-        rxnday = self.rxnday_func(ci, num_days, freq, center_mean_on_last_day)
-
-        log_handler(
-            self,
-            response,
-            f"Saving rx{num_days}day vector to R data file",
-            logger,
-            log_level=loglevel,
-            process_step="save_rdata",
-        )
-        output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, rxnday, output_path)
+        avail_indices = climdex.climdex_get_available_indices(ci, False)
+        avail_processes = self.available_processes(avail_indices)
 
         log_handler(
             self,
@@ -139,7 +131,7 @@ class ClimdexRxnday(Process):
             log_level=loglevel,
             process_step="build_output",
         )
-        response.outputs["rda_output"].file = output_path
+        response.outputs["avail_processes"].data = avail_processes
 
         # Clear R global env
         robjects.r("rm(list=ls())")

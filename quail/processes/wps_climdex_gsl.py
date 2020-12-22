@@ -11,6 +11,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 
 class ClimdexGSL(Process):
     """
+    Wraps climdex.gsl
     Computes the growing season length (GSL): Growing season length
     is the number of days between the start of the first spell of warm days
     in the first half of the year, defined as six or more days with mean

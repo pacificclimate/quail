@@ -12,6 +12,7 @@ from quail.io import climdex_input, ci_name, output_file, rda_output, vector_nam
 
 class ClimdexRMM(Process):
     """
+    wraps climdex.r10mm, climdex.r20mm and climdex.rnnmm
     The annual count of days where daily precipitation is more
     than [threshold] mm per day
     """
