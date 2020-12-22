@@ -1,6 +1,48 @@
 Changes
 *******
 
+0.4.0 (2020-12-14)
+==================
+
+* Create wps_climdex_spells with climdex.wsdi(#_51)
+* Create wps_climdexInput_csv(#_52)
+* Add climdex.csdi to wps_climdex_spells(#_53)
+* Create wps_climdex_temp_pctl with climdex.tn10p(#_54)
+* Add climdex.cdd to wps_climdex_spells(#_55)
+* Add climdex.cwd to wps_climdex_spells(#_56)
+* Add climdex.tn90p to wps_climdex_temp_pctl(#_57)
+* Create wps_climdex_rmm with climdex.r10mm, climdex.r20mm, and climdex.rnnmm(#_58)
+* Add tx10p option to wps_climdex_temp_pctl(#_59)
+* Add tx90p option to wps_climdex_temp_pctl(#_60)
+* Create wps_climdex_dtr(#_61)
+* Create wps_climdex_ptot(#_62)
+* Add r99ptot to wps_climdex_ptot(#_63)
+* Create wps_climdex_sdii(#_64)
+* Create wps_climdex_rxnday with climdex.rx1day(#_65)
+* Create wps_climdex_quantile(#_66)
+* Add climdex.rx5day to wps_climdex_rxnday(#_67)
+* Create wps_climdex_get_available_indices(#_69)
+* Add climdex.prcptot to wps_climdex_ptot(#_70)
+
+.. _53: https://github.com/pacificclimate/quail/pull/53
+.. _54: https://github.com/pacificclimate/quail/pull/54
+.. _55: https://github.com/pacificclimate/quail/pull/55
+.. _56: https://github.com/pacificclimate/quail/pull/56
+.. _57: https://github.com/pacificclimate/quail/pull/57
+.. _58: https://github.com/pacificclimate/quail/pull/58
+.. _59: https://github.com/pacificclimate/quail/pull/59
+.. _60: https://github.com/pacificclimate/quail/pull/60
+.. _61: https://github.com/pacificclimate/quail/pull/61
+.. _62: https://github.com/pacificclimate/quail/pull/62
+.. _63: https://github.com/pacificclimate/quail/pull/63
+.. _64: https://github.com/pacificclimate/quail/pull/64
+.. _65: https://github.com/pacificclimate/quail/pull/65
+.. _66: https://github.com/pacificclimate/quail/pull/66
+.. _67: https://github.com/pacificclimate/quail/pull/67
+.. _69: https://github.com/pacificclimate/quail/pull/69
+.. _70: https://github.com/pacificclimate/quail/pull/70
+
+
 0.3.0 (2020-12-09)
 ==================
 
