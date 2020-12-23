@@ -37,11 +37,11 @@ RUN apt-get update && \
 
 COPY . .
 
-EXPOSE 5005
+EXPOSE 5000
 
-CMD gunicorn --bind=0.0.0.0:5005 quail.wsgi:application
+CMD gunicorn --bind=0.0.0.0:5000 quail.wsgi:application
 
 # docker build -t pcic/quail .
-# docker run -p 5005:5005 pcic/quail
-# http://localhost:5005/wps?request=GetCapabilities&service=WPS
-# http://localhost:5005/wps?request=DescribeProcess&service=WPS&identifier=all&version=1.0.0
+# docker run -p 5000:5000 pcic/quail
+# http://localhost:5000/wps?request=GetCapabilities&service=WPS
+# http://localhost:5000/wps?request=DescribeProcess&service=WPS&identifier=all&version=1.0.0
