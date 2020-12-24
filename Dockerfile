@@ -1,26 +1,20 @@
-# vim:set ft=dockerfile:
-FROM r-base:4.0.3
-MAINTAINER https://github.com/pacificclimate/quail
-LABEL Description="quail WPS" Vendor="pacificclimate" Version="0.1.0"
+FROM rocker/r-ver:4.0.3 AS builder
 
 ENV PIP_INDEX_URL="https://pypi.pacificclimate.org/simple/"
 
-WORKDIR /code
-
 COPY requirements.txt r_requirements.txt install_pkgs.R ./
 
-# Update system
+# Install python and R packages
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    libgit2-dev \
-    libpq-dev \
-    python3.8 \
+    # Install pip
     python3-pip \
-    python3-setuptools \
-    python3-dev \
+    # Install libraries for R packages installation
+    libssl-dev \
     libxml2-dev \
+    libudunits2-dev \
+    libnetcdf-dev \
+    libgit2-dev \
     libfreetype6-dev \
     libpng-dev \
     libtiff5-dev \
@@ -28,14 +22,45 @@ RUN apt-get update && \
     libfontconfig1-dev \
     libharfbuzz-dev \
     libfribidi-dev \
-    libssl-dev \
     libcurl4-openssl-dev && \
-  pip3 install --upgrade pip && \
-  pip3 install -r requirements.txt --ignore-installed && \
-  pip3 install gunicorn && \
-  Rscript install_pkgs.R r_requirements.txt
+    # Install R packages
+    Rscript install_pkgs.R r_requirements.txt && \
+    # Install python packages
+    pip3 install --upgrade pip && \
+    pip3 install -r requirements.txt --ignore-installed --user && \
+    # Install gunicorn
+    pip3 install gunicorn --user
 
-COPY . .
+
+# vim:set ft=dockerfile:
+FROM rocker/r-ver:4.0.3 AS prod
+MAINTAINER https://github.com/pacificclimate/quail
+LABEL Description="quail WPS" Vendor="pacificclimate" Version="0.1.0"
+
+# Install Python
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      python3.8 \
+      python3-pip
+
+# COPY Python packages from builder
+COPY --from=builder /root/.local /root/.local
+
+# Copy R packages in r_requirements.txt and their dependencies
+# Directories cannot be recursively copied
+COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/PCICt \
+  /root/R/x86_64-pc-linux-gnu-library/4.0/PCICt
+COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/climdex.pcic \
+  /root/R/x86_64-pc-linux-gnu-library/4.0/climdex.pcic
+
+# Make sure scripts in .local are usable
+ENV PATH=/root/.local/bin:$PATH
+# Add path to libR.so to the environment variable LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib/R/lib:$LD_LIBRARY_PATH
+
+WORKDIR /code
+
+COPY ./quail /code/quail
 
 EXPOSE 5000
 
