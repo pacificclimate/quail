@@ -52,6 +52,8 @@ COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/PCICt \
   /root/R/x86_64-pc-linux-gnu-library/4.0/PCICt
 COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/climdex.pcic \
   /root/R/x86_64-pc-linux-gnu-library/4.0/climdex.pcic
+COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/Rcpp \
+  /root/R/x86_64-pc-linux-gnu-library/4.0/Rcpp
 
 # Make sure scripts in .local are usable
 ENV PATH=/root/.local/bin:$PATH
