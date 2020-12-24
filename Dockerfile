@@ -35,7 +35,7 @@ RUN apt-get update && \
 # vim:set ft=dockerfile:
 FROM rocker/r-ver:4.0.3 AS prod
 MAINTAINER https://github.com/pacificclimate/quail
-LABEL Description="quail WPS" Vendor="pacificclimate" Version="0.1.0"
+LABEL Description="quail WPS" Vendor="pacificclimate" Version="0.4.2"
 
 # Install Python
 RUN apt-get update && \
