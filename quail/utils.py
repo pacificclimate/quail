@@ -1,11 +1,12 @@
 import logging
 from rpy2 import robjects
-from rpy2.robjects.packages import isinstalled, importr
-from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
+
+from wps_tools.output_handling import rda_to_vector
+
 
 logger = logging.getLogger("PYWPS")
 logger.setLevel(logging.NOTSET)
@@ -19,18 +20,10 @@ logger.addHandler(handler)
 
 
 def test_rda_output(url, vector_name, expected_file, expected_vector_name):
-    with NamedTemporaryFile(
-        suffix=".rda", prefix="tmp_copy", dir="/tmp", delete=True
-    ) as tmp_file:
-        urlretrieve(url, tmp_file.name)
-        robjects.r(f"load(file='{tmp_file.name}')")
-
-    output_vector = robjects.r(vector_name)
-
-    robjects.r(
-        "load(file='{}')".format(resource_filename("tests", f"data/{expected_file}"))
-    )
-    expected_vector = robjects.r(expected_vector_name)
+    output_vector = rda_to_vector(url, vector_name)
+    local_path = resource_filename("tests", f"data/{expected_file}")
+    expected_url = f"file://{local_path}"
+    expected_vector = rda_to_vector(expected_url, expected_vector_name)
 
     for index in range(len(expected_vector)):
         assert str(output_vector[index]) == str(expected_vector[index])
