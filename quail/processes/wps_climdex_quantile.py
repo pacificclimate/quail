@@ -8,7 +8,7 @@ from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
 from quail.utils import logger, collect_literal_inputs
-from quail.io import output_file, url_handler
+from quail.io import output_file
 
 
 class ClimdexQuantile(Process):
