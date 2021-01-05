@@ -4,10 +4,11 @@ from pywps import Process, LiteralInput, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 
-from wps_tools.utils import log_handler, collect_args, common_status_percentages
-from wps_tools.io import log_level
-from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-from quail.io import climdex_input, ci_name, output_file, vector_name, rda_output
+from wps_tools.logging import log_handler, common_status_percentages
+from wps_tools.io import log_level, collect_args, vector_name, rda_output
+from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
+from quail.utils import logger
+from quail.io import climdex_input, ci_name, output_file
 
 
 class GetIndices(Process):
