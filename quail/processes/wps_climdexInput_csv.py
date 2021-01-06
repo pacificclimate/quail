@@ -4,15 +4,10 @@ from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
 from tempfile import NamedTemporaryFile
 
-from wps_tools.utils import log_handler, collect_args, common_status_percentages
-from wps_tools.io import log_level
-from quail.utils import (
-    get_package,
-    logger,
-    load_rdata_to_python,
-    save_python_to_rdata,
-    collect_literal_inputs,
-)
+from wps_tools.logging import log_handler, common_status_percentages
+from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
+from quail.utils import logger, collect_literal_inputs
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -30,7 +25,6 @@ from quail.io import (
     max_missing_days,
     min_base_data_fraction_present,
     output_file,
-    vector_name,
     ci_output,
 )
 

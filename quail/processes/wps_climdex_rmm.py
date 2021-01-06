@@ -4,10 +4,11 @@ from pywps import Process, LiteralInput
 from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
-from wps_tools.utils import log_handler, collect_args, common_status_percentages
-from wps_tools.io import log_level
-from quail.utils import get_package, logger, load_rdata_to_python, save_python_to_rdata
-from quail.io import climdex_input, ci_name, output_file, rda_output, vector_name
+from wps_tools.logging import log_handler, common_status_percentages
+from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
+from quail.utils import logger
+from quail.io import climdex_input, ci_name, output_file
 
 
 class ClimdexRMM(Process):
@@ -114,7 +115,7 @@ class ClimdexRMM(Process):
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, threshold, output_path)
+        save_python_to_rdata(vector_name, count_days, output_path)
 
         log_handler(
             self,
