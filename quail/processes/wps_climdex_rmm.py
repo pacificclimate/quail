@@ -115,7 +115,7 @@ class ClimdexRMM(Process):
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, threshold, output_path)
+        save_python_to_rdata(vector_name, count_days, output_path)
 
         log_handler(
             self,
