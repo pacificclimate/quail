@@ -64,7 +64,7 @@ class GetIndices(Process):
         mention available indices (values) in their docstrings
         """
         processes = collections.defaultdict(list)
-        indices = re.compile("climdex\.([a-zA-Z0-9]*)")
+        indices = re.compile(r"climdex\.([a-zA-Z0-9]*)")
 
         for mod in [
             module
