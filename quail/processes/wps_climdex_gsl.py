@@ -2,11 +2,14 @@ import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
+from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
+
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger
+from quail.utils import logger, load_ci
 from quail.io import climdex_input, ci_name, output_file
 
 
@@ -80,6 +83,7 @@ class ClimdexGSL(Process):
             log_level=loglevel,
             process_step="start",
         )
+        climdex = get_package("climdex.pcic")
 
         log_handler(
             self,
@@ -89,7 +93,7 @@ class ClimdexGSL(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        ci = load_rdata_to_python(climdex_input, ci_name)
+        ci = load_ci(climdex_input, ci_name)
 
         log_handler(
             self,
@@ -99,8 +103,15 @@ class ClimdexGSL(Process):
             log_level=loglevel,
             process_step="process",
         )
-        climdex = get_package("climdex.pcic")
-        gsl = climdex.climdex_gsl(ci, gsl_mode)
+
+        try:
+            gsl = climdex.climdex_gsl(ci, gsl_mode)
+        except RRuntimeError as e:
+            err = ProcessError(msg=e)
+            if err.message == "Sorry, process failed. Please check server error log.":
+                raise ProcessError(msg="Failure running climdex.gsl()")
+            else:
+                raise err
 
         log_handler(
             self,

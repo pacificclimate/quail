@@ -2,6 +2,7 @@ import os
 from rpy2 import robjects
 from pywps import Process, LiteralInput
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
@@ -93,7 +94,7 @@ class ClimdexDTR(Process):
         except RRuntimeError as e:
             err = ProcessError(msg=e)
             if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running Climdex climdex.dtr()")
+                raise ProcessError(msg="Failure running climdex.dtr()")
             else:
                 raise err
 

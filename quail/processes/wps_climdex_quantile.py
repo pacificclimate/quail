@@ -3,6 +3,7 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
@@ -136,8 +137,16 @@ class ClimdexQuantile(Process):
             log_level=loglevel,
             process_step="process",
         )
-        quantiles = robjects.r(quantiles_vector)
-        quantile_vector = climdex.climdex_quantile(data, quantiles)
+
+        try:
+            quantiles = robjects.r(quantiles_vector)
+            quantile_vector = climdex.climdex_quantile(data, quantiles)
+        except RRuntimeError as e:
+            err = ProcessError(msg=e)
+            if err.message == "Sorry, process failed. Please check server error log.":
+                raise ProcessError(msg="Failure running climdex.quantile()")
+            else:
+                raise err
 
         log_handler(
             self,

@@ -3,6 +3,7 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
@@ -108,7 +109,14 @@ class ClimdexPtot(Process):
             process_step="process",
         )
 
-        mothly_pct = robjects.r(f"climdex.{func}ptot(ci)")
+        try:
+            mothly_pct = robjects.r(f"climdex.{func}ptot(ci)")
+        except RRuntimeError as e:
+            err = ProcessError(msg=e)
+            if err.message == "Sorry, process failed. Please check server error log.":
+                raise ProcessError(msg=f"Failure running climdex.{func}ptot()")
+            else:
+                raise err
 
         log_handler(
             self,

@@ -3,6 +3,7 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
 from tempfile import NamedTemporaryFile
+from pywps.app.exceptions import ProcessError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
@@ -234,19 +235,27 @@ class ClimdexInputCSV(Process):
             log_level=loglevel,
             process_step="process",
         )
-        ci = climdex.climdexInput_csv(
-            **params,
-            base_range=robjects.r(base_range),
-            na_strings=na_strings,
-            cal=robjects.r(f"'{cal}'"),
-            n=n,
-            northern_hemisphere=northern_hemisphere,
-            quantiles=robjects.r(quantiles),
-            temp_qtiles=robjects.r(temp_qtiles),
-            prec_qtiles=robjects.r(prec_qtiles),
-            max_missing_days=robjects.r(max_missing_days),
-            min_base_data_fraction_present=min_base_data_fraction_present,
-        )
+
+        try:
+            ci = climdex.climdexInput_csv(
+                **params,
+                base_range=robjects.r(base_range),
+                na_strings=na_strings,
+                cal=robjects.r(f"'{cal}'"),
+                n=n,
+                northern_hemisphere=northern_hemisphere,
+                quantiles=robjects.r(quantiles),
+                temp_qtiles=robjects.r(temp_qtiles),
+                prec_qtiles=robjects.r(prec_qtiles),
+                max_missing_days=robjects.r(max_missing_days),
+                min_base_data_fraction_present=min_base_data_fraction_present,
+            )
+        except RRuntimeError as e:
+            err = ProcessError(msg=e)
+            if err.message == "Sorry, process failed. Please check server error log.":
+                raise ProcessError(msg=f"Failure running climdex.climdexInput.csv()")
+            else:
+                raise err
 
         log_handler(
             self,

@@ -3,6 +3,7 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, vector_name, rda_output
@@ -127,7 +128,7 @@ class GetIndices(Process):
             err = ProcessError(msg=e)
             if err.message == "Sorry, process failed. Please check server error log.":
                 raise ProcessError(
-                    msg=f"Failure running Climdex climdex.get.available.indices()"
+                    msg="Failure running climdex.get.available.indices()"
                 )
             else:
                 raise err

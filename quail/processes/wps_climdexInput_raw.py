@@ -3,11 +3,13 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
 from tempfile import NamedTemporaryFile
+from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, collect_literal_inputs
+from quail.utils import logger, collect_literal_inputs, load_rda
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -154,10 +156,13 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        load_rdata_to_python(filename, obj_name)
-        return robjects.r(
-            f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"
-        )
+        load_rda(filename, obj_name)
+        try:
+            return robjects.r(
+                f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"
+            )
+        except RRuntimeError as e:
+            raise ProcessError(msg="Error generating dates")
 
     def prepare_parameters(
         self,
@@ -288,17 +293,25 @@ class ClimdexInputRaw(Process):
             log_level=loglevel,
             process_step="process",
         )
-        ci = climdex.climdexInput_raw(
-            **params,
-            base_range=robjects.r(base_range),
-            n=n,
-            northern_hemisphere=northern_hemisphere,
-            quantiles=robjects.r(quantiles),
-            temp_qtiles=robjects.r(temp_qtiles),
-            prec_qtiles=robjects.r(prec_qtiles),
-            max_missing_days=robjects.r(max_missing_days),
-            min_base_data_fraction_present=min_base_data_fraction_present,
-        )
+
+        try:
+            ci = climdex.climdexInput_raw(
+                **params,
+                base_range=robjects.r(base_range),
+                n=n,
+                northern_hemisphere=northern_hemisphere,
+                quantiles=robjects.r(quantiles),
+                temp_qtiles=robjects.r(temp_qtiles),
+                prec_qtiles=robjects.r(prec_qtiles),
+                max_missing_days=robjects.r(max_missing_days),
+                min_base_data_fraction_present=min_base_data_fraction_present,
+            )
+        except RRuntimeError as e:
+            err = ProcessError(msg=e)
+            if err.message == "Sorry, process failed. Please check server error log.":
+                raise ProcessError(msg=f"Failure running climdex.climdexInput.raw()")
+            else:
+                raise err
 
         log_handler(
             self,
