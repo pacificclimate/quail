@@ -1,11 +1,12 @@
 import logging
 from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
 
-from wps_tools.output_handling import rda_to_vector
+from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
 
 
 logger = logging.getLogger("PYWPS")
@@ -74,3 +75,16 @@ def collect_literal_inputs(request):
         if "data_type" in vars(request.inputs[k][0]).keys()
     ]
     return literal_inputs
+
+
+def load_ci(climdex_input, ci_name):
+    try:
+        ci =  load_rdata_to_python(climdex_input, ci_name)
+        if ci.rclass[0] == "climdexInput":
+            return ci
+        else:
+            raise ProcessError(msg="Input for ci-name is not a valid climdexInput object")
+
+    except RRuntimeError:
+        logger.error(f"cannot load {ci_name} from {climdex_input}")
+        raise ProcessError(msg="climdexInput object name not found in this rda file")
