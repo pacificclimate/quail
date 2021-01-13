@@ -79,12 +79,25 @@ def collect_literal_inputs(request):
 
 def load_ci(climdex_input, ci_name):
     try:
-        ci =  load_rdata_to_python(climdex_input, ci_name)
+        ci = load_rdata_to_python(climdex_input, ci_name)
         if ci.rclass[0] == "climdexInput":
             return ci
         else:
-            raise ProcessError(msg="Input for ci-name is not a valid climdexInput object")
+            raise ProcessError(
+                msg="Input for ci-name is not a valid climdexInput object"
+            )
 
     except RRuntimeError:
         logger.error(f"cannot load {ci_name} from {climdex_input}")
-        raise ProcessError(msg="climdexInput object name not found in this rda file")
+        raise ProcessError(
+            msg="Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+        )
+
+
+def load_rda(file_, obj_name):
+    try:
+        return load_rdata_to_python(file_, obj_name)
+    except RRuntimeError:
+        raise ProcessError(
+            msg="Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+        )

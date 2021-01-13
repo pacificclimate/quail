@@ -6,8 +6,8 @@ from pywps.app.exceptions import ProcessError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, vector_name, rda_output
-from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger
+from wps_tools.R import get_package, save_python_to_rdata
+from quail.utils import logger, load_ci
 from quail.io import climdex_input, ci_name, output_file
 
 
@@ -110,7 +110,7 @@ class GetIndices(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        ci = load_rdata_to_python(climdex_input, ci_name)
+        ci = load_ci(climdex_input, ci_name)
 
         log_handler(
             self,
@@ -121,7 +121,17 @@ class GetIndices(Process):
             process_step="process",
         )
 
-        avail_indices = climdex.climdex_get_available_indices(ci, False)
+        try:
+            avail_indices = climdex.climdex_get_available_indices(ci, False)
+        except RRuntimeError as e:
+            err = ProcessError(msg=e)
+            if err.message == "Sorry, process failed. Please check server error log.":
+                raise ProcessError(
+                    msg=f"Failure running Climdex climdex.get.available.indices()"
+                )
+            else:
+                raise err
+
         avail_processes = self.available_processes(avail_indices)
 
         log_handler(
