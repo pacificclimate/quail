@@ -1,13 +1,14 @@
-import logging
+import logging, requests, io
 from rpy2 import robjects
+from pywps import Service, tests
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
+from contextlib import redirect_stderr
 
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
-
 
 logger = logging.getLogger("PYWPS")
 logger.setLevel(logging.NOTSET)
@@ -19,6 +20,43 @@ handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
+def collect_literal_inputs(request):
+    literal_inputs = [
+        request.inputs[k][0].data
+        for k in request.inputs.keys()
+        if "data_type" in vars(request.inputs[k][0]).keys()
+    ]
+    return literal_inputs
+
+
+def load_ci(climdex_input, ci_name):
+    try:
+        ci = load_rdata_to_python(climdex_input, ci_name)
+        if ci.rclass[0] == "climdexInput":
+            return ci
+        else:
+            raise ProcessError(
+                msg="Input for ci-name is not a valid climdexInput object"
+            )
+
+    except RRuntimeError:
+        logger.error(f"cannot load {ci_name} from {climdex_input}")
+        raise ProcessError(
+            msg="Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+        )
+
+
+def load_rda(file_, obj_name):
+    try:
+        return load_rdata_to_python(file_, obj_name)
+    except RRuntimeError:
+        raise ProcessError(
+            msg="Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+        )
+
+
+# Teting functions
 
 def test_rda_output(url, vector_name, expected_file, expected_vector_name):
     output_vector = rda_to_vector(url, vector_name)
@@ -68,36 +106,14 @@ def test_ci_output(url, vector_name, expected_file, expected_vector_name):
     robjects.r("rm(list=ls())")
 
 
-def collect_literal_inputs(request):
-    literal_inputs = [
-        request.inputs[k][0].data
-        for k in request.inputs.keys()
-        if "data_type" in vars(request.inputs[k][0]).keys()
-    ]
-    return literal_inputs
+def process_err_test(process, datainputs, err_type):
+    err = io.StringIO()
+    with redirect_stderr(err):
+        with pytest.raises(Exception):
+            run_wps_process(process(), datainputs)
 
-
-def load_ci(climdex_input, ci_name):
-    try:
-        ci = load_rdata_to_python(climdex_input, ci_name)
-        if ci.rclass[0] == "climdexInput":
-            return ci
-        else:
-            raise ProcessError(
-                msg="Input for ci-name is not a valid climdexInput object"
-            )
-
-    except RRuntimeError:
-        logger.error(f"cannot load {ci_name} from {climdex_input}")
-        raise ProcessError(
-            msg="Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
-        )
-
-
-def load_rda(file_, obj_name):
-    try:
-        return load_rdata_to_python(file_, obj_name)
-    except RRuntimeError:
-        raise ProcessError(
-            msg="Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
-        )
+    if err_type == "unknown ci name":
+        msg = "Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+    if err_type == "class is not ci":
+        msg = "Input for ci-name is not a valid climdexInput object"
+    assert msg in err.getvalue()
