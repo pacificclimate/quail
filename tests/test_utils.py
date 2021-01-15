@@ -4,7 +4,7 @@ from pywps.app.exceptions import ProcessError
 from tempfile import NamedTemporaryFile
 from contextlib import redirect_stderr
 
-from quail.utils import load_ci, load_rda
+from quail.utils import load_ci, load_rda, r_valid_name
 from wps_tools.testing import local_path
 
 
@@ -51,3 +51,16 @@ def test_load_rda_err(file_, obj_name):
             str(vars(e)["_excinfo"][1])
             == "Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
         )
+
+
+@pytest.mark.parametrize(
+    ("name", "valid"),
+    [
+        ("autumn_days", True),
+        (".autumn", True),
+        (".2", False),
+        ("if", False),
+    ],
+)
+def test_r_valid_name(name, valid):
+    assert r_valid_name(name) == valid

@@ -1,4 +1,4 @@
-import pytest, logging, requests, io
+import pytest, logging, requests, io, re
 from rpy2 import robjects
 from pywps import Service, tests
 from pywps.app.exceptions import ProcessError
@@ -10,7 +10,7 @@ from contextlib import redirect_stderr
 
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
 from wps_tools.testing import run_wps_process
-
+from wps_tools.R import get_package
 
 logger = logging.getLogger("PYWPS")
 logger.setLevel(logging.NOTSET)
@@ -56,6 +56,14 @@ def load_rda(file_, obj_name):
         raise ProcessError(
             msg="Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
         )
+
+
+def r_valid_name(robj_name):
+    """The R function 'make.names' will change a name if it
+    is not syntactically correct and leave it if it is
+    """
+    base = get_package("base")
+    return base.make_names(robj_name)[0] == robj_name
 
 
 # Teting functions
