@@ -17,7 +17,10 @@ from wps_tools.testing import local_path
 def test_load_ci_obj_err(file_, obj_name):
     with pytest.raises(ProcessError) as e:
         load_ci(file_, obj_name)
-        assert str(vars(e)["_excinfo"][1]) == "Input for ci-name is not a valid climdexInput object"
+        assert (
+            str(vars(e)["_excinfo"][1])
+            == "Input for ci-name is not a valid climdexInput object"
+        )
 
 
 @pytest.mark.parametrize(
@@ -29,7 +32,10 @@ def test_load_ci_obj_err(file_, obj_name):
 def test_load_ci_name_err(file_, obj_name):
     with pytest.raises(ProcessError) as e:
         load_ci(file_, obj_name)
-        assert str(vars(e)["_excinfo"][1]) == "Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+        assert (
+            str(vars(e)["_excinfo"][1])
+            == "Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+        )
 
 
 @pytest.mark.parametrize(
@@ -41,4 +47,7 @@ def test_load_ci_name_err(file_, obj_name):
 def test_load_rda_err(file_, obj_name):
     with pytest.raises(ProcessError) as e:
         load_rda(file_, obj_name)
-        assert str(vars(e)["_excinfo"][1]) == "Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+        assert (
+            str(vars(e)["_excinfo"][1])
+            == "Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+        )

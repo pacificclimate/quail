@@ -5,6 +5,7 @@ from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdex_mmdmt import ClimdexMMDMT
 from quail.utils import process_err_test
 
+
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "month_type", "freq"),
     [
@@ -36,8 +37,13 @@ def test_wps_climdex_mmdmt(climdex_input, ci_name, month_type, freq):
     ("climdex_input", "ci_name", "month_type", "freq", "err_type"),
     [
         (local_path("climdexInput.rda"), "not_ci", "txx", "monthly", "unknown ci name"),
-        (local_path("expected_mmdmt_data.rda"), "expected_tnx_annual", "tnx", "annual", "class is not ci"),
-
+        (
+            local_path("expected_mmdmt_data.rda"),
+            "expected_tnx_annual",
+            "tnx",
+            "annual",
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_mmdmt_err(climdex_input, ci_name, month_type, freq, err_type):

@@ -114,7 +114,9 @@ class ClimdexRMM(Process):
                 if threshold in (10.0, 20.0):
                     err_msg = "Failure running climdex.r{:,g}mm()".format(threshold)
                 else:
-                    err_msg = f"Failure running climdex.rnnmm() with threshold {threshold}"
+                    err_msg = (
+                        f"Failure running climdex.rnnmm() with threshold {threshold}"
+                    )
                 raise ProcessError(msg=err_msg)
             else:
                 raise err

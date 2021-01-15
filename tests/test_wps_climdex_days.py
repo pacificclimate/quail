@@ -60,14 +60,14 @@ def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
             "not_ci",
             "summer days",
             "summer_days",
-            "unknown ci name"
+            "unknown ci name",
         ),
         (
             local_path("expected_days_data.rda"),
             "expected_summer_days",
             "summer days",
             "summer_days",
-            "class is not ci"
+            "class is not ci",
         ),
     ],
 )

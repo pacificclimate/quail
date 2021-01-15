@@ -36,8 +36,20 @@ def test_wps_climdex_temp_pctl(climdex_input, ci_name, func, freq):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "func", "freq", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "tn10p", "monthly", "unknown ci name"),
-        (local_path("expected_temp_pctl.rda"), "expected_tn90p", "tn90p", "annual", "class is not ci"),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "tn10p",
+            "monthly",
+            "unknown ci name",
+        ),
+        (
+            local_path("expected_temp_pctl.rda"),
+            "expected_tn90p",
+            "tn90p",
+            "annual",
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_temp_pctl_err(climdex_input, ci_name, func, freq, err_type):

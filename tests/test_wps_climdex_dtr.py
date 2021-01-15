@@ -7,6 +7,7 @@ from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdex_dtr import ClimdexDTR
 from quail.utils import process_err_test
 
+
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "freq"),
     [
@@ -31,7 +32,12 @@ def test_wps_climdex_dtr(climdex_input, ci_name, freq):
     ("climdex_input", "ci_name", "freq", "err_type"),
     [
         (local_path("climdexInput.rda"), "not_ci", "monthly", "unknown ci name"),
-        (local_path("expected_dtr.rda"), "expected_dtr_annual", "annual", "class is not ci"),
+        (
+            local_path("expected_dtr.rda"),
+            "expected_dtr_annual",
+            "annual",
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_dtr_err(climdex_input, ci_name, freq, err_type):

@@ -5,6 +5,7 @@ from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdex_rmm import ClimdexRMM
 from quail.utils import process_err_test
 
+
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold"),
     [

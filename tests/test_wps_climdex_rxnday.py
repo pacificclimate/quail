@@ -5,6 +5,7 @@ from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdex_rxnday import ClimdexRxnday
 from quail.utils import process_err_test
 
+
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "freq", "num_days"),
     [
@@ -32,7 +33,13 @@ def test_wps_climdex_rxnday(climdex_input, ci_name, freq, num_days):
     ("climdex_input", "ci_name", "freq", "num_days", "err_type"),
     [
         (local_path("climdexInput.rda"), "not_ci", "monthly", 1, "unknown ci name"),
-        (local_path("expected_rxnday.rda"), "expected_rx5day_annual", "annual", 5, "class is not ci"),
+        (
+            local_path("expected_rxnday.rda"),
+            "expected_rx5day_annual",
+            "annual",
+            5,
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_rxnday_err(climdex_input, ci_name, freq, num_days, err_type):

@@ -5,6 +5,7 @@ from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdexInput_raw import ClimdexInputRaw
 from quail.utils import process_err_test
 
+
 @pytest.mark.parametrize(
     (
         "tmax_file",
@@ -81,7 +82,7 @@ def test_wps_climdexInput_raw(
         "prec_column",
         "base_range",
         "vector_name",
-        "err_type"
+        "err_type",
     ),
     [
         (
@@ -96,7 +97,7 @@ def test_wps_climdexInput_raw(
             "ONE_DAY_PRECIPITATION",
             "c(1971, 2000)",
             "climdexInput",
-            "load_rda err"
+            "load_rda err",
         ),
     ],
 )
@@ -112,7 +113,7 @@ def test_wps_climdexInput_raw_err(
     prec_column,
     base_range,
     vector_name,
-    err_type
+    err_type,
 ):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True

@@ -49,29 +49,19 @@ def test_wps_climdex_quantile(
 
 
 @pytest.mark.parametrize(
-    (
-        "data_file",
-        "data_vector",
-        "quantiles_vector",
-        "vector_name",
-        "err_type"
-    ),
+    ("data_file", "data_vector", "quantiles_vector", "vector_name", "err_type"),
     [
         (
             local_path("ec.1018935.rda"),
             "not_tmax",
             "c(0.1, 0.5, 0.9)",
             "tmax_quantiles",
-            "load_rda err"
+            "load_rda err",
         ),
     ],
 )
 def test_wps_climdex_quantile_err(
-    data_file,
-    data_vector,
-    quantiles_vector,
-    vector_name,
-    err_type
+    data_file, data_vector, quantiles_vector, vector_name, err_type
 ):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True

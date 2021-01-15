@@ -37,8 +37,13 @@ def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
     ("climdex_input", "ci_name", "func", "span_years", "err_type"),
     [
         (local_path("climdexInput.rda"), "not_ci", "wsdi", False, "unknown ci name"),
-        (local_path("expected_spells_data.rda"), "expected_csdi_span_yrs", "csdi", True, "class is not ci"),
-
+        (
+            local_path("expected_spells_data.rda"),
+            "expected_csdi_span_yrs",
+            "csdi",
+            True,
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_spells_err(climdex_input, ci_name, func, span_years, err_type):

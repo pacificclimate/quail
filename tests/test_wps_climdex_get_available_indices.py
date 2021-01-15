@@ -8,6 +8,7 @@ from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdex_get_available_indices import GetIndices
 from quail.utils import process_err_test
 
+
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name"),
     [(local_path("climdexInput.rda"), "ci")],
@@ -28,7 +29,7 @@ def test_wps_get_available_indices(climdex_input, ci_name):
     ("climdex_input", "ci_name", "err_type"),
     [
         (local_path("climdexInput.rda"), "not_ci", "unknown ci name"),
-        (local_path("expected_dtr.rda"), "expected_dtr_annual", "class is not ci")
+        (local_path("expected_dtr.rda"), "expected_dtr_annual", "class is not ci"),
     ],
 )
 def test_wps_get_available_indices_err(climdex_input, ci_name, err_type):
