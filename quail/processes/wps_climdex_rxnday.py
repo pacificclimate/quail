@@ -124,11 +124,7 @@ class ClimdexRxnday(Process):
         try:
             rxnday = self.rxnday_func(ci, num_days, freq, center_mean_on_last_day)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running climdex_rx{num_days}day()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

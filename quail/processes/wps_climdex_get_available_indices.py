@@ -125,13 +125,7 @@ class GetIndices(Process):
         try:
             avail_indices = climdex.climdex_get_available_indices(ci, False)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(
-                    msg="Failure running climdex.get.available.indices()"
-                )
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         avail_processes = self.available_processes(avail_indices)
 

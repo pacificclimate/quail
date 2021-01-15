@@ -94,11 +94,7 @@ class ClimdexSDII(Process):
         try:
             sdii = climdex.climdex_sdii(ci)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg="Failure running climdex.sdii()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

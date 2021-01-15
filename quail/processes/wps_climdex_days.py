@@ -136,11 +136,7 @@ class ClimdexDays(Process):
         try:
             count_days = self.days(days_type, ci)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running Climdex {days_type} function")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

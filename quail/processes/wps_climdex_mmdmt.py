@@ -109,11 +109,7 @@ class ClimdexMMDMT(Process):
         try:
             temps = robjects.r(f"climdex.{month_type}(ci, freq='{freq}')")
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running climdex.{month_type}()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

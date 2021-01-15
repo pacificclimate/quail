@@ -112,11 +112,7 @@ class ClimdexPtot(Process):
         try:
             mothly_pct = robjects.r(f"climdex.{func}ptot(ci)")
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running climdex.{func}ptot()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

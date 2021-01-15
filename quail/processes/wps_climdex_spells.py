@@ -113,11 +113,7 @@ class ClimdexSpells(Process):
             robjects.r.assign("span_years", span_years)
             spells = robjects.r(f"climdex.{func}(ci, span_years)")
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running climdex.{func}()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

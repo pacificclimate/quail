@@ -142,11 +142,7 @@ class ClimdexQuantile(Process):
             quantiles = robjects.r(quantiles_vector)
             quantile_vector = climdex.climdex_quantile(data, quantiles)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg="Failure running climdex.quantile()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

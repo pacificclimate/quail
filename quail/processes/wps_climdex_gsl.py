@@ -107,11 +107,7 @@ class ClimdexGSL(Process):
         try:
             gsl = climdex.climdex_gsl(ci, gsl_mode)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg="Failure running climdex.gsl()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

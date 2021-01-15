@@ -109,17 +109,7 @@ class ClimdexRMM(Process):
         try:
             count_days = self.threshold_func(threshold, ci)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                if threshold in (10.0, 20.0):
-                    err_msg = "Failure running climdex.r{:,g}mm()".format(threshold)
-                else:
-                    err_msg = (
-                        f"Failure running climdex.rnnmm() with threshold {threshold}"
-                    )
-                raise ProcessError(msg=err_msg)
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

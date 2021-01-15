@@ -92,11 +92,7 @@ class ClimdexDTR(Process):
         try:
             dtr = climdex.climdex_dtr(ci, freq)
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg="Failure running climdex.dtr()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,

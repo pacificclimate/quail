@@ -307,11 +307,7 @@ class ClimdexInputRaw(Process):
                 min_base_data_fraction_present=min_base_data_fraction_present,
             )
         except RRuntimeError as e:
-            err = ProcessError(msg=e)
-            if err.message == "Sorry, process failed. Please check server error log.":
-                raise ProcessError(msg=f"Failure running climdex.climdexInput.raw()")
-            else:
-                raise err
+            raise ProcessError(msg=str(e))
 
         log_handler(
             self,
