@@ -8,7 +8,7 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, collect_literal_inputs
+from quail.utils import logger, collect_literal_inputs, load_rda
 from quail.io import output_file
 
 
@@ -125,7 +125,7 @@ class ClimdexQuantile(Process):
         )
 
         if data_file:
-            data = load_rdata_to_python(data_file, data_vector)
+            data = load_rda(data_file, data_vector)
         else:
             data = robjects.r(data_vector)
 

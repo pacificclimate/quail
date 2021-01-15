@@ -118,4 +118,6 @@ def process_err_test(process, datainputs, err_type):
         msg = "Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
     if err_type == "class is not ci":
         msg = "Input for ci-name is not a valid climdexInput object"
+    if err_type == "load_rda err":
+        msg = "Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
     assert msg in err.getvalue()
