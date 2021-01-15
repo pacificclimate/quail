@@ -39,13 +39,13 @@ def load_ci(climdex_input, ci_name):
             return ci
         else:
             raise ProcessError(
-                msg="Input for ci-name is not a valid climdexInput object"
+                msg="RRuntimeError: Input for ci-name is not a valid climdexInput object"
             )
 
     except RRuntimeError:
         logger.error(f"cannot load {ci_name} from {climdex_input}")
         raise ProcessError(
-            msg="Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+            msg="RRuntimeError: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
         )
 
 
@@ -54,7 +54,7 @@ def load_rda(file_, obj_name):
         return load_rdata_to_python(file_, obj_name)
     except RRuntimeError:
         raise ProcessError(
-            msg="Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+            msg="RRuntimeError: Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
         )
 
 
@@ -63,7 +63,8 @@ def r_valid_name(robj_name):
     is not syntactically correct and leave it if it is
     """
     base = get_package("base")
-    return base.make_names(robj_name)[0] == robj_name
+    if base.make_names(robj_name)[0] is not robj_name:
+        raise ProcessError(msg="RRuntimeError: Your vector name is not a valid R name")
 
 
 # Teting functions

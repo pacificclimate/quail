@@ -54,13 +54,13 @@ def test_load_rda_err(file_, obj_name):
 
 
 @pytest.mark.parametrize(
-    ("name", "valid"),
-    [
-        ("autumn_days", True),
-        (".autumn", True),
-        (".2", False),
-        ("if", False),
-    ],
+    ("name"),
+    [(".2"),("if"),("two words")],
 )
-def test_r_valid_name(name, valid):
-    assert r_valid_name(name) == valid
+def test_r_valid_name(name):
+    with pytest.raises(ProcessError) as e:
+        r_valid_name(name)
+        assert (
+            str(vars(e)["_excinfo"][1])
+            == "RRuntimeError: Your vector name is not a valid R name"
+        )
