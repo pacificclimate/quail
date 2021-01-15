@@ -1,4 +1,4 @@
-import logging, requests, io
+import pytest, logging, requests, io
 from rpy2 import robjects
 from pywps import Service, tests
 from pywps.app.exceptions import ProcessError
@@ -9,6 +9,8 @@ from tempfile import NamedTemporaryFile
 from contextlib import redirect_stderr
 
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
+from wps_tools.testing import run_wps_process
+
 
 logger = logging.getLogger("PYWPS")
 logger.setLevel(logging.NOTSET)
