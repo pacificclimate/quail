@@ -31,15 +31,26 @@ def test_wps_climdex_dtr(climdex_input, ci_name, freq):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "freq", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "monthly", "vector_name", "unknown ci name"),
-        (local_path("climdexInput.rda"), "ci", "monthly", "vector name", "invalid vector name"),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "monthly",
+            "vector_name",
+            "unknown ci name",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "monthly",
+            "vector name",
+            "invalid vector name",
+        ),
         (
             local_path("expected_dtr.rda"),
             "expected_dtr_annual",
             "annual",
             "vector_name",
             "class is not ci",
-
         ),
     ],
 )

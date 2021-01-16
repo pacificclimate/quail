@@ -55,7 +55,7 @@ def test_load_rda_err(file_, obj_name):
 
 @pytest.mark.parametrize(
     ("name"),
-    [(".2"),("if"),("two words")],
+    [(".2"), ("if"), ("two words")],
 )
 def test_r_valid_name(name):
     with pytest.raises(ProcessError) as e:

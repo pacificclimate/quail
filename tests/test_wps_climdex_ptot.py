@@ -33,9 +33,27 @@ def test_wps_climdex_ptot(climdex_input, ci_name, threshold):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", 95, "vector_name", "unknown ci name"),
-        (local_path("climdexInput.rda"), "ci", 95, "vector name", "invalid vector name"),
-        (local_path("expected_ptot.rda"), "expected_r99ptot", 99, "vector_name", "class is not ci"),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            95,
+            "vector_name",
+            "unknown ci name",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            95,
+            "vector name",
+            "invalid vector name",
+        ),
+        (
+            local_path("expected_ptot.rda"),
+            "expected_r99ptot",
+            99,
+            "vector_name",
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_ptot_err(climdex_input, ci_name, threshold, err_type, vector_name):

@@ -62,7 +62,9 @@ def test_wps_climdex_temp_pctl(climdex_input, ci_name, func, freq):
         ),
     ],
 )
-def test_wps_climdex_temp_pctl_err(climdex_input, ci_name, func, freq, err_type, vector_name):
+def test_wps_climdex_temp_pctl_err(
+    climdex_input, ci_name, func, freq, err_type, vector_name
+):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:

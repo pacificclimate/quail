@@ -47,8 +47,20 @@ def test_wps_climdex_gsl(climdex_input, ci_name, gsl_mode):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "gsl_mode", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "GSL", "vector_name", "unknown ci name"),
-        (local_path("climdexInput.rda"), "ci", "GSL", "vector name", "invalid vector name"),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "GSL",
+            "vector_name",
+            "unknown ci name",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "GSL",
+            "vector name",
+            "invalid vector name",
+        ),
         (
             local_path("expected_gsl.rda"),
             "expected_gsl_vector",

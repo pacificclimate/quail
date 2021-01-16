@@ -28,8 +28,18 @@ def test_wps_climdex_sdii(climdex_input, ci_name):
     ("climdex_input", "ci_name", "vector_name", "err_type"),
     [
         (local_path("climdexInput.rda"), "not_ci", "vector_name", "unknown ci name"),
-        (local_path("climdexInput.rda"), "not_ci", "vector name", "invalid vector name"),
-        (local_path("expected_sdii.rda"), "expected_sdii", "vector_name", "class is not ci"),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "vector name",
+            "invalid vector name",
+        ),
+        (
+            local_path("expected_sdii.rda"),
+            "expected_sdii",
+            "vector_name",
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_sdii_err(climdex_input, ci_name, err_type, vector_name):

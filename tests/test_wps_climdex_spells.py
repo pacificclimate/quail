@@ -36,8 +36,22 @@ def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "func", "span_years", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "ci", "wsdi", False, "vector name", "invalid vector name"),
-        (local_path("climdexInput.rda"), "not_ci", "wsdi", False, "vector_name", "unknown ci name"),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "wsdi",
+            False,
+            "vector name",
+            "invalid vector name",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "wsdi",
+            False,
+            "vector_name",
+            "unknown ci name",
+        ),
         (
             local_path("expected_spells_data.rda"),
             "expected_csdi_span_yrs",
@@ -48,7 +62,9 @@ def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
         ),
     ],
 )
-def test_wps_climdex_spells_err(climdex_input, ci_name, func, span_years, err_type, vector_name):
+def test_wps_climdex_spells_err(
+    climdex_input, ci_name, func, span_years, err_type, vector_name
+):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:

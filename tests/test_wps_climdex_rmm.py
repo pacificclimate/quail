@@ -30,9 +30,27 @@ def test_wps_climdex_rmm(climdex_input, ci_name, threshold):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", 10.0, "vector_name", "unknown ci name"),
-        (local_path("climdexInput.rda"), "ci", 10.0, "vector name", "invalid vector name"),
-        (local_path("expected_rmm.rda"), "expected_r10mm", 20.0, "vector_name", "class is not ci"),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            10.0,
+            "vector_name",
+            "unknown ci name",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            10.0,
+            "vector name",
+            "invalid vector name",
+        ),
+        (
+            local_path("expected_rmm.rda"),
+            "expected_r10mm",
+            20.0,
+            "vector_name",
+            "class is not ci",
+        ),
     ],
 )
 def test_wps_climdex_rmm_err(climdex_input, ci_name, threshold, err_type, vector_name):
