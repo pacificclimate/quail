@@ -8,7 +8,7 @@ from pywps.app.exceptions import ProcessError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, collect_literal_inputs
+from quail.utils import logger, collect_literal_inputs, r_valid_name
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -262,6 +262,7 @@ class ClimdexInputCSV(Process):
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
+        r_valid_name(vector_name)
         save_python_to_rdata(vector_name, ci, output_path)
 
         log_handler(

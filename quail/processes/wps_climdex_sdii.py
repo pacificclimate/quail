@@ -8,7 +8,7 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, load_ci
+from quail.utils import logger, load_ci, r_valid_name
 from quail.io import climdex_input, ci_name, output_file
 
 
@@ -61,6 +61,7 @@ class ClimdexSDII(Process):
         climdex_input, ci_name, output_file, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
+        r_valid_name(vector_name)
 
         log_handler(
             self,

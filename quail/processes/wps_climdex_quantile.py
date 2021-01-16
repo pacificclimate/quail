@@ -8,7 +8,7 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, collect_literal_inputs, load_rda
+from quail.utils import logger, collect_literal_inputs, load_rda, r_valid_name
 from quail.io import output_file
 
 
@@ -104,6 +104,7 @@ class ClimdexQuantile(Process):
             vector_name,
             loglevel,
         ) = self.collect_args_wrapper(request)
+        r_valid_name(vector_name)
 
         log_handler(
             self,
