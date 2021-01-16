@@ -63,7 +63,7 @@ def r_valid_name(robj_name):
     is not syntactically correct and leave it if it is
     """
     base = get_package("base")
-    if base.make_names(robj_name)[0] is not robj_name:
+    if base.make_names(robj_name)[0] != robj_name:
         raise ProcessError(msg="RRuntimeError: Your vector name is not a valid R name")
 
 
@@ -125,9 +125,11 @@ def process_err_test(process, datainputs, err_type):
             run_wps_process(process(), datainputs)
 
     if err_type == "unknown ci name":
-        msg = "Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+        msg = "RRuntimeError: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
     if err_type == "class is not ci":
-        msg = "Input for ci-name is not a valid climdexInput object"
+        msg = "RRuntimeError: Input for ci-name is not a valid climdexInput object"
     if err_type == "load_rda err":
-        msg = "Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+        msg = "RRuntimeError: Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
+    if err_type == "invalid vector name":
+        msg = "RRuntimeError: Your vector name is not a valid R name"
     assert msg in err.getvalue()

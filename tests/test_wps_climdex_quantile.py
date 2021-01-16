@@ -58,6 +58,13 @@ def test_wps_climdex_quantile(
             "tmax_quantiles",
             "load_rda err",
         ),
+        (
+            local_path("ec.1018935.rda"),
+            "not_tmax",
+            "c(0.1, 0.5, 0.9)",
+            "tmax quantiles",
+            "invalid vector name",
+        ),
     ],
 )
 def test_wps_climdex_quantile_err(

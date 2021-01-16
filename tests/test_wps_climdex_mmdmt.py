@@ -34,19 +34,21 @@ def test_wps_climdex_mmdmt(climdex_input, ci_name, month_type, freq):
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "month_type", "freq", "err_type"),
+    ("climdex_input", "ci_name", "month_type", "freq", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "txx", "monthly", "unknown ci name"),
+        (local_path("climdexInput.rda"), "not_ci", "txx", "monthly", "vector_name", "unknown ci name"),
+        (local_path("climdexInput.rda"), "ci", "txx", "monthly", "vector name", "invalid vector name"),
         (
             local_path("expected_mmdmt_data.rda"),
             "expected_tnx_annual",
             "tnx",
             "annual",
+            "vector_name",
             "class is not ci",
         ),
     ],
 )
-def test_wps_climdex_mmdmt_err(climdex_input, ci_name, month_type, freq, err_type):
+def test_wps_climdex_mmdmt_err(climdex_input, ci_name, month_type, freq, err_type, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
@@ -54,6 +56,7 @@ def test_wps_climdex_mmdmt_err(climdex_input, ci_name, month_type, freq, err_typ
             f"climdex_input=@xlink:href={climdex_input};"
             f"ci_name={ci_name};"
             f"month_type={month_type};"
+            f"vector_name={vector_name};"
             f"freq={freq};"
             f"output_file={out_file.name};"
         )

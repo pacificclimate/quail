@@ -31,13 +31,14 @@ def test_wps_climdex_ptot(climdex_input, ci_name, threshold):
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "threshold", "err_type"),
+    ("climdex_input", "ci_name", "threshold", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", 95, "unknown ci name"),
-        (local_path("expected_ptot.rda"), "expected_r99ptot", 99, "class is not ci"),
+        (local_path("climdexInput.rda"), "not_ci", 95, "vector_name", "unknown ci name"),
+        (local_path("climdexInput.rda"), "ci", 95, "vector name", "invalid vector name"),
+        (local_path("expected_ptot.rda"), "expected_r99ptot", 99, "vector_name", "class is not ci"),
     ],
 )
-def test_wps_climdex_ptot_err(climdex_input, ci_name, threshold, err_type):
+def test_wps_climdex_ptot_err(climdex_input, ci_name, threshold, err_type, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
@@ -45,6 +46,7 @@ def test_wps_climdex_ptot_err(climdex_input, ci_name, threshold, err_type):
             f"climdex_input=@xlink:href={climdex_input};"
             f"ci_name={ci_name};"
             f"output_file={out_file.name};"
+            f"vector_name={vector_name};"
             f"threshold={threshold};"
         )
         process_err_test(ClimdexPtot, datainputs, err_type)

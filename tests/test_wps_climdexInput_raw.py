@@ -99,6 +99,20 @@ def test_wps_climdexInput_raw(
             "climdexInput",
             "load_rda err",
         ),
+        (
+            local_path("ec.1018935.rda"),
+            local_path("ec.1018935.rda"),
+            local_path("ec.1018935.rda"),
+            "ec.1018935.tmax",
+            "ec.1018935.tmin",
+            "ec.1018935.prec",
+            "MAX_TEMP",
+            "MIN_TEMP",
+            "ONE_DAY_PRECIPITATION",
+            "c(1971, 2000)",
+            "climdex Input",
+            "invalid vector name",
+        ),
     ],
 )
 def test_wps_climdexInput_raw_err(

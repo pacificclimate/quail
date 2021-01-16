@@ -25,19 +25,21 @@ def test_wps_climdex_sdii(climdex_input, ci_name):
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "err_type"),
+    ("climdex_input", "ci_name", "vector_name", "err_type"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "unknown ci name"),
-        (local_path("expected_sdii.rda"), "expected_sdii", "class is not ci"),
+        (local_path("climdexInput.rda"), "not_ci", "vector_name", "unknown ci name"),
+        (local_path("climdexInput.rda"), "not_ci", "vector name", "invalid vector name"),
+        (local_path("expected_sdii.rda"), "expected_sdii", "vector_name", "class is not ci"),
     ],
 )
-def test_wps_climdex_sdii_err(climdex_input, ci_name, err_type):
+def test_wps_climdex_sdii_err(climdex_input, ci_name, err_type, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = (
             f"climdex_input=@xlink:href={climdex_input};"
             f"ci_name={ci_name};"
+            f"vector_name={vector_name};"
             f"output_file={out_file.name};"
         )
         process_err_test(ClimdexSDII, datainputs, err_type)

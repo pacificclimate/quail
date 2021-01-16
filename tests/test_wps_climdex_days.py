@@ -57,6 +57,13 @@ def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
     [
         (
             local_path("climdexInput.rda"),
+            "ci",
+            "summer days",
+            "summer days",
+            "invalid vector name",
+        ),
+        (
+            local_path("climdexInput.rda"),
             "not_ci",
             "summer days",
             "summer_days",
