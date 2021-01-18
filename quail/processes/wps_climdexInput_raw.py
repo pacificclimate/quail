@@ -164,6 +164,13 @@ class ClimdexInputRaw(Process):
         except RRuntimeError as e:
             raise ProcessError(msg="Error generating dates")
 
+    def column(self, df_name, column_name, var):
+        df_column = robjects.r(df_name).rx2(column_name)
+        if robjects.r['is.null'](df_column)[0]:
+            raise ProcessError(f"RRuntimeError: No {var} column of that name")
+        else:
+            return df_column
+
     def prepare_parameters(
         self,
         request,
@@ -184,7 +191,7 @@ class ClimdexInputRaw(Process):
         prec_dates = self.generate_dates(
             request, prec_file, prec_name, date_fields, date_format, cal
         )
-        prec = robjects.r(f"{prec_name}${prec_column}")
+        prec = self.column(prec_name, prec_column, "prec")
 
         if "tavg_file" in args.keys():
             # use tavg data if provided
@@ -192,7 +199,7 @@ class ClimdexInputRaw(Process):
             tavg_dates = self.generate_dates(
                 request, tavg_file, tavg_name, date_fields, date_format, cal
             )
-            tavg = robjects.r(f"{tavg_name}${tavg_column}")
+            tavg = self.column(tavg_name, tavg_column, "tavg")
 
             return {
                 "tavg": tavg,
@@ -213,8 +220,8 @@ class ClimdexInputRaw(Process):
                 request, tmin_file, tmin_name, date_fields, date_format, cal
             )
 
-            tmax = robjects.r(f"{tmax_name}${tmax_column}")
-            tmin = robjects.r(f"{tmin_name}${tmin_column}")
+            tmax = self.column(tmax_name, tmax_column, "tmax")
+            tmin = self.column(tmin_name, tmin_column, "tmin")
 
             return {
                 "tmax": tmax,

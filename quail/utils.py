@@ -52,10 +52,16 @@ def load_ci(climdex_input, ci_name):
 def load_rda(file_, obj_name):
     try:
         return load_rdata_to_python(file_, obj_name)
-    except RRuntimeError:
-        raise ProcessError(
-            msg="RRuntimeError: Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
-        )
+    except RRuntimeError as e:
+        err_name = re.compile(r"object \'(.*)\' not found").findall(str(e))
+        if '_' in err_name[0]:
+            raise ProcessError(
+                msg=f"RRuntimeError: One of the variable names passed is not an object found in the given rda files"
+            )
+        else:
+            raise ProcessError(
+                msg=f"RRuntimeError: There is no object named {err_name[0]} in this rda file"
+            )
 
 
 def r_valid_name(robj_name):
@@ -126,10 +132,10 @@ def process_err_test(process, datainputs, err_type):
 
     if err_type == "unknown ci name":
         msg = "RRuntimeError: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
-    if err_type == "class is not ci":
+    elif err_type == "class is not ci":
         msg = "RRuntimeError: Input for ci-name is not a valid climdexInput object"
-    if err_type == "load_rda err":
-        msg = "RRuntimeError: Either your file is not a valid Rdata file or there is no object of that name is not found in this rda file"
-    if err_type == "invalid vector name":
+    elif err_type == "load_rda err":
+        msg = "object"
+    elif err_type == "invalid vector name":
         msg = "RRuntimeError: Your vector name is not a valid R name"
     assert msg in err.getvalue()
