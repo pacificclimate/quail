@@ -2,6 +2,7 @@ import pytest, logging, requests, io, re
 from rpy2 import robjects
 from pywps import Service, tests
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib._rinterface_capi import RParsingError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
@@ -32,6 +33,15 @@ def collect_literal_inputs(request):
     return literal_inputs
 
 
+def validate_vector(vector):
+    try:
+        robjects.r(vector)
+    except RParsingError:
+        raise ProcessError(
+            "RRuntimeError: Invalid vector format, follow R vector syntax"
+        )
+
+
 def load_ci(climdex_input, ci_name):
     try:
         ci = load_rdata_to_python(climdex_input, ci_name)
@@ -54,7 +64,7 @@ def load_rda(file_, obj_name):
         return load_rdata_to_python(file_, obj_name)
     except RRuntimeError as e:
         err_name = re.compile(r"object \'(.*)\' not found").findall(str(e))
-        if '_' in err_name[0]:
+        if "_" in err_name[0]:
             raise ProcessError(
                 msg=f"RRuntimeError: One of the variable names passed is not an object found in the given rda files"
             )
