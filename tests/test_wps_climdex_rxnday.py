@@ -34,18 +34,18 @@ def test_wps_climdex_rxnday(climdex_input, ci_name, freq, num_days):
     [
         (
             local_path("climdexInput.rda"),
-            "not_ci",
-            "monthly",
-            1,
-            "vector_name",
-            "invalid vector name",
-        ),
-        (
-            local_path("climdexInput.rda"),
             "ci",
             "monthly",
             1,
             "vector name",
+            "invalid vector name",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "monthly",
+            1,
+            "vector_name",
             "unknown ci name",
         ),
         (
