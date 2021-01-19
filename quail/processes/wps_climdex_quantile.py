@@ -143,7 +143,8 @@ class ClimdexQuantile(Process):
             quantiles = robjects.r(quantiles_vector)
             quantile_vector = climdex.climdex_quantile(data, quantiles)
         except RRuntimeError as e:
-            raise ProcessError(msg=str(e))
+            err_msg = type(e).__name__ + ": " + str(e)
+            raise ProcessError(msg=err_msg)
 
         log_handler(
             self,

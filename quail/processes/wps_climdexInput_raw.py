@@ -330,7 +330,8 @@ class ClimdexInputRaw(Process):
                 min_base_data_fraction_present=min_base_data_fraction_present,
             )
         except RRuntimeError as e:
-            raise ProcessError(msg=str(e))
+            err_msg = type(e).__name__ + ": " + str(e)
+            raise ProcessError(msg=err_msg)
 
         log_handler(
             self,

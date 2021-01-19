@@ -137,7 +137,8 @@ class ClimdexDays(Process):
         try:
             count_days = self.days(days_type, ci)
         except RRuntimeError as e:
-            raise ProcessError(msg=str(e))
+            err_msg = type(e).__name__ + ": " + str(e)
+            raise ProcessError(msg=err_msg)
 
         log_handler(
             self,

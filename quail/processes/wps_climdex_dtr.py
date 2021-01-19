@@ -93,7 +93,8 @@ class ClimdexDTR(Process):
         try:
             dtr = climdex.climdex_dtr(ci, freq)
         except RRuntimeError as e:
-            raise ProcessError(msg=str(e))
+            err_msg = type(e).__name__ + ": " + str(e)
+            raise ProcessError(msg=err_msg)
 
         log_handler(
             self,

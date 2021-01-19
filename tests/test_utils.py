@@ -61,10 +61,7 @@ def test_load_rda_err(file_, obj_name):
 def test_r_valid_name(name):
     with pytest.raises(ProcessError) as e:
         r_valid_name(name)
-        assert (
-            str(vars(e)["_excinfo"][1])
-            == "RRuntimeError: Your vector name is not a valid R name"
-        )
+        assert str(vars(e)["_excinfo"][1]) == "Your vector name is not a valid R name"
 
 
 @pytest.mark.parametrize(
@@ -83,10 +80,7 @@ def test_validate_vector_err(vector, err_type):
     with pytest.raises(ProcessError) as e:
         validate_vector(vector)
         if err_type == "not vector":
-            assert (
-                str(vars(e)["_excinfo"][1])
-                == "RRuntimeError: Invalid type passed for vector"
-            )
+            assert str(vars(e)["_excinfo"][1]) == "Invalid type passed for vector"
         if err_type == "invalid syntax":
             assert (
                 str(vars(e)["_excinfo"][1])

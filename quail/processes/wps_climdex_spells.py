@@ -114,7 +114,8 @@ class ClimdexSpells(Process):
             robjects.r.assign("span_years", span_years)
             spells = robjects.r(f"climdex.{func}(ci, span_years)")
         except RRuntimeError as e:
-            raise ProcessError(msg=str(e))
+            err_msg = type(e).__name__ + ": " + str(e)
+            raise ProcessError(msg=err_msg)
 
         log_handler(
             self,

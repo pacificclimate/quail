@@ -39,11 +39,11 @@ def validate_vector(vector):
         if robjects.r["is.vector"](vect)[0]:
             pass
         else:
-            raise ProcessError("RRuntimeError: Invalid type passed for vector")
+            raise ProcessError("Invalid type passed for vector")
 
     except RParsingError:
         raise ProcessError(
-            "RRuntimeError: Invalid vector format, follow R vector syntax"
+            "RParsingError: Invalid vector format, follow R vector syntax"
         )
 
 
@@ -54,10 +54,10 @@ def load_ci(climdex_input, ci_name):
             return ci
         else:
             raise ProcessError(
-                msg="RRuntimeError: Input for ci-name is not a valid climdexInput object"
+                msg="Input for ci-name is not a valid climdexInput object"
             )
 
-    except RRuntimeError:
+    except RRuntimeError as e:
         logger.error(f"cannot load {ci_name} from {climdex_input}")
         raise ProcessError(
             msg="RRuntimeError: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
@@ -85,7 +85,7 @@ def r_valid_name(robj_name):
     """
     base = get_package("base")
     if base.make_names(robj_name)[0] != robj_name:
-        raise ProcessError(msg="RRuntimeError: Your vector name is not a valid R name")
+        raise ProcessError(msg="Your vector name is not a valid R name")
 
 
 # Teting functions
@@ -148,13 +148,13 @@ def process_err_test(process, datainputs, err_type):
     if err_type == "unknown ci name":
         msg = "RRuntimeError: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
     elif err_type == "class is not ci":
-        msg = "RRuntimeError: Input for ci-name is not a valid climdexInput object"
+        msg = "Input for ci-name is not a valid climdexInput object"
     elif err_type == "load_rda err":
         msg = "object"
     elif err_type == "invalid vector name":
-        msg = "RRuntimeError: Your vector name is not a valid R name"
+        msg = "Your vector name is not a valid R name"
     elif err_type == "bad syntax":
-        msg = "RRuntimeError: Invalid vector format, follow R vector syntax"
+        msg = "RParsingError: Invalid vector format, follow R vector syntax"
     elif err_type == "invlaid column":
         msg = "column of that name"
     assert msg in err.getvalue()
