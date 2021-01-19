@@ -1,17 +1,25 @@
-import pytest, logging, requests, io, re
+import logging
+import re
 from rpy2 import robjects
-from pywps import Service, tests
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib._rinterface_capi import RParsingError
 from rpy2.rinterface_lib.embedded import RRuntimeError
+
+# Libraries for test functions
+import pytest
+import io
+from rpy2 import robjects
+from contextlib import redirect_stderr
+from wps_tools.output_handling import rda_to_vector
+from wps_tools.testing import run_wps_process
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
-from contextlib import redirect_stderr
 
+# PCIC libraries
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
-from wps_tools.testing import run_wps_process
 from wps_tools.R import get_package
+
 
 logger = logging.getLogger("PYWPS")
 logger.setLevel(logging.NOTSET)
@@ -36,9 +44,7 @@ def collect_literal_inputs(request):
 def validate_vector(vector):
     try:
         vect = robjects.r(vector)
-        if robjects.r["is.vector"](vect)[0]:
-            pass
-        else:
+        if not robjects.r["is.vector"](vect)[0]:
             raise ProcessError("Invalid type passed for vector")
 
     except RParsingError as e:
@@ -88,8 +94,7 @@ def r_valid_name(robj_name):
         raise ProcessError(msg="Your vector name is not a valid R name")
 
 
-# Teting functions
-
+# Testing
 
 def test_rda_output(url, vector_name, expected_file, expected_vector_name):
     output_vector = rda_to_vector(url, vector_name)

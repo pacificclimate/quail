@@ -168,12 +168,12 @@ class ClimdexInputRaw(Process):
                 f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"
             )
         except RRuntimeError as e:
-            raise ProcessError(msg="Error generating dates")
+            raise ProcessError(msg=f"{type(e).__name__}: Error generating dates")
 
     def column(self, df_name, column_name, var):
         df_column = robjects.r(df_name).rx2(column_name)
         if robjects.r["is.null"](df_column)[0]:
-            raise ProcessError(f"RRuntimeError: No {var} column of that name")
+            raise ProcessError(f"No {var} column of that name")
         else:
             return df_column
 
