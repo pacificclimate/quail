@@ -1,4 +1,4 @@
-import os
+import os, csv
 from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
@@ -131,6 +131,15 @@ class ClimdexInputCSV(Process):
             status_supported=True,
         )
 
+    def check_columns(self, csv_file, column, var):
+        with open(csv_file, "r") as file_:
+            reader = csv.reader(file_)
+            columns = next(reader)
+            if column not in columns:
+                raise ProcessError(
+                    f"RRuntimeError: column name for {var} not found in csv"
+                )
+
     def prepare_parameters(
         self,
         request,
@@ -143,6 +152,7 @@ class ClimdexInputCSV(Process):
     ):
         args = collect_args(request, self.workdir)
         prec_file = args["prec_file"][0]
+        self.check_columns(prec_file, prec_column, "prec")
         data_types = robjects.r(
             f"list(list(fields={date_fields}, format='{date_format}'))"
         )
@@ -150,6 +160,7 @@ class ClimdexInputCSV(Process):
         if "tavg_file" in args.keys():
             # use tavg data if provided
             tavg_file = prec_file = args["tavg_file"][0]
+            self.check_columns(tavg_file, tavg_column, "tavg")
             date_columns = robjects.r(
                 f"list(tavg = '{tavg_column}', prec = '{prec_column}')"
             )
@@ -163,7 +174,10 @@ class ClimdexInputCSV(Process):
         elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
             # use tmax and tmin data if tavg is not provided
             tmax_file = args["tmax_file"][0]
+            self.check_columns(tmax_file, tmax_column, "tmax")
             tmin_file = args["tmin_file"][0]
+            self.check_columns(tmin_file, tmin_column, "tmin")
+
             date_columns = robjects.r(
                 f"list(tmax = '{tmax_column}', tmin = '{tmin_column}', prec = '{prec_column}')"
             )
