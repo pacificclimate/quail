@@ -35,7 +35,12 @@ def collect_literal_inputs(request):
 
 def validate_vector(vector):
     try:
-        robjects.r(vector)
+        vect = robjects.r(vector)
+        if robjects.r["is.vector"](vect)[0]:
+            pass
+        else:
+            raise ProcessError("RRuntimeError: Invalid type passed for vector")
+
     except RParsingError:
         raise ProcessError(
             "RRuntimeError: Invalid vector format, follow R vector syntax"
