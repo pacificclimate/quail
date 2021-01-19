@@ -1,13 +1,14 @@
-import os
+import os, csv
 from rpy2 import robjects
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
 from tempfile import NamedTemporaryFile
+from pywps.app.exceptions import ProcessError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, collect_literal_inputs
+from quail.utils import logger, collect_literal_inputs, r_valid_name, validate_vector
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -130,6 +131,13 @@ class ClimdexInputCSV(Process):
             status_supported=True,
         )
 
+    def check_columns(self, csv_file, column, var):
+        with open(csv_file, "r") as file_:
+            reader = csv.reader(file_)
+            columns = next(reader)
+            if column not in columns:
+                raise ProcessError(f"No {var} column of that name")
+
     def prepare_parameters(
         self,
         request,
@@ -142,6 +150,7 @@ class ClimdexInputCSV(Process):
     ):
         args = collect_args(request, self.workdir)
         prec_file = args["prec_file"][0]
+        self.check_columns(prec_file, prec_column, "prec")
         data_types = robjects.r(
             f"list(list(fields={date_fields}, format='{date_format}'))"
         )
@@ -149,6 +158,7 @@ class ClimdexInputCSV(Process):
         if "tavg_file" in args.keys():
             # use tavg data if provided
             tavg_file = prec_file = args["tavg_file"][0]
+            self.check_columns(tavg_file, tavg_column, "tavg")
             date_columns = robjects.r(
                 f"list(tavg = '{tavg_column}', prec = '{prec_column}')"
             )
@@ -162,7 +172,10 @@ class ClimdexInputCSV(Process):
         elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
             # use tmax and tmin data if tavg is not provided
             tmax_file = args["tmax_file"][0]
+            self.check_columns(tmax_file, tmax_column, "tmax")
             tmin_file = args["tmin_file"][0]
+            self.check_columns(tmin_file, tmin_column, "tmin")
+
             date_columns = robjects.r(
                 f"list(tmax = '{tmax_column}', tmin = '{tmin_column}', prec = '{prec_column}')"
             )
@@ -196,6 +209,16 @@ class ClimdexInputCSV(Process):
             vector_name,
             loglevel,
         ) = collect_literal_inputs(request)
+        [
+            validate_vector(vector)
+            for vector in [
+                base_range,
+                date_fields,
+                temp_qtiles,
+                prec_qtiles,
+                max_missing_days,
+            ]
+        ]
 
         log_handler(
             self,
@@ -234,19 +257,23 @@ class ClimdexInputCSV(Process):
             log_level=loglevel,
             process_step="process",
         )
-        ci = climdex.climdexInput_csv(
-            **params,
-            base_range=robjects.r(base_range),
-            na_strings=na_strings,
-            cal=robjects.r(f"'{cal}'"),
-            n=n,
-            northern_hemisphere=northern_hemisphere,
-            quantiles=robjects.r(quantiles),
-            temp_qtiles=robjects.r(temp_qtiles),
-            prec_qtiles=robjects.r(prec_qtiles),
-            max_missing_days=robjects.r(max_missing_days),
-            min_base_data_fraction_present=min_base_data_fraction_present,
-        )
+
+        try:
+            ci = climdex.climdexInput_csv(
+                **params,
+                base_range=robjects.r(base_range),
+                na_strings=na_strings,
+                cal=robjects.r(f"'{cal}'"),
+                n=n,
+                northern_hemisphere=northern_hemisphere,
+                quantiles=robjects.r(quantiles),
+                temp_qtiles=robjects.r(temp_qtiles),
+                prec_qtiles=robjects.r(prec_qtiles),
+                max_missing_days=robjects.r(max_missing_days),
+                min_base_data_fraction_present=min_base_data_fraction_present,
+            )
+        except RRuntimeError as e:
+            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
         log_handler(
             self,
@@ -257,6 +284,7 @@ class ClimdexInputCSV(Process):
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
+        r_valid_name(vector_name)
         save_python_to_rdata(vector_name, ci, output_path)
 
         log_handler(

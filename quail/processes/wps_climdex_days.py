@@ -1,13 +1,14 @@
 import os
 from rpy2 import robjects
+from rpy2.rinterface_lib.embedded import RRuntimeError
 from pywps import Process, LiteralInput
 from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
-from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger
+from wps_tools.R import get_package, save_python_to_rdata
+from quail.utils import logger, load_ci, r_valid_name
 from quail.io import climdex_input, ci_name, output_file
 
 
@@ -97,12 +98,13 @@ class ClimdexDays(Process):
         elif days_type == "tropical nights":
             return climdex.climdex_tr(ci)
         else:
-            raise ProcessError("invalid days_type")
+            raise ProcessError("invalid days type")
 
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
             arg[0] for arg in collect_args(request, self.workdir).values()
         ]
+        r_valid_name(vector_name)
 
         log_handler(
             self,
@@ -121,7 +123,7 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        ci = load_rdata_to_python(climdex_input, ci_name)
+        ci = load_ci(climdex_input, ci_name)
 
         log_handler(
             self,
@@ -131,7 +133,11 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="process",
         )
-        count_days = self.days(days_type, ci)
+
+        try:
+            count_days = self.days(days_type, ci)
+        except RRuntimeError as e:
+            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
         log_handler(
             self,

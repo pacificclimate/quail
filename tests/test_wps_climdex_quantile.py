@@ -3,6 +3,7 @@ from tempfile import NamedTemporaryFile
 
 from wps_tools.testing import run_wps_process, local_path
 from quail.processes.wps_climdex_quantile import ClimdexQuantile
+from quail.utils import process_err_test
 
 
 @pytest.mark.parametrize(
@@ -45,3 +46,38 @@ def test_wps_climdex_quantile(
         )
 
         run_wps_process(ClimdexQuantile(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("data_file", "data_vector", "quantiles_vector", "vector_name", "err_type"),
+    [
+        (
+            local_path("ec.1018935.rda"),
+            "not_tmax",
+            "c(0.1, 0.5, 0.9)",
+            "tmax_quantiles",
+            "load_rda err",
+        ),
+        (
+            local_path("ec.1018935.rda"),
+            "not_tmax",
+            "c(0.1, 0.5, 0.9)",
+            "tmax quantiles",
+            "invalid vector name",
+        ),
+    ],
+)
+def test_wps_climdex_quantile_err(
+    data_file, data_vector, quantiles_vector, vector_name, err_type
+):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = (
+            f"data_file=@xlink:href={data_file};"
+            f"data_vector={data_vector};"
+            f"quantiles_vector={quantiles_vector};"
+            f"vector_name={vector_name};"
+            f"output_file={out_file.name};"
+        )
+        process_err_test(ClimdexQuantile, datainputs, err_type)

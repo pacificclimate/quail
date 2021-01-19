@@ -3,11 +3,12 @@ from rpy2 import robjects
 from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
-from quail.utils import logger, collect_literal_inputs
+from quail.utils import logger, collect_literal_inputs, load_rda, r_valid_name
 from quail.io import output_file
 
 
@@ -103,6 +104,7 @@ class ClimdexQuantile(Process):
             vector_name,
             loglevel,
         ) = self.collect_args_wrapper(request)
+        r_valid_name(vector_name)
 
         log_handler(
             self,
@@ -124,7 +126,7 @@ class ClimdexQuantile(Process):
         )
 
         if data_file:
-            data = load_rdata_to_python(data_file, data_vector)
+            data = load_rda(data_file, data_vector)
         else:
             data = robjects.r(data_vector)
 
@@ -136,8 +138,12 @@ class ClimdexQuantile(Process):
             log_level=loglevel,
             process_step="process",
         )
-        quantiles = robjects.r(quantiles_vector)
-        quantile_vector = climdex.climdex_quantile(data, quantiles)
+
+        try:
+            quantiles = robjects.r(quantiles_vector)
+            quantile_vector = climdex.climdex_quantile(data, quantiles)
+        except RRuntimeError as e:
+            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
         log_handler(
             self,
