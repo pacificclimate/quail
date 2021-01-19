@@ -148,4 +148,8 @@ def process_err_test(process, datainputs, err_type):
         msg = "object"
     elif err_type == "invalid vector name":
         msg = "RRuntimeError: Your vector name is not a valid R name"
+    elif err_type == "bad syntax":
+        msg = "RRuntimeError: Invalid vector format, follow R vector syntax"
+    elif err_type == "invlaid column":
+        msg = "column of that name"
     assert msg in err.getvalue()

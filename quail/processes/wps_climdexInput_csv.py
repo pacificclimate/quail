@@ -136,9 +136,7 @@ class ClimdexInputCSV(Process):
             reader = csv.reader(file_)
             columns = next(reader)
             if column not in columns:
-                raise ProcessError(
-                    f"RRuntimeError: column name for {var} not found in csv"
-                )
+                raise ProcessError(f"RRuntimeError: No {var} column of that name")
 
     def prepare_parameters(
         self,
