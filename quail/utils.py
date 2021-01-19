@@ -96,6 +96,7 @@ def r_valid_name(robj_name):
 
 # Testing
 
+
 def test_rda_output(url, vector_name, expected_file, expected_vector_name):
     output_vector = rda_to_vector(url, vector_name)
     local_path = resource_filename("tests", f"data/{expected_file}")
