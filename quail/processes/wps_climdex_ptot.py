@@ -112,8 +112,7 @@ class ClimdexPtot(Process):
         try:
             mothly_pct = robjects.r(f"climdex.{func}ptot(ci)")
         except RRuntimeError as e:
-            err_msg = type(e).__name__ + ": " + str(e)
-            raise ProcessError(msg=err_msg)
+            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
         log_handler(
             self,

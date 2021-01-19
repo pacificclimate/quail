@@ -41,9 +41,9 @@ def validate_vector(vector):
         else:
             raise ProcessError("Invalid type passed for vector")
 
-    except RParsingError:
+    except RParsingError as e:
         raise ProcessError(
-            "RParsingError: Invalid vector format, follow R vector syntax"
+            msg=f"{type(e).__name__}: Invalid vector format, follow R vector syntax"
         )
 
 
@@ -60,7 +60,7 @@ def load_ci(climdex_input, ci_name):
     except RRuntimeError as e:
         logger.error(f"cannot load {ci_name} from {climdex_input}")
         raise ProcessError(
-            msg="RRuntimeError: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
+            msg=f"{type(e).__name__}: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
         )
 
 
@@ -71,11 +71,11 @@ def load_rda(file_, obj_name):
         err_name = re.compile(r"object \'(.*)\' not found").findall(str(e))
         if "_" in err_name[0]:
             raise ProcessError(
-                msg=f"RRuntimeError: One of the variable names passed is not an object found in the given rda files"
+                msg=f"{type(e).__name__}: One of the variable names passed is not an object found in the given rda files"
             )
         else:
             raise ProcessError(
-                msg=f"RRuntimeError: There is no object named {err_name[0]} in this rda file"
+                msg=f"{type(e).__name__}: There is no object named {err_name[0]} in this rda file"
             )
 
 

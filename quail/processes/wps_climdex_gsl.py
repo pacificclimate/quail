@@ -108,8 +108,7 @@ class ClimdexGSL(Process):
         try:
             gsl = climdex.climdex_gsl(ci, gsl_mode)
         except RRuntimeError as e:
-            err_msg = type(e).__name__ + ": " + str(e)
-            raise ProcessError(msg=err_msg)
+            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
         log_handler(
             self,

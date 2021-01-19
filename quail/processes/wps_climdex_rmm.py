@@ -110,8 +110,7 @@ class ClimdexRMM(Process):
         try:
             count_days = self.threshold_func(threshold, ci)
         except RRuntimeError as e:
-            err_msg = type(e).__name__ + ": " + str(e)
-            raise ProcessError(msg=err_msg)
+            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
         log_handler(
             self,
