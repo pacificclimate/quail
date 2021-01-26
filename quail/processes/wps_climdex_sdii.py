@@ -17,7 +17,7 @@ class ClimdexSDII(Process):
     Wraps climdex.sdii
     Computes the climdex index SDII, or Simple Precipitation Intensity Index.
     This is defined as the sum of precipitation in wet days (days with
-    preciptitation over 1mm) during the year divided by the number of wet days
+    precipitation over 1mm) during the year divided by the number of wet days
     in the year.
     """
 
