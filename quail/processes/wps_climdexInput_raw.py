@@ -8,12 +8,15 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
-from wps_tools.R import get_package, load_rdata_to_python, save_python_to_rdata
+from wps_tools.R import (
+    get_package,
+    load_rdata_to_python,
+    save_python_to_rdata,
+    r_valid_name,
+)
 from quail.utils import (
     logger,
     collect_literal_inputs,
-    load_rda,
-    r_valid_name,
     validate_vector,
 )
 from quail.io import (
@@ -162,7 +165,7 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        load_rda(filename, obj_name)
+        load_rdata_to_python(filename, obj_name)
         try:
             return robjects.r(
                 f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"

@@ -1,40 +1,46 @@
 import pytest
 from tempfile import NamedTemporaryFile
 
-from wps_tools.testing import run_wps_process, local_path
+from wps_tools.testing import run_wps_process, local_path, process_err_test
 from quail.processes.wps_climdex_spells import ClimdexSpells
-from quail.utils import process_err_test
+
+
+def build_params(climdex_input, ci_name, func, span_years, vector_name, output_file):
+    return (
+        f"climdex_input=@xlink:href={climdex_input};"
+        f"ci_name={ci_name};"
+        f"func={func};"
+        f"span_years={span_years};"
+        f"vector_name={vector_name};"
+        f"output_file={output_file};"
+    )
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "func", "span_years"),
+    ("climdex_input", "ci_name", "func", "span_years", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "ci", "wsdi", False),
-        (local_path("climdexInput.rda"), "ci", "wsdi", True),
-        (local_path("climdexInput.rda"), "ci", "csdi", False),
-        (local_path("climdexInput.rda"), "ci", "csdi", True),
-        (local_path("climdexInput.rda"), "ci", "cdd", False),
-        (local_path("climdexInput.rda"), "ci", "cdd", True),
-        (local_path("climdexInput.rda"), "ci", "cwd", False),
-        (local_path("climdexInput.rda"), "ci", "cwd", True),
+        (local_path("climdexInput.rda"), "ci", "wsdi", False, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "wsdi", True, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "csdi", False, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "csdi", True, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "cdd", False, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "cdd", True, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "cwd", False, "vector_name"),
+        (local_path("climdexInput.rda"), "ci", "cwd", True, "vector_name"),
     ],
 )
-def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
+def test_wps_climdex_spells(climdex_input, ci_name, func, span_years, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = (
-            f"climdex_input=@xlink:href={climdex_input};"
-            f"ci_name={ci_name};"
-            f"func={func};"
-            f"span_years={span_years};"
-            f"output_file={out_file.name};"
+        datainputs = build_params(
+            climdex_input, ci_name, func, span_years, vector_name, out_file.name
         )
         run_wps_process(ClimdexSpells(), datainputs)
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "func", "span_years", "vector_name", "err_type"),
+    ("climdex_input", "ci_name", "func", "span_years", "vector_name"),
     [
         (
             local_path("climdexInput.rda"),
@@ -42,15 +48,30 @@ def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
             "wsdi",
             False,
             "vector name",
-            "invalid vector name",
         ),
+    ],
+)
+def test_wps_climdex_spells_vector_err(
+    climdex_input, ci_name, func, span_years, vector_name
+):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(
+            climdex_input, ci_name, func, span_years, vector_name, out_file.name
+        )
+        process_err_test(ClimdexSpells, datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "ci_name", "func", "span_years", "vector_name"),
+    [
         (
             local_path("climdexInput.rda"),
             "not_ci",
             "wsdi",
             False,
             "vector_name",
-            "unknown ci name",
         ),
         (
             local_path("expected_spells_data.rda"),
@@ -58,22 +79,16 @@ def test_wps_climdex_spells(climdex_input, ci_name, func, span_years):
             "csdi",
             True,
             "vector_name",
-            "class is not ci",
         ),
     ],
 )
-def test_wps_climdex_spells_err(
-    climdex_input, ci_name, func, span_years, err_type, vector_name
+def test_wps_climdex_spells_ci_err(
+    climdex_input, ci_name, func, span_years, vector_name
 ):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = (
-            f"climdex_input=@xlink:href={climdex_input};"
-            f"ci_name={ci_name};"
-            f"func={func};"
-            f"span_years={span_years};"
-            f"vector_name={vector_name};"
-            f"output_file={out_file.name};"
+        datainputs = build_params(
+            climdex_input, ci_name, func, span_years, vector_name, out_file.name
         )
-        process_err_test(ClimdexSpells, datainputs, err_type)
+        process_err_test(ClimdexSpells, datainputs)
