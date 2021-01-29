@@ -54,36 +54,11 @@ def validate_vector(vector):
 
 
 def load_ci(climdex_input, ci_name):
-    try:
-        ci = load_rdata_to_python(climdex_input, ci_name)
-        if ci.rclass[0] == "climdexInput":
-            return ci
-        else:
-            raise ProcessError(
-                msg="Input for ci-name is not a valid climdexInput object"
-            )
-    except ProcessError:
-        raise
-    except RRuntimeError as e:
-        logger.error(f"cannot load {ci_name} from {climdex_input}")
-        raise ProcessError(
-            msg=f"{type(e).__name__}: Either your file is not a valid Rdata file or the climdexInput object name is not found in this rda file"
-        )
-
-
-def load_rda(file_, obj_name):
-    try:
-        return load_rdata_to_python(file_, obj_name)
-    except RRuntimeError as e:
-        err_name = re.compile(r"object \'(.*)\' not found").findall(str(e))
-        if "_" in err_name[0]:
-            raise ProcessError(
-                msg=f"{type(e).__name__}: One of the variable names passed is not an object found in the given rda files"
-            )
-        else:
-            raise ProcessError(
-                msg=f"{type(e).__name__}: There is no object named {err_name[0]} in this rda file"
-            )
+    ci = load_rdata_to_python(climdex_input, ci_name)
+    if ci.rclass[0] == "climdexInput":
+        return ci
+    else:
+        raise ProcessError(msg="Input for ci-name is not a valid climdexInput object")
 
 
 # Testing

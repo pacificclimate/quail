@@ -17,7 +17,6 @@ from wps_tools.R import (
 from quail.utils import (
     logger,
     collect_literal_inputs,
-    load_rda,
     validate_vector,
 )
 from quail.io import (
@@ -166,7 +165,7 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        load_rda(filename, obj_name)
+        load_rdata_to_python(filename, obj_name)
         try:
             return robjects.r(
                 f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"

@@ -5,7 +5,7 @@ from pywps.app.exceptions import ProcessError
 from tempfile import NamedTemporaryFile
 from contextlib import redirect_stderr
 
-from quail.utils import load_ci, load_rda, validate_vector
+from quail.utils import load_ci, validate_vector
 from wps_tools.testing import local_path
 
 
@@ -37,21 +37,6 @@ def test_load_ci_name_err(file_, obj_name):
         str(vars(e)["_excinfo"][1])
         == "RRuntimeError: The variable name passed is not an object found in the given rda file"
     )
-
-
-@pytest.mark.parametrize(
-    ("file_", "obj_name"),
-    [
-        (resource_filename("tests", "data/expected_days_data.rda"), "autumn_days"),
-    ],
-)
-def test_load_rda_err(file_, obj_name):
-    with pytest.raises(ProcessError) as e:
-        load_rda(file_, obj_name)
-        assert (
-            str(vars(e)["_excinfo"][1])
-            == "RRuntimeError: One of the variable names passed is not an object found in the given rda files"
-        )
 
 
 @pytest.mark.parametrize(

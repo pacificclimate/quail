@@ -13,7 +13,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, load_rda, validate_vector
+from quail.utils import logger, collect_literal_inputs, validate_vector
 from quail.io import output_file
 
 
@@ -132,7 +132,7 @@ class ClimdexQuantile(Process):
         )
 
         if data_file:
-            data = load_rda(data_file, data_vector)
+            data = load_rdata_to_python(data_file, data_vector)
         else:
             data = robjects.r(data_vector)
 
