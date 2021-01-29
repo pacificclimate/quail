@@ -1,9 +1,8 @@
 import pytest
 from tempfile import NamedTemporaryFile
 
-from wps_tools.testing import run_wps_process, local_path
+from wps_tools.testing import run_wps_process, local_path, process_err_test
 from quail.processes.wps_climdexInput_raw import ClimdexInputRaw
-from quail.utils import process_err_test
 
 
 @pytest.mark.parametrize(
@@ -82,7 +81,6 @@ def test_wps_climdexInput_raw(
         "prec_column",
         "base_range",
         "vector_name",
-        "err_type",
     ),
     [
         (
@@ -97,7 +95,6 @@ def test_wps_climdexInput_raw(
             "ONE_DAY_PRECIPITATION",
             "c(1971, 2000)",
             "climdexInput",
-            "load_rda err",
         ),
         (
             local_path("ec.1018935.rda"),
@@ -111,7 +108,6 @@ def test_wps_climdexInput_raw(
             "ONE_DAY_PRECIPITATION",
             "c(1971, 2000)",
             "climdex Input",
-            "invalid vector name",
         ),
         (
             local_path("ec.1018935.rda"),
@@ -125,7 +121,6 @@ def test_wps_climdexInput_raw(
             "ONE_DAY_PRECIPITATION",
             "c(1971, 2000)",
             "climdexInput",
-            "invlaid column",
         ),
         (
             local_path("ec.1018935.rda"),
@@ -139,7 +134,6 @@ def test_wps_climdexInput_raw(
             "ONE_DAY_PRECIPITATION",
             "c1971, 2000)",
             "climdexInput",
-            "bad syntax",
         ),
     ],
 )
@@ -155,7 +149,6 @@ def test_wps_climdexInput_raw_err(
     prec_column,
     base_range,
     vector_name,
-    err_type,
 ):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
@@ -174,4 +167,4 @@ def test_wps_climdexInput_raw_err(
             f"out_file={out_file.name};"
             f"vector_name={vector_name};"
         )
-        process_err_test(ClimdexInputRaw, datainputs, err_type)
+        process_err_test(ClimdexInputRaw, datainputs)
