@@ -33,10 +33,16 @@ logger.addHandler(handler)
 
 
 def collect_literal_inputs(request):
+    csvs = [
+        "tmax_file_content",
+        "tmin_file_content",
+        "prec_file_content",
+        "tavg_file_content",
+    ]
     literal_inputs = [
         request.inputs[k][0].data
         for k in request.inputs.keys()
-        if "data_type" in vars(request.inputs[k][0]).keys()
+        if "data_type" in vars(request.inputs[k][0]).keys() and k not in csvs
     ]
     return literal_inputs
 
