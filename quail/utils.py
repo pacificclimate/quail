@@ -36,7 +36,7 @@ def collect_literal_inputs(request):
     literal_inputs = [
         request.inputs[k][0].data
         for k in request.inputs.keys()
-        if "data_type" in vars(request.inputs[k][0]).keys()
+        if "data_type" in vars(request.inputs[k][0]).keys() and "_content" not in k
     ]
     return literal_inputs
 

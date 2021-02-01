@@ -1,9 +1,11 @@
 import os, csv
 from rpy2 import robjects
+from tempfile import NamedTemporaryFile as TempFile
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
 from pywps.app.Common import Metadata
 from tempfile import NamedTemporaryFile
 from pywps.app.exceptions import ProcessError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
@@ -49,45 +51,41 @@ class ClimdexInputCSV(Process):
             },
         )
         inputs = [
-            ComplexInput(
-                "tmax_file",
-                "daily maximum temperature data file",
-                abstract="Name of file containing daily maximum temperature data.",
+            LiteralInput(
+                "tmax_file_content",
+                "daily maximum temperature data file content",
+                abstract="Content of file with daily maximum temperature data "
+                "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("text/csv", extension=".csv"),
-                ],
+                data_type="string",
             ),
-            ComplexInput(
-                "tmin_file",
+            LiteralInput(
+                "tmin_file_content",
                 "daily minimum temperature data file",
-                abstract="Name of file containing daily minimum temperature data.",
+                abstract="Content of file with daily minimum temperature data "
+                "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("text/csv", extension=".csv"),
-                ],
+                data_type="string",
             ),
-            ComplexInput(
-                "prec_file",
-                "daily total precipitation data file",
-                abstract="Name of file containing daily total precipitation data.",
+            LiteralInput(
+                "prec_file_content",
+                "daily total precipitation data file content",
+                abstract="Content of file with daily total precipitation data "
+                "(temporary alternative to taking file).",
                 min_occurs=1,
                 max_occurs=1,
-                supported_formats=[
-                    Format("text/csv", extension=".csv"),
-                ],
+                data_type="string",
             ),
-            ComplexInput(
-                "tavg_file",
-                "mean temperature data file",
-                abstract="Name of file containing daily mean temperature data.",
+            LiteralInput(
+                "tavg_file_content",
+                "mean temperature data file content",
+                abstract="Content of file with daily mean temperature data "
+                "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("text/csv", extension=".csv"),
-                ],
+                data_type="string",
             ),
             LiteralInput(
                 "na_strings",
@@ -136,16 +134,37 @@ class ClimdexInputCSV(Process):
             status_supported=True,
         )
 
-    def check_columns(self, csv_file, column, var):
-        with open(csv_file, "r") as file_:
-            reader = csv.reader(file_)
-            columns = next(reader)
-            if column not in columns:
-                raise ProcessError(f"No {var} column of that name")
+    def prepare_csv_files(self, args):
+        def write_csv(content):
+            file_ = TempFile(mode="w+", suffix=".csv")
+            file_.write(content)
+            file_.seek(0)
+
+            return file_
+
+        prec_file = write_csv(args["prec_file_content"][0])
+
+        if "tavg_file_content" in args.keys():
+            tavg_file = write_csv(args["tavg_file_content"][0])
+            return {"prec_file": prec_file, "tavg_file": tavg_file}
+
+        elif "tmax_file_content" in args.keys() and "tmin_file_content" in args.keys():
+            tmax_file = write_csv(args["tmax_file_content"][0])
+            tmin_file = write_csv(args["tmin_file_content"][0])
+            return {
+                "prec_file": prec_file,
+                "tmin_file": tmin_file,
+                "tmax_file": tmax_file,
+            }
+
+        else:
+            raise ProcessError(
+                "You must provide one of either a tavg file content or tmax and tmin file content"
+            )
 
     def prepare_parameters(
         self,
-        request,
+        data_files,
         date_fields,
         date_format,
         tmax_column,
@@ -153,17 +172,23 @@ class ClimdexInputCSV(Process):
         prec_column,
         tavg_column,
     ):
-        args = collect_args(request, self.workdir)
-        prec_file = args["prec_file"][0]
-        self.check_columns(prec_file, prec_column, "prec")
+        def check_columns(csv_file, column, var):
+            with open(csv_file, "r") as file_:
+                reader = csv.reader(file_)
+                columns = next(reader)
+                if column not in columns:
+                    raise ProcessError(f"No {var} column of that name")
+
+        prec_file = data_files["prec_file"]
+        check_columns(prec_file.name, prec_column, "prec")
         data_types = robjects.r(
             f"list(list(fields={date_fields}, format='{date_format}'))"
         )
 
-        if "tavg_file" in args.keys():
+        if "tavg_file" in data_files.keys():
             # use tavg data if provided
-            tavg_file = prec_file = args["tavg_file"][0]
-            self.check_columns(tavg_file, tavg_column, "tavg")
+            tavg_file = data_files["tavg_file"]
+            check_columns(tavg_file.name, tavg_column, "tavg")
             date_columns = robjects.r(
                 f"list(tavg = '{tavg_column}', prec = '{prec_column}')"
             )
@@ -174,20 +199,20 @@ class ClimdexInputCSV(Process):
                 "date_types": data_types,
             }
 
-        elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
+        elif "tmax_file" in data_files.keys() and "tmin_file" in data_files.keys():
             # use tmax and tmin data if tavg is not provided
-            tmax_file = args["tmax_file"][0]
-            self.check_columns(tmax_file, tmax_column, "tmax")
-            tmin_file = args["tmin_file"][0]
-            self.check_columns(tmin_file, tmin_column, "tmin")
+            tmax_file = data_files["tmax_file"]
+            check_columns(tmax_file.name, tmax_column, "tmax")
+            tmin_file = data_files["tmin_file"]
+            check_columns(tmin_file.name, tmin_column, "tmin")
 
             date_columns = robjects.r(
                 f"list(tmax = '{tmax_column}', tmin = '{tmin_column}', prec = '{prec_column}')"
             )
             return {
-                "tmax_file": tmax_file,
-                "tmin_file": tmin_file,
-                "prec_file": prec_file,
+                "tmax_file": tmax_file.name,
+                "tmin_file": tmin_file.name,
+                "prec_file": prec_file.name,
                 "data_columns": date_columns,
                 "date_types": data_types,
             }
@@ -244,8 +269,11 @@ class ClimdexInputCSV(Process):
             log_level=loglevel,
             process_step="prepare_params",
         )
+
+        args = collect_args(request, self.workdir)
+        data_files = self.prepare_csv_files(args)
         params = self.prepare_parameters(
-            request,
+            data_files,
             date_fields,
             date_format,
             tmax_column,
@@ -279,6 +307,9 @@ class ClimdexInputCSV(Process):
             )
         except RRuntimeError as e:
             raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
+
+        finally:
+            [tmpfile.close() for tmpfile in data_files.values()]
 
         log_handler(
             self,
