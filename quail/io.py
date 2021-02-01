@@ -38,7 +38,7 @@ ci_rda = ComplexInput(
 ci_name = LiteralInput(
     "ci_name",
     "climdexInput name",
-    abstract="Name of the climdexInput object",
+    abstract="Name of the climdexInput object. Only needed when using ci_rda input.",
     default="ci",
     min_occurs=1,
     max_occurs=1,
