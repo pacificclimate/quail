@@ -10,7 +10,7 @@ from quail.processes.wps_climdex_days import ClimdexDays
 
 def build_params(climdex_input, ci_name, days_type, vector_name, output_file):
     return (
-        f"climdex_input=@xlink:href={climdex_input};"
+        f"ci_rda=@xlink:href={climdex_input};"
         f"ci_name={ci_name};"
         f"days_type={days_type};"
         f"vector_name={vector_name};"
@@ -47,12 +47,33 @@ def build_params(climdex_input, ci_name, days_type, vector_name, output_file):
         ),
     ],
 )
-def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
+def test_wps_climdex_days_rda(climdex_input, ci_name, days_type, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
             climdex_input, ci_name, days_type, vector_name, out_file.name
+        )
+        run_wps_process(ClimdexDays(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "days_type"),
+    [
+        (
+            local_path("climdexInput.rds"),
+            "summer days",
+        ),
+    ],
+)
+def test_wps_climdex_days_rds(climdex_input, days_type):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = (
+            f"ci_rds=@xlink:href={climdex_input};"
+            f"days_type={days_type};"
+            f"output_file={out_file.name};"
         )
         run_wps_process(ClimdexDays(), datainputs)
 

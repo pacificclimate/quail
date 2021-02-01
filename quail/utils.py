@@ -53,12 +53,21 @@ def validate_vector(vector):
         )
 
 
-def load_ci(climdex_input, ci_name):
-    ci = load_rdata_to_python(climdex_input, ci_name)
+def load_ci(args, ci_name):
+    if "ci_rda" in args.keys():
+        ci = load_rdata_to_python(args["ci_rda"][0], ci_name)
+    elif "ci_rds" in args.keys():
+        rds = args["ci_rds"][0]
+        ci = robjects.r(f"readRDS('{rds}')")
+    else:
+        raise ProcessError(
+            "You must provide either a Rda or RDS file containing the climdexInput"
+        )
+
     if ci.rclass[0] == "climdexInput":
         return ci
     else:
-        raise ProcessError(msg="Input for ci-name is not a valid climdexInput object")
+        raise ProcessError("Input for ci-name is not a valid climdexInput object")
 
 
 # Testing
