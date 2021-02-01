@@ -55,7 +55,7 @@ class ClimdexInputCSV(Process):
                 "tmax_file_content",
                 "daily maximum temperature data file content",
                 abstract="Content of file with daily maximum temperature data "
-                    "(temporary alternative to taking file).",
+                "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -64,7 +64,7 @@ class ClimdexInputCSV(Process):
                 "tmin_file_content",
                 "daily minimum temperature data file",
                 abstract="Content of file with daily minimum temperature data "
-                    "(temporary alternative to taking file).",
+                "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -73,7 +73,7 @@ class ClimdexInputCSV(Process):
                 "prec_file_content",
                 "daily total precipitation data file content",
                 abstract="Content of file with daily total precipitation data "
-                    "(temporary alternative to taking file).",
+                "(temporary alternative to taking file).",
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -82,7 +82,7 @@ class ClimdexInputCSV(Process):
                 "tavg_file_content",
                 "mean temperature data file content",
                 abstract="Content of file with daily mean temperature data "
-                    "(temporary alternative to taking file).",
+                "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -135,7 +135,6 @@ class ClimdexInputCSV(Process):
         )
 
     def prepare_csv_files(self, args):
-
         def write_csv(content):
             file_ = TempFile(mode="w+", suffix=".csv")
             file_.write(content)
@@ -173,7 +172,6 @@ class ClimdexInputCSV(Process):
         prec_column,
         tavg_column,
     ):
-
         def check_columns(csv_file, column, var):
             with open(csv_file, "r") as file_:
                 reader = csv.reader(file_)

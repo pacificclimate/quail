@@ -1,19 +1,14 @@
 import pytest
 from tempfile import NamedTemporaryFile
-from pkg_resources import resource_filename
-from wps_tools.file_handling import csv_handler
 
 from wps_tools.testing import run_wps_process, local_path, process_err_test
 from quail.processes.wps_climdexInput_csv import ClimdexInputCSV
 
-tmax_file_content = csv_handler(resource_filename("tests", "data/1018935_MAX_TEMP.csv"))
-tmin_file_content = csv_handler(resource_filename("tests", "data/1018935_MIN_TEMP.csv"))
-prec_file_content = csv_handler(
-    resource_filename("tests", "data/1018935_ONE_DAY_PRECIPITATION.csv")
-)
-
 
 def build_params(
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -53,6 +48,9 @@ def build_params(
     ],
 )
 def test_wps_climdexInput_csv(
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -63,6 +61,9 @@ def test_wps_climdexInput_csv(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
+            tmax_file_content,
+            tmin_file_content,
+            prec_file_content,
             tmax_column,
             tmin_column,
             prec_column,
@@ -92,6 +93,9 @@ def test_wps_climdexInput_csv(
     ],
 )
 def test_wps_climdexInput_csv_column_err(
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -102,6 +106,9 @@ def test_wps_climdexInput_csv_column_err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
+            tmax_file_content,
+            tmin_file_content,
+            prec_file_content,
             tmax_column,
             tmin_column,
             prec_column,
@@ -131,6 +138,9 @@ def test_wps_climdexInput_csv_column_err(
     ],
 )
 def test_wps_climdexInput_csv_syntax_err(
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -141,6 +151,9 @@ def test_wps_climdexInput_csv_syntax_err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
+            tmax_file_content,
+            tmin_file_content,
+            prec_file_content,
             tmax_column,
             tmin_column,
             prec_column,
