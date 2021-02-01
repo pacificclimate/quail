@@ -54,7 +54,8 @@ class ClimdexInputCSV(Process):
             LiteralInput(
                 "tmax_file_content",
                 "daily maximum temperature data file content",
-                abstract="Content of file with daily maximum temperature data.",
+                abstract="Content of file with daily maximum temperature data "
+                    "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -62,7 +63,8 @@ class ClimdexInputCSV(Process):
             LiteralInput(
                 "tmin_file_content",
                 "daily minimum temperature data file",
-                abstract="Content of file with daily minimum temperature data.",
+                abstract="Content of file with daily minimum temperature data "
+                    "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
@@ -70,7 +72,8 @@ class ClimdexInputCSV(Process):
             LiteralInput(
                 "prec_file_content",
                 "daily total precipitation data file content",
-                abstract="Content of file with daily total precipitation data.",
+                abstract="Content of file with daily total precipitation data "
+                    "(temporary alternative to taking file).",
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -78,7 +81,8 @@ class ClimdexInputCSV(Process):
             LiteralInput(
                 "tavg_file_content",
                 "mean temperature data file content",
-                abstract="Content of file with daily mean temperature data.",
+                abstract="Content of file with daily mean temperature data "
+                    "(temporary alternative to taking file).",
                 min_occurs=0,
                 max_occurs=1,
                 data_type="string",
