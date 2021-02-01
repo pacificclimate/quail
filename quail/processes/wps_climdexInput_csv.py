@@ -134,23 +134,24 @@ class ClimdexInputCSV(Process):
             status_supported=True,
         )
 
-    def write_csv(self, content):
-        file_ = TempFile(mode="w+", suffix=".csv")
-        file_.write(content)
-        file_.seek(0)
-
-        return file_
-
     def prepare_csv_files(self, args):
-        prec_file = self.write_csv(args["prec_file_content"][0])
+
+        def write_csv(content):
+            file_ = TempFile(mode="w+", suffix=".csv")
+            file_.write(content)
+            file_.seek(0)
+
+            return file_
+
+        prec_file = write_csv(args["prec_file_content"][0])
 
         if "tavg_file_content" in args.keys():
-            tavg_file = self.write_csv(args["tavg_file_content"][0])
+            tavg_file = write_csv(args["tavg_file_content"][0])
             return {"prec_file": prec_file, "tavg_file": tavg_file}
 
         elif "tmax_file_content" in args.keys() and "tmin_file_content" in args.keys():
-            tmax_file = self.write_csv(args["tmax_file_content"][0])
-            tmin_file = self.write_csv(args["tmin_file_content"][0])
+            tmax_file = write_csv(args["tmax_file_content"][0])
+            tmin_file = write_csv(args["tmin_file_content"][0])
             return {
                 "prec_file": prec_file,
                 "tmin_file": tmin_file,
@@ -162,13 +163,6 @@ class ClimdexInputCSV(Process):
                 "You must provide one of either a tavg file content or tmax and tmin file content"
             )
 
-    def check_columns(self, csv_file, column, var):
-        with open(csv_file, "r") as file_:
-            reader = csv.reader(file_)
-            columns = next(reader)
-            if column not in columns:
-                raise ProcessError(f"No {var} column of that name")
-
     def prepare_parameters(
         self,
         data_files,
@@ -179,8 +173,16 @@ class ClimdexInputCSV(Process):
         prec_column,
         tavg_column,
     ):
+
+        def check_columns(csv_file, column, var):
+            with open(csv_file, "r") as file_:
+                reader = csv.reader(file_)
+                columns = next(reader)
+                if column not in columns:
+                    raise ProcessError(f"No {var} column of that name")
+
         prec_file = data_files["prec_file"]
-        self.check_columns(prec_file.name, prec_column, "prec")
+        check_columns(prec_file.name, prec_column, "prec")
         data_types = robjects.r(
             f"list(list(fields={date_fields}, format='{date_format}'))"
         )
@@ -188,7 +190,7 @@ class ClimdexInputCSV(Process):
         if "tavg_file" in data_files.keys():
             # use tavg data if provided
             tavg_file = data_files["tavg_file"]
-            self.check_columns(tavg_file.name, tavg_column, "tavg")
+            check_columns(tavg_file.name, tavg_column, "tavg")
             date_columns = robjects.r(
                 f"list(tavg = '{tavg_column}', prec = '{prec_column}')"
             )
@@ -202,9 +204,9 @@ class ClimdexInputCSV(Process):
         elif "tmax_file" in data_files.keys() and "tmin_file" in data_files.keys():
             # use tmax and tmin data if tavg is not provided
             tmax_file = data_files["tmax_file"]
-            self.check_columns(tmax_file.name, tmax_column, "tmax")
+            check_columns(tmax_file.name, tmax_column, "tmax")
             tmin_file = data_files["tmin_file"]
-            self.check_columns(tmin_file.name, tmin_column, "tmin")
+            check_columns(tmin_file.name, tmin_column, "tmin")
 
             date_columns = robjects.r(
                 f"list(tmax = '{tmax_column}', tmin = '{tmin_column}', prec = '{prec_column}')"
