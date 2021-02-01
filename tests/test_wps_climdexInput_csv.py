@@ -6,9 +6,9 @@ from quail.processes.wps_climdexInput_csv import ClimdexInputCSV
 
 
 def build_params(
-    tmax_file,
-    tmin_file,
-    prec_file,
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -17,9 +17,9 @@ def build_params(
     output_file,
 ):
     return (
-        f"tmax_file=@xlink:href={tmax_file};"
-        f"tmin_file=@xlink:href={tmin_file};"
-        f"prec_file=@xlink:href={prec_file};"
+        f"tmax_file_content={tmax_file_content};"
+        f"tmin_file_content={tmin_file_content};"
+        f"prec_file_content={prec_file_content};"
         f"tmax_column={tmax_column};"
         f"tmin_column={tmin_column};"
         f"prec_column={prec_column};"
@@ -31,9 +31,6 @@ def build_params(
 
 @pytest.mark.parametrize(
     (
-        "tmax_file",
-        "tmin_file",
-        "prec_file",
         "tmax_column",
         "tmin_column",
         "prec_column",
@@ -42,9 +39,6 @@ def build_params(
     ),
     [
         (
-            local_path("1018935_MAX_TEMP.csv"),
-            local_path("1018935_MIN_TEMP.csv"),
-            local_path("1018935_ONE_DAY_PRECIPITATION.csv"),
             "MAX_TEMP",
             "MIN_TEMP",
             "ONE_DAY_PRECIPITATION",
@@ -54,9 +48,9 @@ def build_params(
     ],
 )
 def test_wps_climdexInput_csv(
-    tmax_file,
-    tmin_file,
-    prec_file,
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -67,9 +61,9 @@ def test_wps_climdexInput_csv(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            tmax_file,
-            tmin_file,
-            prec_file,
+            tmax_file_content,
+            tmin_file_content,
+            prec_file_content,
             tmax_column,
             tmin_column,
             prec_column,
@@ -82,9 +76,6 @@ def test_wps_climdexInput_csv(
 
 @pytest.mark.parametrize(
     (
-        "tmax_file",
-        "tmin_file",
-        "prec_file",
         "tmax_column",
         "tmin_column",
         "prec_column",
@@ -93,9 +84,6 @@ def test_wps_climdexInput_csv(
     ),
     [
         (
-            local_path("1018935_MAX_TEMP.csv"),
-            local_path("1018935_MIN_TEMP.csv"),
-            local_path("1018935_ONE_DAY_PRECIPITATION.csv"),
             "FAKE_COLUMN",
             "MIN_TEMP",
             "ONE_DAY_PRECIPITATION",
@@ -105,9 +93,9 @@ def test_wps_climdexInput_csv(
     ],
 )
 def test_wps_climdexInput_csv_column_err(
-    tmax_file,
-    tmin_file,
-    prec_file,
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -118,9 +106,9 @@ def test_wps_climdexInput_csv_column_err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            tmax_file,
-            tmin_file,
-            prec_file,
+            tmax_file_content,
+            tmin_file_content,
+            prec_file_content,
             tmax_column,
             tmin_column,
             prec_column,
@@ -133,9 +121,6 @@ def test_wps_climdexInput_csv_column_err(
 
 @pytest.mark.parametrize(
     (
-        "tmax_file",
-        "tmin_file",
-        "prec_file",
         "tmax_column",
         "tmin_column",
         "prec_column",
@@ -144,9 +129,6 @@ def test_wps_climdexInput_csv_column_err(
     ),
     [
         (
-            local_path("1018935_MAX_TEMP.csv"),
-            local_path("1018935_MIN_TEMP.csv"),
-            local_path("1018935_ONE_DAY_PRECIPITATION.csv"),
             "FAKE_COLUMN",
             "MIN_TEMP",
             "ONE_DAY_PRECIPITATION",
@@ -156,9 +138,9 @@ def test_wps_climdexInput_csv_column_err(
     ],
 )
 def test_wps_climdexInput_csv_syntax_err(
-    tmax_file,
-    tmin_file,
-    prec_file,
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
     tmax_column,
     tmin_column,
     prec_column,
@@ -169,9 +151,9 @@ def test_wps_climdexInput_csv_syntax_err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            tmax_file,
-            tmin_file,
-            prec_file,
+            tmax_file_content,
+            tmin_file_content,
+            prec_file_content,
             tmax_column,
             tmin_column,
             prec_column,
