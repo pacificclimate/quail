@@ -1,5 +1,4 @@
 import pytest
-from tempfile import NamedTemporaryFile
 from pkg_resources import resource_filename
 from wps_tools.file_handling import csv_handler
 

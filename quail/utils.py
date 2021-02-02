@@ -1,24 +1,15 @@
 import logging
-import re
 from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib._rinterface_capi import RParsingError
-from rpy2.rinterface_lib.embedded import RRuntimeError
 
 # Libraries for test functions
-import pytest
-import io
-from rpy2 import robjects
-from contextlib import redirect_stderr
-from wps_tools.output_handling import rda_to_vector
-from wps_tools.testing import run_wps_process
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
 
 # PCIC libraries
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
-from wps_tools.R import get_package
 
 
 logger = logging.getLogger("PYWPS")

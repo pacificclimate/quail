@@ -1,6 +1,6 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput
+from pywps import Process
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 from pywps.app.Common import Metadata

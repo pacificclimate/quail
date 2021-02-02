@@ -1,5 +1,4 @@
 import pytest
-import sys
 from rpy2 import robjects
 from itertools import chain
 from tempfile import NamedTemporaryFile

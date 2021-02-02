@@ -1,8 +1,5 @@
 import pytest
-import io
 from tempfile import NamedTemporaryFile
-from pywps.app.exceptions import ProcessError
-from contextlib import redirect_stderr
 
 from wps_tools.testing import local_path, run_wps_process, process_err_test
 from quail.processes.wps_climdex_days import ClimdexDays

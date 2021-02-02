@@ -1,20 +1,15 @@
 import os, csv
 from rpy2 import robjects
 from tempfile import NamedTemporaryFile as TempFile
-from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
+from pywps import Process, LiteralInput
 from pywps.app.Common import Metadata
-from tempfile import NamedTemporaryFile
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
-from wps_tools.R import (
-    get_package,
-    load_rdata_to_python,
-    save_python_to_rdata,
-    r_valid_name,
-)
+from wps_tools.io import log_level, collect_args, vector_name
+from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
+
 from quail.utils import logger, collect_literal_inputs, validate_vector
 from quail.io import (
     tmax_column,

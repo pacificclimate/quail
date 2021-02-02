@@ -1,12 +1,8 @@
 import pytest
-import io
 from pkg_resources import resource_filename
 from pywps.app.exceptions import ProcessError
-from tempfile import NamedTemporaryFile
-from contextlib import redirect_stderr
 
 from quail.utils import load_ci, validate_vector
-from wps_tools.testing import local_path
 
 
 @pytest.mark.parametrize(
