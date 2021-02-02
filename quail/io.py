@@ -1,15 +1,5 @@
 from pywps import LiteralInput, ComplexInput, ComplexOutput, Format
 
-climdex_input = ComplexInput(
-    "climdex_input",
-    "climdexInput",
-    abstract="Rdata (.rda) file containing R Object of type climdexInput",
-    min_occurs=0,
-    max_occurs=1,
-    supported_formats=[
-        Format("application/x-gzip", extension=".rda", encoding="base64")
-    ],
-)
 
 ci_rds = ComplexInput(
     "ci_rds",
