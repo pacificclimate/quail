@@ -49,7 +49,7 @@ def build_params(
         ),
     ],
 )
-def test_wps_climdex_quantile(
+def test_wps_climdex_quantile_rda(
     data_file,
     data_vector,
     quantiles_vector,
@@ -77,8 +77,8 @@ def test_wps_climdex_quantile(
     ),
     [
         (
-            local_path("ec.1018935.rds"),
-            "unlist(ec.1018935.tmax['MAX_TEMP'])",
+            local_path("ec.1018935.MAX_TEMP.rds"),
+            None,
             "c(0.1, 0.5, 0.9)",
             "tmax_quantiles",
         ),

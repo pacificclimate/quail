@@ -55,7 +55,7 @@ class ClimdexQuantile(Process):
             LiteralInput(
                 "data_vector",
                 "Data Vector",
-                abstract="R double vector data to compute quantiles on",
+                abstract="R double vector data to compute quantiles on. Only neeed when data_rds is used.",
                 default="data_vector",
                 min_occurs=1,
                 max_occurs=1,
@@ -149,7 +149,7 @@ class ClimdexQuantile(Process):
         elif data_file.endswith("rda"):
             data = load_rdata_to_python(data_file, data_vector)
         elif data_file.endswith("rds"):
-            data = robjects.r(f"readRDS('{data_file}')")
+            data = robjects.r(f"unlist(readRDS('{data_file}'))")
 
         log_handler(
             self,
