@@ -13,8 +13,8 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, load_ci
-from quail.io import climdex_input, ci_name, output_file
+from quail.utils import logger, load_ci, collect_literal_inputs
+from quail.io import ci_rda, ci_rds, ci_name, output_file
 
 
 class ClimdexRMM(Process):
@@ -33,7 +33,8 @@ class ClimdexRMM(Process):
             },
         )
         inputs = [
-            climdex_input,
+            ci_rda,
+            ci_rds,
             ci_name,
             output_file,
             LiteralInput(
@@ -79,9 +80,9 @@ class ClimdexRMM(Process):
             return climdex.climdex_rnnmm(ci, threshold)
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, threshold, vector_name, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
+        ci_name, output_file, threshold, vector_name, loglevel = collect_literal_inputs(
+            request
+        )
         r_valid_name(vector_name)
 
         log_handler(
@@ -101,7 +102,8 @@ class ClimdexRMM(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        ci = load_ci(climdex_input, ci_name)
+        args = collect_args(request, self.workdir)
+        ci = load_ci(args, ci_name)
 
         log_handler(
             self,

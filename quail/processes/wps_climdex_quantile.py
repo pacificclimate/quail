@@ -33,19 +33,30 @@ class ClimdexQuantile(Process):
         )
         inputs = [
             ComplexInput(
-                "data_file",
-                "Data File",
-                abstract="Path to the file containing data to compute quantiles on",
+                "data_rda",
+                "Rda Data File",
+                abstract="Path to the file containing data to compute quantiles on.",
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
                     Format("application/x-gzip", extension=".rda", encoding="base64")
                 ],
             ),
+            ComplexInput(
+                "data_rds",
+                "Rda Data File",
+                abstract="Path to the file containing data to compute quantiles on",
+                min_occurs=0,
+                max_occurs=1,
+                supported_formats=[
+                    Format("application/x-gzip", extension=".rds", encoding="base64")
+                ],
+            ),
             LiteralInput(
                 "data_vector",
                 "Data Vector",
                 abstract="R double vector data to compute quantiles on",
+                default="data_vector",
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -93,8 +104,10 @@ class ClimdexQuantile(Process):
 
     def collect_args_wrapper(self, request):
         literal_inputs = collect_literal_inputs(request)
-        if "data_file" in collect_args(request, self.workdir).keys():
-            data_file = collect_args(request, self.workdir)["data_file"][0]
+        if "data_rda" in collect_args(request, self.workdir).keys():
+            data_file = collect_args(request, self.workdir)["data_rda"][0]
+        elif "data_rds" in collect_args(request, self.workdir).keys():
+            data_file = collect_args(request, self.workdir)["data_rds"][0]
         else:
             data_file = None
 
@@ -131,10 +144,12 @@ class ClimdexQuantile(Process):
             process_step="load_rdata",
         )
 
-        if data_file:
-            data = load_rdata_to_python(data_file, data_vector)
-        else:
+        if data_file is None:
             data = robjects.r(data_vector)
+        elif data_file.endswith("rda"):
+            data = load_rdata_to_python(data_file, data_vector)
+        elif data_file.endswith("rds"):
+            data = robjects.r(f"readRDS('{data_file}')")
 
         log_handler(
             self,

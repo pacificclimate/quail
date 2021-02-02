@@ -59,6 +59,7 @@ def load_ci(args, ci_name):
     elif "ci_rds" in args.keys():
         rds = args["ci_rds"][0]
         ci = robjects.r(f"readRDS('{rds}')")
+        robjects.r.assign("ci", ci)
     else:
         raise ProcessError(
             "You must provide either a Rda or RDS file containing the climdexInput"

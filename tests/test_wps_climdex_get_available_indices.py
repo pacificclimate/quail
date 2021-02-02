@@ -12,12 +12,28 @@ from quail.processes.wps_climdex_get_available_indices import GetIndices
     ("climdex_input", "ci_name"),
     [(local_path("climdexInput.rda"), "ci")],
 )
-def test_wps_get_available_indices(climdex_input, ci_name):
+def test_wps_get_available_indices_rda(climdex_input, ci_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = (
-            f"climdex_input=@xlink:href={climdex_input};"
+            f"ci_rda=@xlink:href={climdex_input};"
+            f"ci_name={ci_name};"
+            f"output_file={out_file.name};"
+        )
+        run_wps_process(GetIndices(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "ci_name"),
+    [(local_path("climdexInput.rds"), "ci")],
+)
+def test_wps_get_available_indices_rds(climdex_input, ci_name):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = (
+            f"ci_rds=@xlink:href={climdex_input};"
             f"ci_name={ci_name};"
             f"output_file={out_file.name};"
         )
@@ -36,7 +52,7 @@ def test_wps_get_available_indices_ci_err(climdex_input, ci_name):
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = (
-            f"climdex_input=@xlink:href={climdex_input};"
+            f"ci_rda=@xlink:href={climdex_input};"
             f"ci_name={ci_name};"
             f"output_file={out_file.name};"
         )
