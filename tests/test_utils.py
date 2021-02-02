@@ -10,14 +10,17 @@ from wps_tools.testing import local_path
 
 
 @pytest.mark.parametrize(
-    ("file_", "obj_name"),
+    ("args", "obj_name"),
     [
-        (resource_filename("tests", "data/expected_gsl.rda"), "expected_gsl_vector"),
+        (
+            {"ci_rda": [resource_filename("tests", "data/expected_gsl.rda")]},
+            "expected_gsl_vector",
+        ),
     ],
 )
-def test_load_ci_obj_err(file_, obj_name):
+def test_load_ci_obj_err(args, obj_name):
     with pytest.raises(ProcessError) as e:
-        load_ci(file_, obj_name)
+        load_ci(args, obj_name)
     assert (
         str(vars(e)["_excinfo"][1])
         == "Input for ci-name is not a valid climdexInput object"
@@ -25,17 +28,32 @@ def test_load_ci_obj_err(file_, obj_name):
 
 
 @pytest.mark.parametrize(
-    ("file_", "obj_name"),
+    ("args", "obj_name"),
     [
-        (resource_filename("tests", "data/climdexInput.rda"), "not_ci"),
+        ({"ci_rda": [resource_filename("tests", "data/climdexInput.rda")]}, "not_ci"),
     ],
 )
-def test_load_ci_name_err(file_, obj_name):
+def test_load_ci_name_err(args, obj_name):
     with pytest.raises(ProcessError) as e:
-        load_ci(file_, obj_name)
+        load_ci(args, obj_name)
     assert (
         str(vars(e)["_excinfo"][1])
         == "RRuntimeError: The variable name passed is not an object found in the given rda file"
+    )
+
+
+@pytest.mark.parametrize(
+    ("args", "obj_name"),
+    [
+        ({"not_ci": [resource_filename("tests", "data/climdexInput.rda")]}, "ci"),
+    ],
+)
+def test_load_ci_args_err(args, obj_name):
+    with pytest.raises(ProcessError) as e:
+        load_ci(args, obj_name)
+    assert (
+        str(vars(e)["_excinfo"][1])
+        == "You must provide either a Rda or RDS file containing the climdexInput"
     )
 
 
