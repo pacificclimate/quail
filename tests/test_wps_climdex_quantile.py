@@ -6,11 +6,7 @@ from quail.processes.wps_climdex_quantile import ClimdexQuantile
 
 
 def build_params(
-    data_file,
-    data_vector,
-    quantiles_vector,
-    vector_name,
-    output_file,
+    data_file, data_vector, quantiles_vector, vector_name, output_file,
 ):
     return (
         f"data_file=@xlink:href={data_file};"
@@ -22,12 +18,7 @@ def build_params(
 
 
 @pytest.mark.parametrize(
-    (
-        "data_file",
-        "data_vector",
-        "quantiles_vector",
-        "vector_name",
-    ),
+    ("data_file", "data_vector", "quantiles_vector", "vector_name",),
     [
         (
             local_path("ec.1018935.rda"),
@@ -35,12 +26,7 @@ def build_params(
             "c(0.1, 0.5, 0.9)",
             "tmax_quantiles",
         ),
-        (
-            None,
-            "0:10",
-            "0.5",
-            "quantile_50p",
-        ),
+        (None, "0:10", "0.5", "quantile_50p",),
         (
             local_path("ec.1018935.MAX_TEMP.rds"),
             None,
@@ -50,10 +36,7 @@ def build_params(
     ],
 )
 def test_wps_climdex_quantile(
-    data_file,
-    data_vector,
-    quantiles_vector,
-    vector_name,
+    data_file, data_vector, quantiles_vector, vector_name,
 ):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
@@ -88,11 +71,7 @@ def test_wps_climdex_quantile_vector_err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            data_file,
-            data_vector,
-            quantiles_vector,
-            vector_name,
-            out_file.name,
+            data_file, data_vector, quantiles_vector, vector_name, out_file.name,
         )
         process_err_test(ClimdexQuantile, datainputs)
 
@@ -115,10 +94,6 @@ def test_wps_climdex_quantile_load_rda__err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            data_file,
-            data_vector,
-            quantiles_vector,
-            vector_name,
-            out_file.name,
+            data_file, data_vector, quantiles_vector, vector_name, out_file.name,
         )
         process_err_test(ClimdexQuantile, datainputs)

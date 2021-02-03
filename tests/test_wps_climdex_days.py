@@ -18,30 +18,10 @@ def build_params(climdex_input, ci_name, days_type, vector_name, output_file):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "days_type", "vector_name"),
     [
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "summer days",
-            "summer_days",
-        ),
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "icing days",
-            "icing_days",
-        ),
-        (
-            local_path("climdexInput.rds"),
-            "ci",
-            "frost days",
-            "frost_days",
-        ),
-        (
-            local_path("climdexInput.rds"),
-            "ci",
-            "tropical nights",
-            "tropical_nights",
-        ),
+        (local_path("climdexInput.rda"), "ci", "summer days", "summer_days",),
+        (local_path("climdexInput.rda"), "ci", "icing days", "icing_days",),
+        (local_path("climdexInput.rds"), "ci", "frost days", "frost_days",),
+        (local_path("climdexInput.rds"), "ci", "tropical nights", "tropical_nights",),
     ],
 )
 def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
@@ -56,14 +36,7 @@ def test_wps_climdex_days(climdex_input, ci_name, days_type, vector_name):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "days_type", "vector_name"),
-    [
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "summer days",
-            "summer days",
-        ),
-    ],
+    [(local_path("climdexInput.rda"), "ci", "summer days", "summer days",),],
 )
 def test_wps_climdex_days_vector_err(climdex_input, ci_name, days_type, vector_name):
     with NamedTemporaryFile(
@@ -78,12 +51,7 @@ def test_wps_climdex_days_vector_err(climdex_input, ci_name, days_type, vector_n
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "days_type", "vector_name"),
     [
-        (
-            local_path("climdexInput.rda"),
-            "not_ci",
-            "summer days",
-            "summer_days",
-        ),
+        (local_path("climdexInput.rda"), "not_ci", "summer days", "summer_days",),
         (
             local_path("expected_days_data.rda"),
             "expected_summer_days",

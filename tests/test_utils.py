@@ -25,9 +25,7 @@ def test_load_ci_obj_err(args, obj_name):
 
 @pytest.mark.parametrize(
     ("args", "obj_name"),
-    [
-        ({"ci_rda": [resource_filename("tests", "data/climdexInput.rda")]}, "not_ci"),
-    ],
+    [({"ci_rda": [resource_filename("tests", "data/climdexInput.rda")]}, "not_ci"),],
 )
 def test_load_ci_name_err(args, obj_name):
     with pytest.raises(ProcessError) as e:
@@ -40,9 +38,7 @@ def test_load_ci_name_err(args, obj_name):
 
 @pytest.mark.parametrize(
     ("args", "obj_name"),
-    [
-        ({"not_ci": [resource_filename("tests", "data/climdexInput.rda")]}, "ci"),
-    ],
+    [({"not_ci": [resource_filename("tests", "data/climdexInput.rda")]}, "ci"),],
 )
 def test_load_ci_args_err(args, obj_name):
     with pytest.raises(ProcessError) as e:
@@ -54,16 +50,14 @@ def test_load_ci_args_err(args, obj_name):
 
 
 @pytest.mark.parametrize(
-    ("vector"),
-    [("c('cats')"), ("c('cats', 'dogs')"), ("c(cats=1, dogs=2)")],
+    ("vector"), [("c('cats')"), ("c('cats', 'dogs')"), ("c(cats=1, dogs=2)")],
 )
 def test_validate_vector(vector):
     validate_vector(vector)
 
 
 @pytest.mark.parametrize(
-    ("vector"),
-    [("()"), ("c'cats', 'dogs')")],
+    ("vector"), [("()"), ("c'cats', 'dogs')")],
 )
 def test_validate_vector_err(vector):
     with pytest.raises(ProcessError) as e:

@@ -25,11 +25,7 @@ class ClimdexQuantile(Process):
 
     def __init__(self):
         self.status_percentage_steps = dict(
-            common_status_percentages,
-            **{
-                "load_rdata": 10,
-                "save_rdata": 90,
-            },
+            common_status_percentages, **{"load_rdata": 10, "save_rdata": 90,},
         )
         inputs = [
             ComplexInput(

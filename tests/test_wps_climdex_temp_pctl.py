@@ -41,15 +41,7 @@ def test_wps_climdex_temp_pctl(climdex_input, ci_name, func, freq, vector_name):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "func", "freq", "vector_name"),
-    [
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "tn10p",
-            "monthly",
-            "vector name",
-        ),
-    ],
+    [(local_path("climdexInput.rda"), "ci", "tn10p", "monthly", "vector name",),],
 )
 def test_wps_climdex_temp_pctl_vector_err(
     climdex_input, ci_name, func, freq, vector_name
@@ -66,13 +58,7 @@ def test_wps_climdex_temp_pctl_vector_err(
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "func", "freq", "vector_name"),
     [
-        (
-            local_path("climdexInput.rda"),
-            "not_ci",
-            "tn10p",
-            "monthly",
-            "vector_name",
-        ),
+        (local_path("climdexInput.rda"), "not_ci", "tn10p", "monthly", "vector_name",),
         (
             local_path("expected_temp_pctl.rda"),
             "expected_tn90p",

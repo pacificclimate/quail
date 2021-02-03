@@ -21,8 +21,7 @@ class GetIndices(Process):
 
     def __init__(self):
         self.status_percentage_steps = dict(
-            common_status_percentages,
-            **{"load_rdata": 10},
+            common_status_percentages, **{"load_rdata": 10},
         )
         inputs = [
             climdex_input,
@@ -84,12 +83,9 @@ class GetIndices(Process):
         return dict(processes)
 
     def _handler(self, request, response):
-        (
-            climdex_input,
-            ci_name,
-            output_file,
-            loglevel,
-        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
+        (climdex_input, ci_name, output_file, loglevel,) = [
+            arg[0] for arg in collect_args(request, self.workdir).values()
+        ]
 
         log_handler(
             self,

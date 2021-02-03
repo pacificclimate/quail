@@ -31,13 +31,7 @@ def test_wps_climdex_sdii(climdex_input, ci_name, vector_name):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "vector_name"),
-    [
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            "vector name",
-        ),
-    ],
+    [(local_path("climdexInput.rda"), "ci", "vector name",),],
 )
 def test_wps_climdex_sdii_vector_err(climdex_input, ci_name, vector_name):
     with NamedTemporaryFile(
@@ -50,16 +44,8 @@ def test_wps_climdex_sdii_vector_err(climdex_input, ci_name, vector_name):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "vector_name"),
     [
-        (
-            local_path("climdexInput.rda"),
-            "not_ci",
-            "vector_name",
-        ),
-        (
-            local_path("expected_sdii.rda"),
-            "expected_sdii",
-            "vector_name",
-        ),
+        (local_path("climdexInput.rda"), "not_ci", "vector_name",),
+        (local_path("expected_sdii.rda"), "expected_sdii", "vector_name",),
     ],
 )
 def test_wps_climdex_sdii_ci_err(climdex_input, ci_name, vector_name):

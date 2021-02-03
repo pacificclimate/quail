@@ -28,11 +28,7 @@ class ClimdexDays(Process):
 
     def __init__(self):
         self.status_percentage_steps = dict(
-            common_status_percentages,
-            **{
-                "prep_ci": 10,
-                "save_rdata": 90,
-            },
+            common_status_percentages, **{"prep_ci": 10, "save_rdata": 90,},
         )
         inputs = [
             climdex_input,
