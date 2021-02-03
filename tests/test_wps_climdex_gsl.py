@@ -18,10 +18,30 @@ def build_params(climdex_input, ci_name, vector_name, gsl_mode, output_file):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "vector_name", "gsl_mode"),
     [
-        (local_path("climdexInput.rda"), "ci", "vector_name", "GSL",),
-        (local_path("climdexInput.rda"), "ci", "vector_name", "GSL_first",),
-        (local_path("climdexInput.rds"), "ci", "vector_name", "GSL_max",),
-        (local_path("climdexInput.rds"), "ci", "vector_name", "GSL_sum",),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "vector_name",
+            "GSL",
+        ),
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "vector_name",
+            "GSL_first",
+        ),
+        (
+            local_path("climdexInput.rds"),
+            "ci",
+            "vector_name",
+            "GSL_max",
+        ),
+        (
+            local_path("climdexInput.rds"),
+            "ci",
+            "vector_name",
+            "GSL_sum",
+        ),
     ],
 )
 def test_wps_climdex_gsl(climdex_input, ci_name, vector_name, gsl_mode):
@@ -36,7 +56,14 @@ def test_wps_climdex_gsl(climdex_input, ci_name, vector_name, gsl_mode):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "gsl_mode", "vector_name"),
-    [(local_path("climdexInput.rda"), "ci", "GSL", "vector name",),],
+    [
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "GSL",
+            "vector name",
+        ),
+    ],
 )
 def test_wps_climdex_gsl_vector_err(climdex_input, ci_name, gsl_mode, vector_name):
     with NamedTemporaryFile(
@@ -51,8 +78,18 @@ def test_wps_climdex_gsl_vector_err(climdex_input, ci_name, gsl_mode, vector_nam
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "gsl_mode", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "GSL", "vector_name",),
-        (local_path("expected_gsl.rda"), "expected_gsl_vector", "GSL", "vector_name",),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "GSL",
+            "vector_name",
+        ),
+        (
+            local_path("expected_gsl.rda"),
+            "expected_gsl_vector",
+            "GSL",
+            "vector_name",
+        ),
     ],
 )
 def test_wps_climdex_gsl_ci_err(climdex_input, ci_name, gsl_mode, vector_name):

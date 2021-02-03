@@ -38,7 +38,9 @@ def test_wps_climdex_ptot_rda(climdex_input, ci_name, threshold, vector_name):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold", "vector_name"),
-    [(local_path("climdexInput.rds"), "ci", None, "vector_name"),],
+    [
+        (local_path("climdexInput.rds"), "ci", None, "vector_name"),
+    ],
 )
 def test_wps_climdex_ptot_rds(climdex_input, ci_name, threshold, vector_name):
     with NamedTemporaryFile(
@@ -52,7 +54,14 @@ def test_wps_climdex_ptot_rds(climdex_input, ci_name, threshold, vector_name):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold", "vector_name"),
-    [(local_path("climdexInput.rda"), "ci", 95, "vector name",),],
+    [
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            95,
+            "vector name",
+        ),
+    ],
 )
 def test_wps_climdex_ptot_vector_err(climdex_input, ci_name, threshold, vector_name):
     with NamedTemporaryFile(
@@ -67,8 +76,18 @@ def test_wps_climdex_ptot_vector_err(climdex_input, ci_name, threshold, vector_n
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "threshold", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "not_ci", 95, "vector_name",),
-        (local_path("expected_ptot.rda"), "expected_r99ptot", 99, "vector_name",),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            95,
+            "vector_name",
+        ),
+        (
+            local_path("expected_ptot.rda"),
+            "expected_r99ptot",
+            99,
+            "vector_name",
+        ),
     ],
 )
 def test_wps_climdex_ptot_ci_err(climdex_input, ci_name, threshold, vector_name):

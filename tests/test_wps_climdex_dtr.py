@@ -35,7 +35,14 @@ def test_wps_climdex_dtr(climdex_input, ci_name, freq, vector_name):
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "freq", "vector_name"),
-    [(local_path("climdexInput.rda"), "ci", "monthly", "vector name",),],
+    [
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "monthly",
+            "vector name",
+        ),
+    ],
 )
 def test_wps_climdex_dtr_vector_err(climdex_input, ci_name, freq, vector_name):
     with NamedTemporaryFile(
@@ -50,7 +57,12 @@ def test_wps_climdex_dtr_vector_err(climdex_input, ci_name, freq, vector_name):
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "freq", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "monthly", "vector_name",),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "monthly",
+            "vector_name",
+        ),
         (
             local_path("expected_dtr.rda"),
             "expected_dtr_annual",

@@ -42,7 +42,11 @@ class ClimdexInputRaw(Process):
 
     def __init__(self):
         self.status_percentage_steps = dict(
-            common_status_percentages, **{"prepare_params": 10, "save_rdata": 90,},
+            common_status_percentages,
+            **{
+                "prepare_params": 10,
+                "save_rdata": 90,
+            },
         )
         inputs = [
             ComplexInput(
@@ -51,7 +55,9 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily maximum temperature data.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64"),],
+                supported_formats=[
+                    Format("application/x-gzip", encoding="base64"),
+                ],
             ),
             ComplexInput(
                 "tmin_file",
@@ -59,7 +65,9 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily minimum temperature data.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64"),],
+                supported_formats=[
+                    Format("application/x-gzip", encoding="base64"),
+                ],
             ),
             ComplexInput(
                 "prec_file",
@@ -67,7 +75,9 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily total precipitation data.",
                 min_occurs=1,
                 max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64"),],
+                supported_formats=[
+                    Format("application/x-gzip", encoding="base64"),
+                ],
             ),
             ComplexInput(
                 "tavg_file",
@@ -75,7 +85,9 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily mean temperature data.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64"),],
+                supported_formats=[
+                    Format("application/x-gzip", encoding="base64"),
+                ],
             ),
             LiteralInput(
                 "tmax_name",

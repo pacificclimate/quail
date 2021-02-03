@@ -42,7 +42,15 @@ def test_wps_climdex_spells_rds(climdex_input, ci_name, func, span_years, vector
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "func", "span_years", "vector_name"),
-    [(local_path("climdexInput.rda"), "ci", "wsdi", False, "vector name",),],
+    [
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "wsdi",
+            False,
+            "vector name",
+        ),
+    ],
 )
 def test_wps_climdex_spells_vector_err(
     climdex_input, ci_name, func, span_years, vector_name
@@ -59,7 +67,13 @@ def test_wps_climdex_spells_vector_err(
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "func", "span_years", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "wsdi", False, "vector_name",),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "wsdi",
+            False,
+            "vector_name",
+        ),
         (
             local_path("expected_spells_data.rda"),
             "expected_csdi_span_yrs",

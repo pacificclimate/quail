@@ -30,7 +30,13 @@ def build_params(
 
 
 @pytest.mark.parametrize(
-    ("tmax_column", "tmin_column", "prec_column", "base_range", "vector_name",),
+    (
+        "tmax_column",
+        "tmin_column",
+        "prec_column",
+        "base_range",
+        "vector_name",
+    ),
     [
         (
             "MAX_TEMP",
@@ -69,7 +75,13 @@ def test_wps_climdexInput_csv(
 
 
 @pytest.mark.parametrize(
-    ("tmax_column", "tmin_column", "prec_column", "base_range", "vector_name",),
+    (
+        "tmax_column",
+        "tmin_column",
+        "prec_column",
+        "base_range",
+        "vector_name",
+    ),
     [
         (
             "FAKE_COLUMN",
@@ -108,7 +120,13 @@ def test_wps_climdexInput_csv_column_err(
 
 
 @pytest.mark.parametrize(
-    ("tmax_column", "tmin_column", "prec_column", "base_range", "vector_name",),
+    (
+        "tmax_column",
+        "tmin_column",
+        "prec_column",
+        "base_range",
+        "vector_name",
+    ),
     [
         (
             "FAKE_COLUMN",

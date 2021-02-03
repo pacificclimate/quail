@@ -41,7 +41,15 @@ def test_wps_climdex_mmdmt_rda(climdex_input, ci_name, month_type, freq, vector_
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "month_type", "freq", "vector_name"),
-    [(local_path("climdexInput.rda"), "ci", "txx", "monthly", "vector name",),],
+    [
+        (
+            local_path("climdexInput.rda"),
+            "ci",
+            "txx",
+            "monthly",
+            "vector name",
+        ),
+    ],
 )
 def test_wps_climdex_mmdmt_vector_err(
     climdex_input, ci_name, month_type, freq, vector_name
@@ -58,7 +66,13 @@ def test_wps_climdex_mmdmt_vector_err(
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "month_type", "freq", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "txx", "monthly", "vector_name",),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "txx",
+            "monthly",
+            "vector_name",
+        ),
         (
             local_path("expected_mmdmt_data.rda"),
             "expected_tnx_annual",

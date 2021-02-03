@@ -38,7 +38,13 @@ def test_wps_climdex_rxnday(climdex_input, ci_name, freq, num_days, vector_name)
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name", "freq", "num_days", "vector_name"),
     [
-        (local_path("climdexInput.rda"), "not_ci", "monthly", 1, "vector_name",),
+        (
+            local_path("climdexInput.rda"),
+            "not_ci",
+            "monthly",
+            1,
+            "vector_name",
+        ),
         (
             local_path("expected_rxnday.rda"),
             "expected_rx5day_annual",

@@ -23,7 +23,11 @@ class ClimdexPtot(Process):
 
     def __init__(self):
         self.status_percentage_steps = dict(
-            common_status_percentages, **{"load_rdata": 10, "save_rdata": 90,},
+            common_status_percentages,
+            **{
+                "load_rdata": 10,
+                "save_rdata": 90,
+            },
         )
         inputs = [
             climdex_input,
@@ -70,9 +74,14 @@ class ClimdexPtot(Process):
             return f"r{threshold}"
 
     def _handler(self, request, response):
-        (climdex_input, ci_name, output_file, threshold, vector_name, loglevel,) = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
+        (
+            climdex_input,
+            ci_name,
+            output_file,
+            threshold,
+            vector_name,
+            loglevel,
+        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
         r_valid_name(vector_name)
 
         log_handler(

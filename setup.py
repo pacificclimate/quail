@@ -51,6 +51,12 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=reqs,
-    extras_require={"dev": dev_reqs,},  # pip install ".[dev]"
-    entry_points={"console_scripts": ["quail=quail.cli:cli",]},
+    extras_require={
+        "dev": dev_reqs,
+    },  # pip install ".[dev]"
+    entry_points={
+        "console_scripts": [
+            "quail=quail.cli:cli",
+        ]
+    },
 )
