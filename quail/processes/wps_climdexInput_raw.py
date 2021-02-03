@@ -13,11 +13,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import (
-    logger,
-    collect_literal_inputs,
-    validate_vector,
-)
+from quail.utils import logger, collect_literal_inputs, validate_vector, load_rds
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -46,11 +42,7 @@ class ClimdexInputRaw(Process):
 
     def __init__(self):
         self.status_percentage_steps = dict(
-            common_status_percentages,
-            **{
-                "prepare_params": 10,
-                "save_rdata": 90,
-            },
+            common_status_percentages, **{"prepare_params": 10, "save_rdata": 90,},
         )
         inputs = [
             ComplexInput(
@@ -59,9 +51,7 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily maximum temperature data.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
-                ],
+                supported_formats=[Format("application/x-gzip", encoding="base64"),],
             ),
             ComplexInput(
                 "tmin_file",
@@ -69,9 +59,7 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily minimum temperature data.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
-                ],
+                supported_formats=[Format("application/x-gzip", encoding="base64"),],
             ),
             ComplexInput(
                 "prec_file",
@@ -79,9 +67,7 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily total precipitation data.",
                 min_occurs=1,
                 max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
-                ],
+                supported_formats=[Format("application/x-gzip", encoding="base64"),],
             ),
             ComplexInput(
                 "tavg_file",
@@ -89,36 +75,38 @@ class ClimdexInputRaw(Process):
                 abstract="Name of file containing daily mean temperature data.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
-                ],
+                supported_formats=[Format("application/x-gzip", encoding="base64"),],
             ),
             LiteralInput(
                 "tmax_name",
                 "daily maximum temperature object name",
                 default="tmax",
-                abstract="Name of R object containing daily maximum temperature data.",
+                abstract="In a Rda file, the name of the R object containing daily "
+                "maximum temperature data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             LiteralInput(
                 "tmin_name",
                 "daily minimum temperature data file",
                 default="tmin",
-                abstract="Name of R object containing daily minimum temperature data.",
+                abstract="In a Rda file, the name of the R object containing daily "
+                "minimum temperature data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             LiteralInput(
                 "prec_name",
                 "daily total precipitation data file",
                 default="prec",
-                abstract="Name of R object containing daily mean temperature data.",
+                abstract="In a Rda file, the name of the R object containing daily "
+                "mean temperature data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             LiteralInput(
                 "tavg_name",
                 "mean temperature data file",
                 default="tavg",
-                abstract="Name of R object containing daily total precipitation data.",
+                abstract="In a Rda file, the name of the R object containing daily total "
+                "precipitation data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             tmax_column,
@@ -164,7 +152,14 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        load_rdata_to_python(filename, obj_name)
+        if filename.lower().endswith(("rda", "rdata")):
+            load_rdata_to_python(filename, obj_name)
+        elif filename.lower().endswith("rds"):
+            obj = load_rds(filename)
+            robjects.r.assign(obj_name, obj)
+        else:
+            raise ProcessError(f"Invalid data file. Must be either Rdata or RDS")
+
         try:
             return robjects.r(
                 f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"
