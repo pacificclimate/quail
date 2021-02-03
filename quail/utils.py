@@ -2,6 +2,7 @@ import logging
 from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib._rinterface_capi import RParsingError
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 # Libraries for test functions
 from urllib.request import urlretrieve
@@ -10,6 +11,7 @@ from tempfile import NamedTemporaryFile
 
 # PCIC libraries
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
+from wps_tools.error_handling import custom_process_error
 
 
 logger = logging.getLogger("PYWPS")
@@ -44,17 +46,21 @@ def validate_vector(vector):
         )
 
 
-def load_ci(args, ci_name):
-    if "ci_rda" in args.keys():
-        ci = load_rdata_to_python(args["ci_rda"][0], ci_name)
-    elif "ci_rds" in args.keys():
-        rds = args["ci_rds"][0]
-        ci = robjects.r(f"readRDS('{rds}')")
+def load_rds(rds_file):
+    try:
+        return robjects.r(f"readRDS('{rds_file}')")
+    except RRuntimeError as e:
+        raise ProcessError(f"Invalid RDS file. {custom_process_error(e)} ")
+
+
+def load_ci(r_file, ci_name):
+    if r_file.lower().endswith(("rda", "rdata")):
+        ci = load_rdata_to_python(r_file, ci_name)
+    elif r_file.lower().endswith("rds"):
+        ci = load_rds(r_file)
         robjects.r.assign("ci", ci)
     else:
-        raise ProcessError(
-            "You must provide either a Rda or RDS file containing the climdexInput"
-        )
+        raise ProcessError("File containing ClimdexInput must be a Rdata or RDS file")
 
     if ci.rclass[0] == "climdexInput":
         return ci
