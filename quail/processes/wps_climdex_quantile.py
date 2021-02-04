@@ -99,6 +99,20 @@ class ClimdexQuantile(Process):
 
         return [data_file] + literal_inputs
 
+    def unpack_data_file(self, data_file, data_vector):
+        try:
+            return load_rdata_to_python(data_file, data_vector)
+        except (RRuntimeError, ProcessError, IndexError):
+            pass
+
+        try:
+            return robjects.r(f"unlist(readRDS('{data_file}'))")
+        except (RRuntimeError, ProcessError) as e:
+            raise ProcessError(
+                f"{type(e).__name__}: Data file must be a RDS file or "
+                "a Rdata file containing an object of the given name"
+            )
+
     def _handler(self, request, response):
         (
             data_file,
@@ -131,7 +145,7 @@ class ClimdexQuantile(Process):
         )
 
         if data_file:
-            data = robjects.r["unlist"](get_robj(data_file, data_vector))[0]
+            data = self.unpack_data_file(data_file, data_vector)
         else:
             data = robjects.r(data_vector)
 
