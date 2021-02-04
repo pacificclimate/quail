@@ -46,21 +46,24 @@ def validate_vector(vector):
         )
 
 
-def load_rds(rds_file):
+def get_robj(r_file, obj_name):
     try:
-        return robjects.r(f"readRDS('{rds_file}')")
-    except RRuntimeError as e:
-        raise ProcessError(f"Invalid RDS file. {custom_process_error(e)} ")
+        return load_rdata_to_python(r_file, obj_name)
+    except (RRuntimeError, ProcessError, IndexError):
+        pass
+
+    try:
+        return robjects.r(f"readRDS('{r_file}')")
+    except (RRuntimeError, ProcessError) as e:
+        raise ProcessError(
+            f"{type(e).__name__}: Data file must be a RDS file or "
+            "a Rdata file containing an object of the given name"
+        )
 
 
 def load_ci(r_file, ci_name):
-    if r_file.lower().endswith(("rda", "rdata")):
-        ci = load_rdata_to_python(r_file, ci_name)
-    elif r_file.lower().endswith("rds"):
-        ci = load_rds(r_file)
-        robjects.r.assign("ci", ci)
-    else:
-        raise ProcessError("File containing ClimdexInput must be a Rdata or RDS file")
+    ci = get_robj(r_file, ci_name)
+    robjects.r.assign("ci", ci)
 
     if ci.rclass[0] == "climdexInput":
         return ci

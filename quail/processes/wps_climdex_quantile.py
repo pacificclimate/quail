@@ -13,7 +13,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector, load_rds
+from quail.utils import logger, collect_literal_inputs, validate_vector, get_robj
 from quail.io import output_file
 
 
@@ -130,13 +130,10 @@ class ClimdexQuantile(Process):
             process_step="load_rdata",
         )
 
-        if data_file is None:
+        if data_file:
+            data = robjects.r["unlist"](get_robj(data_file, data_vector))[0]
+        else:
             data = robjects.r(data_vector)
-        elif data_file.lower().endswith(("rda", "rdata")):
-            data = load_rdata_to_python(data_file, data_vector)
-        elif data_file.lower().endswith("rds"):
-            # Using R base function "unlist" without importing base
-            data = robjects.r["unlist"](load_rds(data_file))[0]
 
         log_handler(
             self,

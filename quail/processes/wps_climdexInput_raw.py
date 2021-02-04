@@ -13,7 +13,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector, load_rds
+from quail.utils import logger, collect_literal_inputs, validate_vector, get_robj
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -164,13 +164,8 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        if filename.lower().endswith(("rda", "rdata")):
-            load_rdata_to_python(filename, obj_name)
-        elif filename.lower().endswith("rds"):
-            obj = load_rds(filename)
-            robjects.r.assign(obj_name, obj)
-        else:
-            raise ProcessError(f"Invalid data file. Must be either Rdata or RDS")
+        df = get_robj(filename, obj_name)
+        robjects.r.assign(obj_name, df)
 
         try:
             return robjects.r(
