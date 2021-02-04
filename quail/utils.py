@@ -47,6 +47,13 @@ def validate_vector(vector):
 
 
 def get_robj(r_file, obj_name):
+    """RDS and RDA files have the same mimetype, so the pyWPS ClimdexInput
+    is unable to tell them apart and apply the correct suffix. The R function
+    `load()` can only read Rdata files and `readRDS()` can only read RDS
+    files. Without the input having a suffix, this function passes the input
+    to `load()`, then, if that raises an exception, passes it to `readRDS()`,
+    and finally if that fails, raises a ProcessError.
+    """
     try:
         return load_rdata_to_python(r_file, obj_name)
     except (RRuntimeError, ProcessError, IndexError):

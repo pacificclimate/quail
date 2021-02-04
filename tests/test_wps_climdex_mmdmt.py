@@ -29,7 +29,7 @@ def build_params(climdex_input, ci_name, month_type, freq, vector_name, output_f
         (local_path("climdexInput.rds"), "ci", "tnn", "annual", "vector_name"),
     ],
 )
-def test_wps_climdex_mmdmt_rda(climdex_input, ci_name, month_type, freq, vector_name):
+def test_wps_climdex_mmdmt(climdex_input, ci_name, month_type, freq, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
