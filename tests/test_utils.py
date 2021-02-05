@@ -1,23 +1,34 @@
 import pytest
-import io
 from pkg_resources import resource_filename
 from pywps.app.exceptions import ProcessError
-from tempfile import NamedTemporaryFile
-from contextlib import redirect_stderr
 
 from quail.utils import load_ci, validate_vector
-from wps_tools.testing import local_path
 
 
 @pytest.mark.parametrize(
-    ("file_", "obj_name"),
+    ("r_file", "ci_name"),
     [
-        (resource_filename("tests", "data/expected_gsl.rda"), "expected_gsl_vector"),
+        (resource_filename("tests", "data/climdexInput.rda"), "ci"),
+        (resource_filename("tests", "data/climdexInput.rds"), "ci"),
     ],
 )
-def test_load_ci_obj_err(file_, obj_name):
+def test_load_ci(r_file, ci_name):
+    ci = load_ci(r_file, ci_name)
+    assert ci.rclass[0] == "climdexInput"
+
+
+@pytest.mark.parametrize(
+    ("r_file", "ci_name"),
+    [
+        (
+            resource_filename("tests", "data/expected_gsl.rda"),
+            "expected_gsl_vector",
+        ),
+    ],
+)
+def test_load_ci_obj_err(r_file, ci_name):
     with pytest.raises(ProcessError) as e:
-        load_ci(file_, obj_name)
+        load_ci(r_file, ci_name)
     assert (
         str(vars(e)["_excinfo"][1])
         == "Input for ci-name is not a valid climdexInput object"
@@ -25,17 +36,18 @@ def test_load_ci_obj_err(file_, obj_name):
 
 
 @pytest.mark.parametrize(
-    ("file_", "obj_name"),
+    ("r_file", "ci_name"),
     [
         (resource_filename("tests", "data/climdexInput.rda"), "not_ci"),
+        (resource_filename("tests", "data/1018935_MAX_TEMP.csv"), "ci"),
     ],
 )
-def test_load_ci_name_err(file_, obj_name):
+def test_load_file_err(r_file, ci_name):
     with pytest.raises(ProcessError) as e:
-        load_ci(file_, obj_name)
+        load_ci(r_file, ci_name)
     assert (
-        str(vars(e)["_excinfo"][1])
-        == "RRuntimeError: The variable name passed is not an object found in the given rda file"
+        str(vars(e)["_excinfo"][1]) == "RRuntimeError: Data file must be a RDS file or "
+        "a Rdata file containing an object of the given name"
     )
 
 

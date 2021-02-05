@@ -18,6 +18,7 @@ def build_params(climdex_input, ci_name, vector_name, output_file):
     ("climdex_input", "ci_name", "vector_name"),
     [
         (local_path("climdexInput.rda"), "ci", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "vector_name"),
     ],
 )
 def test_wps_climdex_sdii(climdex_input, ci_name, vector_name):

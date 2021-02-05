@@ -33,6 +33,19 @@ from quail.processes.wps_climdexInput_raw import ClimdexInputRaw
             "c(1971, 2000)",
             "climdexInput",
         ),
+        (
+            local_path("ec.1018935.tmax.rds"),
+            local_path("ec.1018935.tmin.rds"),
+            local_path("ec.1018935.prec.rds"),
+            "ec.1018935.tmax",
+            "ec.1018935.tmin",
+            "ec.1018935.prec",
+            "MAX_TEMP",
+            "MIN_TEMP",
+            "ONE_DAY_PRECIPITATION",
+            "c(1971, 2000)",
+            "climdexInput",
+        ),
     ],
 )
 def test_wps_climdexInput_raw(

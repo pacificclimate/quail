@@ -1,5 +1,4 @@
 import pytest
-import sys
 from rpy2 import robjects
 from itertools import chain
 from tempfile import NamedTemporaryFile
@@ -10,9 +9,9 @@ from quail.processes.wps_climdex_get_available_indices import GetIndices
 
 @pytest.mark.parametrize(
     ("climdex_input", "ci_name"),
-    [(local_path("climdexInput.rda"), "ci")],
+    [(local_path("climdexInput.rda"), "ci"), (local_path("climdexInput.rds"), "ci")],
 )
-def test_wps_get_available_indices(climdex_input, ci_name):
+def test_wps_get_available_indices_rda(climdex_input, ci_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:

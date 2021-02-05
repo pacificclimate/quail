@@ -21,8 +21,8 @@ def build_params(climdex_input, ci_name, freq, num_days, vector_name, output_fil
     [
         (local_path("climdexInput.rda"), "ci", "monthly", 1, "vector_name"),
         (local_path("climdexInput.rda"), "ci", "annual", 1, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "monthly", 5, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "annual", 5, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "monthly", 5, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "annual", 5, "vector_name"),
     ],
 )
 def test_wps_climdex_rxnday(climdex_input, ci_name, freq, num_days, vector_name):

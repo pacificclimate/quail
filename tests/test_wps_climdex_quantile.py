@@ -5,7 +5,13 @@ from wps_tools.testing import run_wps_process, local_path, process_err_test
 from quail.processes.wps_climdex_quantile import ClimdexQuantile
 
 
-def build_params(data_file, data_vector, quantiles_vector, vector_name, output_file):
+def build_params(
+    data_file,
+    data_vector,
+    quantiles_vector,
+    vector_name,
+    output_file,
+):
     return (
         f"data_file=@xlink:href={data_file};"
         f"data_vector={data_vector};"
@@ -34,6 +40,12 @@ def build_params(data_file, data_vector, quantiles_vector, vector_name, output_f
             "0:10",
             "0.5",
             "quantile_50p",
+        ),
+        (
+            local_path("ec.1018935.MAX_TEMP.rds"),
+            None,
+            "c(0.1, 0.5, 0.9)",
+            "tmax_quantiles",
         ),
     ],
 )
@@ -76,7 +88,11 @@ def test_wps_climdex_quantile_vector_err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            data_file, data_vector, quantiles_vector, vector_name, out_file.name
+            data_file,
+            data_vector,
+            quantiles_vector,
+            vector_name,
+            out_file.name,
         )
         process_err_test(ClimdexQuantile, datainputs)
 
@@ -99,6 +115,10 @@ def test_wps_climdex_quantile_load_rda__err(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(
-            data_file, data_vector, quantiles_vector, vector_name, out_file.name
+            data_file,
+            data_vector,
+            quantiles_vector,
+            vector_name,
+            out_file.name,
         )
         process_err_test(ClimdexQuantile, datainputs)

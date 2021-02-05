@@ -31,13 +31,13 @@ def build_params(climdex_input, ci_name, vector_name, gsl_mode, output_file):
             "GSL_first",
         ),
         (
-            local_path("climdexInput.rda"),
+            local_path("climdexInput.rds"),
             "ci",
             "vector_name",
             "GSL_max",
         ),
         (
-            local_path("climdexInput.rda"),
+            local_path("climdexInput.rds"),
             "ci",
             "vector_name",
             "GSL_sum",

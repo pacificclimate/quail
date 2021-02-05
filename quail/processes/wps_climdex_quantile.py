@@ -13,7 +13,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector
+from quail.utils import logger, collect_literal_inputs, validate_vector, get_robj
 from quail.io import output_file
 
 
@@ -34,18 +34,17 @@ class ClimdexQuantile(Process):
         inputs = [
             ComplexInput(
                 "data_file",
-                "Data File",
-                abstract="Path to the file containing data to compute quantiles on",
+                "Rda Data File",
+                abstract="Path to the file containing data to compute quantiles on.",
                 min_occurs=0,
                 max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64")
-                ],
+                supported_formats=[Format("application/x-gzip", encoding="base64")],
             ),
             LiteralInput(
                 "data_vector",
                 "Data Vector",
-                abstract="R double vector data to compute quantiles on",
+                abstract="R double vector data to compute quantiles on. Only neeed when data_rds is used.",
+                default="data_vector",
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
@@ -100,6 +99,20 @@ class ClimdexQuantile(Process):
 
         return [data_file] + literal_inputs
 
+    def unpack_data_file(self, data_file, data_vector):
+        try:
+            return load_rdata_to_python(data_file, data_vector)
+        except (RRuntimeError, ProcessError, IndexError):
+            pass
+
+        try:
+            return robjects.r(f"unlist(readRDS('{data_file}'))")
+        except (RRuntimeError, ProcessError) as e:
+            raise ProcessError(
+                f"{type(e).__name__}: Data file must be a RDS file or "
+                "a Rdata file containing an object of the given name"
+            )
+
     def _handler(self, request, response):
         (
             data_file,
@@ -132,7 +145,7 @@ class ClimdexQuantile(Process):
         )
 
         if data_file:
-            data = load_rdata_to_python(data_file, data_vector)
+            data = self.unpack_data_file(data_file, data_vector)
         else:
             data = robjects.r(data_vector)
 

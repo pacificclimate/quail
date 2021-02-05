@@ -23,13 +23,14 @@ def build_params(climdex_input, ci_name, func, span_years, vector_name, output_f
         (local_path("climdexInput.rda"), "ci", "wsdi", True, "vector_name"),
         (local_path("climdexInput.rda"), "ci", "csdi", False, "vector_name"),
         (local_path("climdexInput.rda"), "ci", "csdi", True, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "cdd", False, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "cdd", True, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "cwd", False, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "cwd", True, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "cdd", False, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "cdd", True, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "cwd", False, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "cwd", True, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "wsdi", False, "vector_name"),
     ],
 )
-def test_wps_climdex_spells(climdex_input, ci_name, func, span_years, vector_name):
+def test_wps_climdex_spells_rds(climdex_input, ci_name, func, span_years, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:

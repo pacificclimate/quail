@@ -1,20 +1,21 @@
 from pywps import LiteralInput, ComplexInput, ComplexOutput, Format
 
+
 climdex_input = ComplexInput(
     "climdex_input",
-    "climdexInput",
-    abstract="Rdata (.rda) file containing R Object of type climdexInput",
+    "climdexInput file",
+    abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
     min_occurs=1,
     max_occurs=1,
-    supported_formats=[
-        Format("application/x-gzip", extension=".rda", encoding="base64")
-    ],
+    supported_formats=[Format("application/x-gzip", encoding="base64")],
 )
 
 ci_name = LiteralInput(
     "ci_name",
     "climdexInput name",
-    abstract="Name of the climdexInput object",
+    abstract="Name of the climdexInput object. Only needed when using Rdata input. "
+    "For RDS input it may be left as the default value.",
+    default="ci",
     min_occurs=1,
     max_occurs=1,
     data_type="string",

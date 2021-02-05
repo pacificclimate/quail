@@ -1,14 +1,14 @@
-import os, sys, inspect, re, collections
+import sys, inspect, re, collections
 from rpy2 import robjects
-from pywps import Process, LiteralInput, LiteralOutput
+from pywps import Process, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output
-from wps_tools.R import get_package, save_python_to_rdata
-from quail.utils import logger, load_ci
+from wps_tools.io import log_level, collect_args
+from wps_tools.R import get_package
+from quail.utils import logger, load_ci, collect_literal_inputs
 from quail.io import climdex_input, ci_name, output_file
 
 

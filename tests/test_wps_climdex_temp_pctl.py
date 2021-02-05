@@ -23,22 +23,18 @@ def build_params(climdex_input, ci_name, func, freq, vector_name, output_file):
         (local_path("climdexInput.rda"), "ci", "tn10p", "annual", "vector_name"),
         (local_path("climdexInput.rda"), "ci", "tn90p", "monthly", "vector_name"),
         (local_path("climdexInput.rda"), "ci", "tn90p", "annual", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "tx10p", "monthly", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "tx10p", "annual", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "tx90p", "monthly", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "tx90p", "annual", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "tx10p", "monthly", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "tx10p", "annual", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "tx90p", "monthly", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "tx90p", "annual", "vector_name"),
     ],
 )
 def test_wps_climdex_temp_pctl(climdex_input, ci_name, func, freq, vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = (
-            f"climdex_input=@xlink:href={climdex_input};"
-            f"ci_name={ci_name};"
-            f"func={func};"
-            f"freq={freq};"
-            f"output_file={out_file.name};"
+        datainputs = build_params(
+            climdex_input, ci_name, func, freq, vector_name, out_file.name
         )
         run_wps_process(ClimdexTempPctl(), datainputs)
 

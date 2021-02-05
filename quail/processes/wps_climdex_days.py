@@ -8,7 +8,7 @@ from pywps.app.Common import Metadata
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output, vector_name
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
-from quail.utils import logger, load_ci
+from quail.utils import logger, load_ci, collect_literal_inputs
 from quail.io import climdex_input, ci_name, output_file
 
 
@@ -30,7 +30,7 @@ class ClimdexDays(Process):
         self.status_percentage_steps = dict(
             common_status_percentages,
             **{
-                "load_rdata": 10,
+                "prep_ci": 10,
                 "save_rdata": 90,
             },
         )
@@ -97,8 +97,6 @@ class ClimdexDays(Process):
             return climdex.climdex_fd(ci)
         elif days_type == "tropical nights":
             return climdex.climdex_tr(ci)
-        else:
-            raise ProcessError("invalid days type")
 
     def _handler(self, request, response):
         climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
@@ -118,10 +116,10 @@ class ClimdexDays(Process):
         log_handler(
             self,
             response,
-            "Loading climdexInput from R data file",
+            "Preparing climdex input",
             logger,
             log_level=loglevel,
-            process_step="load_rdata",
+            process_step="prep_ci",
         )
         ci = load_ci(climdex_input, ci_name)
 

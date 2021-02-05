@@ -1,24 +1,19 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format
+from pywps import Process, LiteralInput, ComplexInput, Format
 from pywps.app.Common import Metadata
-from tempfile import NamedTemporaryFile
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.io import log_level, collect_args, vector_name
 from wps_tools.R import (
     get_package,
     load_rdata_to_python,
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import (
-    logger,
-    collect_literal_inputs,
-    validate_vector,
-)
+from quail.utils import logger, collect_literal_inputs, validate_vector, get_robj
 from quail.io import (
     tmax_column,
     tmin_column,
@@ -61,7 +56,7 @@ class ClimdexInputRaw(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("application/x-gzip", encoding="base64"),
                 ],
             ),
             ComplexInput(
@@ -71,7 +66,7 @@ class ClimdexInputRaw(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("application/x-gzip", encoding="base64"),
                 ],
             ),
             ComplexInput(
@@ -81,7 +76,7 @@ class ClimdexInputRaw(Process):
                 min_occurs=1,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("application/x-gzip", encoding="base64"),
                 ],
             ),
             ComplexInput(
@@ -91,35 +86,39 @@ class ClimdexInputRaw(Process):
                 min_occurs=0,
                 max_occurs=1,
                 supported_formats=[
-                    Format("application/x-gzip", extension=".rda", encoding="base64"),
+                    Format("application/x-gzip", encoding="base64"),
                 ],
             ),
             LiteralInput(
                 "tmax_name",
                 "daily maximum temperature object name",
                 default="tmax",
-                abstract="Name of R object containing daily maximum temperature data.",
+                abstract="In a Rda file, the name of the R object containing daily "
+                "maximum temperature data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             LiteralInput(
                 "tmin_name",
                 "daily minimum temperature data file",
                 default="tmin",
-                abstract="Name of R object containing daily minimum temperature data.",
+                abstract="In a Rda file, the name of the R object containing daily "
+                "minimum temperature data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             LiteralInput(
                 "prec_name",
                 "daily total precipitation data file",
                 default="prec",
-                abstract="Name of R object containing daily mean temperature data.",
+                abstract="In a Rda file, the name of the R object containing daily "
+                "mean temperature data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             LiteralInput(
                 "tavg_name",
                 "mean temperature data file",
                 default="tavg",
-                abstract="Name of R object containing daily total precipitation data.",
+                abstract="In a Rda file, the name of the R object containing daily total "
+                "precipitation data. You may leave as default for RDS files.",
                 data_type="string",
             ),
             tmax_column,
@@ -165,7 +164,9 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        load_rdata_to_python(filename, obj_name)
+        df = get_robj(filename, obj_name)
+        robjects.r.assign(obj_name, df)
+
         try:
             return robjects.r(
                 f"as.PCICt(do.call(paste, {obj_name}[,{date_fields}]), format='{date_format}', cal='{cal}')"

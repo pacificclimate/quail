@@ -1,7 +1,7 @@
 import pytest
 from tempfile import NamedTemporaryFile
 
-from wps_tools.testing import run_wps_process, local_path, process_err_test
+from wps_tools.testing import run_wps_process, process_err_test
 from quail.processes.wps_climdexInput_csv import ClimdexInputCSV
 
 

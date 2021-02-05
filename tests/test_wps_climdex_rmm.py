@@ -20,7 +20,7 @@ def build_params(climdex_input, ci_name, threshold, vector_name, output_file):
     [
         (local_path("climdexInput.rda"), "ci", 10.0, "vector_name"),
         (local_path("climdexInput.rda"), "ci", 20.0, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", 15.5, "vector_name"),
+        (local_path("climdexInput.rds"), "ci", 15.5, "vector_name"),
     ],
 )
 def test_wps_climdex_rmm(climdex_input, ci_name, threshold, vector_name):

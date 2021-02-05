@@ -23,10 +23,10 @@ def build_params(climdex_input, ci_name, month_type, freq, vector_name, output_f
         (local_path("climdexInput.rda"), "ci", "txx", "annual", "vector_name"),
         (local_path("climdexInput.rda"), "ci", "tnx", "monthly", "vector_name"),
         (local_path("climdexInput.rda"), "ci", "tnx", "annual", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "txn", "monthly", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "txn", "annual", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "tnn", "monthly", "vector_name"),
-        (local_path("climdexInput.rda"), "ci", "tnn", "annual", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "txn", "monthly", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "txn", "annual", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "tnn", "monthly", "vector_name"),
+        (local_path("climdexInput.rds"), "ci", "tnn", "annual", "vector_name"),
     ],
 )
 def test_wps_climdex_mmdmt(climdex_input, ci_name, month_type, freq, vector_name):

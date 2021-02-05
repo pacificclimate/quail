@@ -1,24 +1,17 @@
 import logging
-import re
 from rpy2 import robjects
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib._rinterface_capi import RParsingError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 # Libraries for test functions
-import pytest
-import io
-from rpy2 import robjects
-from contextlib import redirect_stderr
-from wps_tools.output_handling import rda_to_vector
-from wps_tools.testing import run_wps_process
 from urllib.request import urlretrieve
 from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
 
 # PCIC libraries
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
-from wps_tools.R import get_package
+from wps_tools.error_handling import custom_process_error
 
 
 logger = logging.getLogger("PYWPS")
@@ -53,12 +46,36 @@ def validate_vector(vector):
         )
 
 
-def load_ci(climdex_input, ci_name):
-    ci = load_rdata_to_python(climdex_input, ci_name)
+def get_robj(r_file, obj_name):
+    """RDS and RDA files have the same mimetype, so the pyWPS ClimdexInput
+    is unable to tell them apart and apply the correct suffix. The R function
+    `load()` can only read Rdata files and `readRDS()` can only read RDS
+    files. Without the input having a suffix, this function passes the input
+    to `load()`, then, if that raises an exception, passes it to `readRDS()`,
+    and finally if that fails, raises a ProcessError.
+    """
+    try:
+        return load_rdata_to_python(r_file, obj_name)
+    except (RRuntimeError, ProcessError, IndexError):
+        pass
+
+    try:
+        return robjects.r(f"readRDS('{r_file}')")
+    except (RRuntimeError, ProcessError) as e:
+        raise ProcessError(
+            f"{type(e).__name__}: Data file must be a RDS file or "
+            "a Rdata file containing an object of the given name"
+        )
+
+
+def load_ci(r_file, ci_name):
+    ci = get_robj(r_file, ci_name)
+    robjects.r.assign("ci", ci)
+
     if ci.rclass[0] == "climdexInput":
         return ci
     else:
-        raise ProcessError(msg="Input for ci-name is not a valid climdexInput object")
+        raise ProcessError("Input for ci-name is not a valid climdexInput object")
 
 
 # Testing

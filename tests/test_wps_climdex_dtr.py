@@ -1,7 +1,5 @@
 import pytest
-import io
 from tempfile import NamedTemporaryFile
-from contextlib import redirect_stderr
 
 from wps_tools.testing import run_wps_process, local_path, process_err_test
 from quail.processes.wps_climdex_dtr import ClimdexDTR
@@ -22,6 +20,7 @@ def build_params(climdex_input, ci_name, freq, vector_name, output_file):
     [
         (local_path("climdexInput.rda"), "ci", "monthly", "dtr"),
         (local_path("climdexInput.rda"), "ci", "annual", "dtr"),
+        (local_path("climdexInput.rds"), "ci", "annual", "dtr"),
     ],
 )
 def test_wps_climdex_dtr(climdex_input, ci_name, freq, vector_name):
