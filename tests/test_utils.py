@@ -2,7 +2,7 @@ import pytest
 from pkg_resources import resource_filename
 from pywps.app.exceptions import ProcessError
 
-from quail.utils import load_ci, validate_vector
+from quail.utils import load_ci, validate_vector, get_ClimdexInputs
 
 
 @pytest.mark.parametrize(
@@ -42,13 +42,24 @@ def test_load_ci_obj_err(r_file, ci_name):
         (resource_filename("tests", "data/1018935_MAX_TEMP.csv"), "ci"),
     ],
 )
-def test_load_file_err(r_file, ci_name):
+def test_load_ci_file_err(r_file, ci_name):
     with pytest.raises(ProcessError) as e:
         load_ci(r_file, ci_name)
     assert (
         str(vars(e)["_excinfo"][1]) == "RRuntimeError: Data file must be a RDS file or "
         "a Rdata file containing an object of the given name"
     )
+
+
+@pytest.mark.parametrize(
+    ("r_file"),
+    [
+        (resource_filename("tests", "data/climdexInput.rda")),
+        (resource_filename("tests", "data/expected_gsl.rda")),
+    ],
+)
+def test_get_ClimdexInputs(r_file):
+    get_ClimdexInputs(r_file)
 
 
 @pytest.mark.parametrize(

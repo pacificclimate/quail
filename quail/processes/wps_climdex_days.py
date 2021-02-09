@@ -8,8 +8,8 @@ from pywps.app.Common import Metadata
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
-from quail.utils import logger, load_ci, collect_literal_inputs, ci_collect_args
-from quail.io import climdex_input, ci_name, output_file
+from quail.utils import logger, load_cis, collect_literal_inputs, ci_collect_args
+from quail.io import climdex_input, output_file
 
 
 class ClimdexDays(Process):
@@ -36,7 +36,6 @@ class ClimdexDays(Process):
         )
         inputs = [
             climdex_input,
-            ci_name,
             output_file,
             LiteralInput(
                 "days_type",
@@ -81,13 +80,8 @@ class ClimdexDays(Process):
         )
 
     def _handler(self, request, response):
-        (
-            climdex_input,
-            ci_name,
-            output_file,
-            days_type,
-            loglevel
-        ) = ci_collect_args(request, self.workdir)
+        (output_file, days_type, loglevel) = collect_literal_inputs(request)
+        climdex_input = request.inputs["climdex_input"]
 
         log_handler(
             self,
@@ -109,7 +103,7 @@ class ClimdexDays(Process):
                 log_level=loglevel,
                 process_step="prep_ci",
             )
-            ci = load_ci(climdex_input[i], ci_name[i])
+            cis = load_cis(climdex_input[i].file)
 
             log_handler(
                 self,
@@ -120,14 +114,18 @@ class ClimdexDays(Process):
                 process_step="process",
             )
 
-            try:
-                count_days = robjects.r(f"climdex.{days_type}(ci)")
-            except RRuntimeError as e:
-                raise ProcessError(msg=f"{type(e).__name__} for file {i}: {str(e)}")
+            for key, value in cis.items():
+                try:
+                    robjects.r.assign("ci", value)
+                    count_days = robjects.r(f"climdex.{days_type}(ci)")
+                except RRuntimeError as e:
+                    raise ProcessError(
+                        msg=f"{type(e).__name__} for {key} in file {i}: {str(e)}"
+                    )
 
-            vector_name = days_type+str(i)
-            robjects.r.assign(vector_name, count_days)
-            vectors.append(vector_name)
+                vector_name = days_type + str(i) + "_" + key
+                robjects.r.assign(vector_name, count_days)
+                vectors.append(vector_name)
 
         log_handler(
             self,
