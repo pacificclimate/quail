@@ -10,6 +10,7 @@ from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
 
 # PCIC libraries
+from wps_tools.io import collect_args
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
 from wps_tools.error_handling import custom_process_error
 
@@ -32,6 +33,16 @@ def collect_literal_inputs(request):
         if "data_type" in vars(request.inputs[k][0]).keys() and "_content" not in k
     ]
     return literal_inputs
+
+
+def ci_collect_args(request, workdir):
+    args = collect_args(request, workdir)
+    return [
+        args[key]
+        if key in ["climdex_input", "ci_name"]
+        else  args[key][0]
+        for key in args.keys()
+    ]
 
 
 def validate_vector(vector):

@@ -6,7 +6,7 @@ climdex_input = ComplexInput(
     "climdexInput file",
     abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
     min_occurs=1,
-    max_occurs=1,
+    max_occurs=100,
     supported_formats=[Format("application/x-gzip", encoding="base64")],
 )
 
@@ -17,7 +17,7 @@ ci_name = LiteralInput(
     "For RDS input it may be left as the default value.",
     default="ci",
     min_occurs=1,
-    max_occurs=1,
+    max_occurs=100,
     data_type="string",
 )
 
@@ -34,7 +34,8 @@ output_file = LiteralInput(
 rda_output = ComplexOutput(
     "rda_output",
     "Rda output file",
-    abstract="Rda file containing R output data",
+    abstract="Rda file containing R output data. Objects are saved based on climate index name "
+    "and file input index (e.g. su0, su1, etc.).",
     supported_formats=[
         Format("application/x-gzip", extension=".rda", encoding="base64")
     ],

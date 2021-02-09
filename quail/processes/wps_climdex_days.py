@@ -6,9 +6,9 @@ from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.io import log_level, collect_args, rda_output
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
-from quail.utils import logger, load_ci, collect_literal_inputs
+from quail.utils import logger, load_ci, collect_literal_inputs, ci_collect_args
 from quail.io import climdex_input, ci_name, output_file
 
 
@@ -42,17 +42,11 @@ class ClimdexDays(Process):
                 "days_type",
                 "Day type to compute",
                 abstract="Day type condition to compute",
-                allowed_values=[
-                    "summer days",
-                    "icing days",
-                    "frost days",
-                    "tropical nights",
-                ],
+                allowed_values=["su", "id", "fd", "tr"],
                 min_occurs=1,
                 max_occurs=1,
                 data_type="string",
             ),
-            vector_name,
             log_level,
         ]
 
@@ -86,23 +80,14 @@ class ClimdexDays(Process):
             status_supported=True,
         )
 
-    def days(self, days_type, ci):
-        climdex = get_package("climdex.pcic")
-
-        if days_type == "summer days":
-            return climdex.climdex_su(ci)
-        elif days_type == "icing days":
-            return climdex.climdex_id(ci)
-        elif days_type == "frost days":
-            return climdex.climdex_fd(ci)
-        elif days_type == "tropical nights":
-            return climdex.climdex_tr(ci)
-
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, days_type, vector_name, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
-        r_valid_name(vector_name)
+        (
+            climdex_input,
+            ci_name,
+            output_file,
+            days_type,
+            loglevel
+        ) = ci_collect_args(request, self.workdir)
 
         log_handler(
             self,
@@ -112,41 +97,48 @@ class ClimdexDays(Process):
             log_level=loglevel,
             process_step="start",
         )
+        robjects.r("library(climdex.pcic)")
+        vectors = []
+
+        for i in range(len(climdex_input)):
+            log_handler(
+                self,
+                response,
+                f"Preparing climdex input {i}",
+                logger,
+                log_level=loglevel,
+                process_step="prep_ci",
+            )
+            ci = load_ci(climdex_input[i], ci_name[i])
+
+            log_handler(
+                self,
+                response,
+                f"Processing {days_type} count {i}",
+                logger,
+                log_level=loglevel,
+                process_step="process",
+            )
+
+            try:
+                count_days = robjects.r(f"climdex.{days_type}(ci)")
+            except RRuntimeError as e:
+                raise ProcessError(msg=f"{type(e).__name__} for file {i}: {str(e)}")
+
+            vector_name = days_type+str(i)
+            robjects.r.assign(vector_name, count_days)
+            vectors.append(vector_name)
 
         log_handler(
             self,
             response,
-            "Preparing climdex input",
-            logger,
-            log_level=loglevel,
-            process_step="prep_ci",
-        )
-        ci = load_ci(climdex_input, ci_name)
-
-        log_handler(
-            self,
-            response,
-            f"Processing {days_type} count",
-            logger,
-            log_level=loglevel,
-            process_step="process",
-        )
-
-        try:
-            count_days = self.days(days_type, ci)
-        except RRuntimeError as e:
-            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
-
-        log_handler(
-            self,
-            response,
-            f"Saving {days_type} count as R data file",
+            f"Saving {days_type} counts to R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, count_days, output_path)
+        robjects.r["save"](*vectors, file=output_path)
 
         log_handler(
             self,
