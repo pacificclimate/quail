@@ -1,5 +1,13 @@
 # Changes
 
+## 0.5.0
+*2021-02-08*
+
+* Add `wps_tools.output_handling` to demos
+* Add `ProcessError`s
+* Use `csv` content as input instead of file
+* Add `Rds` file handling
+
 ## 0.4.2
 *2020-12-24*
 
