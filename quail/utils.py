@@ -86,7 +86,7 @@ def load_cis(r_file):
     except (RRuntimeError, ProcessError) as e:
         raise ProcessError(
             f"{type(e).__name__}: Data file must be a RDS file or "
-            "a Rdata file containing an object of the given name"
+            "a Rdata file containing a ClimdexInput object of the given name"
         )
 
 
@@ -97,14 +97,6 @@ def load_rds_ci(r_file):
         return ci
     else:
         raise ProcessError
-
-
-def load_ci():
-    None
-
-
-def get_robj():
-    None
 
 
 # Testing

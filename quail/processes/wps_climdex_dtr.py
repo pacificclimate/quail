@@ -8,8 +8,8 @@ from pywps.app.Common import Metadata
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, rda_output
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
-from quail.utils import logger, load_ci, collect_literal_inputs, ci_collect_args
-from quail.io import climdex_input, ci_name, output_file, freq
+from quail.utils import logger, load_cis, collect_literal_inputs
+from quail.io import climdex_input, output_file, freq
 
 
 class ClimdexDTR(Process):
@@ -28,7 +28,6 @@ class ClimdexDTR(Process):
         )
         inputs = [
             climdex_input,
-            ci_name,
             output_file,
             freq,
             log_level,
@@ -55,13 +54,8 @@ class ClimdexDTR(Process):
         )
 
     def _handler(self, request, response):
-        (
-            climdex_input,
-            ci_name,
-            output_file,
-            freq,
-            loglevel
-        ) = ci_collect_args(request, self.workdir)
+        output_file, freq, loglevel = collect_literal_inputs(request)
+        climdex_input = request.inputs["climdex_input"]
 
         log_handler(
             self,
@@ -78,12 +72,12 @@ class ClimdexDTR(Process):
             log_handler(
                 self,
                 response,
-                f"Loading climdexInput from R data file {i}",
+                f"Loading climdexInputs from R data file {i}",
                 logger,
                 log_level=loglevel,
                 process_step="load_rdata",
             )
-            ci = load_ci(climdex_input[i], ci_name[i])
+            cis = load_cis(climdex_input[i].file)
 
             log_handler(
                 self,
@@ -94,19 +88,20 @@ class ClimdexDTR(Process):
                 process_step="process",
             )
 
-            try:
-                dtr = climdex.climdex_dtr(ci, freq)
-            except RRuntimeError as e:
-                raise ProcessError(msg=f"{type(e).__name__} for file {i}: {str(e)}")
+            for ci_name, ci in cis.items():
+                try:
+                    dtr = climdex.climdex_dtr(ci, freq)
+                except RRuntimeError as e:
+                    raise ProcessError(msg=f"{type(e).__name__} for file {i}: {str(e)}")
 
-            vector_name = "dtr"+str(i)
+            vector_name = f"dtr{i}_{ci_name}"
             robjects.r.assign(vector_name, dtr)
             vectors.append(vector_name)
 
         log_handler(
             self,
             response,
-            "Saving dtr vector to R data file",
+            "Saving dtr vectors to Rdata file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",

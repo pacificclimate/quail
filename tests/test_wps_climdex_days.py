@@ -43,9 +43,7 @@ def test_wps_climdex_days(climdex_input, ci_name, days_type):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = build_params(
-            climdex_input, ci_name, days_type, out_file.name
-        )
+        datainputs = build_params(climdex_input, ci_name, days_type, out_file.name)
         run_wps_process(ClimdexDays(), datainputs)
 
 
@@ -88,7 +86,5 @@ def test_wps_climdex_days_ci_err(climdex_input, ci_name, days_type):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = build_params(
-            climdex_input, ci_name, days_type, out_file.name
-        )
+        datainputs = build_params(climdex_input, ci_name, days_type, out_file.name)
         process_err_test(ClimdexDays, datainputs)

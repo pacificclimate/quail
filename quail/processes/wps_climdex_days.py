@@ -80,7 +80,7 @@ class ClimdexDays(Process):
         )
 
     def _handler(self, request, response):
-        (output_file, days_type, loglevel) = collect_literal_inputs(request)
+        output_file, days_type, loglevel = collect_literal_inputs
         climdex_input = request.inputs["climdex_input"]
 
         log_handler(
@@ -98,7 +98,7 @@ class ClimdexDays(Process):
             log_handler(
                 self,
                 response,
-                f"Preparing climdex input {i}",
+                f"Preparing climdexInputs {i}",
                 logger,
                 log_level=loglevel,
                 process_step="prep_ci",
@@ -114,16 +114,14 @@ class ClimdexDays(Process):
                 process_step="process",
             )
 
-            for key, value in cis.items():
+            for ci_name, ci in cis.items():
                 try:
-                    robjects.r.assign("ci", value)
+                    robjects.r.assign("ci", ci)
                     count_days = robjects.r(f"climdex.{days_type}(ci)")
                 except RRuntimeError as e:
-                    raise ProcessError(
-                        msg=f"{type(e).__name__} for {key} in file {i}: {str(e)}"
-                    )
+                    raise ProcessError(msg=f"{type(e).__name__} in file {i}: {str(e)}")
 
-                vector_name = days_type + str(i) + "_" + key
+                vector_name = f"{days_type}{i}_{ci_name}"
                 robjects.r.assign(vector_name, count_days)
                 vectors.append(vector_name)
 

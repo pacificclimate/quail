@@ -8,7 +8,6 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args, vector_name
 from wps_tools.R import (
-    get_package,
     load_rdata_to_python,
     save_python_to_rdata,
     r_valid_name,
@@ -164,6 +163,20 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
+        def get_robj(filename, obj_name):
+            try:
+                return load_rdata_to_python(filename, object_name)
+            except (RRuntimeError, ProcessError, IndexError):
+                pass
+
+            try:
+                return robjects.r(f"readRDS('{filename}')")
+            except (RRuntimeError, ProcessError) as e:
+                raise ProcessError(
+                    f"{type(e).__name__}: Data file must be a RDS file or "
+                    "a Rdata file containing an object of the given name"
+                )
+
         df = get_robj(filename, obj_name)
         robjects.r.assign(obj_name, df)
 

@@ -6,10 +6,10 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.io import log_level, collect_args, rda_output
 from wps_tools.R import save_python_to_rdata, r_valid_name
-from quail.utils import logger, load_ci, collect_literal_inputs
-from quail.io import climdex_input, ci_name, output_file
+from quail.utils import logger, load_cis, collect_literal_inputs
+from quail.io import climdex_input, output_file
 
 
 class ClimdexSpells(Process):
@@ -32,7 +32,6 @@ class ClimdexSpells(Process):
         )
         inputs = [
             climdex_input,
-            ci_name,
             output_file,
             LiteralInput(
                 "func",
@@ -50,7 +49,6 @@ class ClimdexSpells(Process):
                 default=False,
                 data_type="boolean",
             ),
-            vector_name,
             log_level,
         ]
 
@@ -76,15 +74,12 @@ class ClimdexSpells(Process):
 
     def _handler(self, request, response):
         (
-            climdex_input,
-            ci_name,
             output_file,
             func,
             span_years,
-            vector_name,
             loglevel,
-        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
-        r_valid_name(vector_name)
+        ) = collect_literal_inputs(request)
+        climdex_input = request.inputs["climdex_input"]
 
         log_handler(
             self,
@@ -95,42 +90,50 @@ class ClimdexSpells(Process):
             process_step="start",
         )
         robjects.r("library(climdex.pcic)")
+        vectors = []
+
+        for i in range(len(climdex_input)):
+            log_handler(
+                self,
+                response,
+                f"Loading climdexInput from R data file {i}",
+                logger,
+                log_level=loglevel,
+                process_step="load_rdata",
+            )
+            cis = load_cis(climdex_input[i].file)
+
+            log_handler(
+                self,
+                response,
+                f"Processing climdex.{func} for each year for file {i}",
+                logger,
+                log_level=loglevel,
+                process_step="process",
+            )
+
+            for ci_name, ci in cis.items():
+                try:
+                    robjects.r.assign("ci", ci)
+                    robjects.r.assign("span_years", span_years)
+                    spells = robjects.r(f"climdex.{func}(ci, span_years)")
+                except RRuntimeError as e:
+                    raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
+
+                vector_name = f"{func}{i}_{ci_name}"
+                robjects.r.assign(vector_name, spells)
+                vectors.append(vector_name)
 
         log_handler(
             self,
             response,
-            "Loading climdexInput from R data file",
-            logger,
-            log_level=loglevel,
-            process_step="load_rdata",
-        )
-        ci = load_ci(climdex_input, ci_name)
-
-        log_handler(
-            self,
-            response,
-            f"Processing climdex.{func} for each year",
-            logger,
-            log_level=loglevel,
-            process_step="process",
-        )
-
-        try:
-            robjects.r.assign("span_years", span_years)
-            spells = robjects.r(f"climdex.{func}(ci, span_years)")
-        except RRuntimeError as e:
-            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
-
-        log_handler(
-            self,
-            response,
-            f"Saving {func} for each year to R data file",
+            f"Saving {func} outputs to R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, spells, output_path)
+        robjects.r["save"](*vectors, file=output_path)
 
         log_handler(
             self,
