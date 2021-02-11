@@ -35,14 +35,6 @@ def collect_literal_inputs(request):
     return literal_inputs
 
 
-def ci_collect_args(request, workdir):
-    args = collect_args(request, workdir)
-    return [
-        args[key] if key in ["climdex_input", "ci_name"] else args[key][0]
-        for key in args.keys()
-    ]
-
-
 def validate_vector(vector):
     try:
         vect = robjects.r(vector)
