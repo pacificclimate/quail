@@ -6,14 +6,10 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
-from wps_tools.R import (
-    get_package,
-    save_python_to_rdata,
-    r_valid_name,
-)
-from quail.utils import logger, load_ci, collect_literal_inputs
-from quail.io import climdex_input, ci_name, output_file
+from wps_tools.io import log_level, rda_output
+from wps_tools.R import get_package
+from quail.utils import logger, load_cis, collect_literal_inputs
+from quail.io import climdex_input, output_file
 
 
 class ClimdexRMM(Process):
@@ -33,7 +29,6 @@ class ClimdexRMM(Process):
         )
         inputs = [
             climdex_input,
-            ci_name,
             output_file,
             LiteralInput(
                 "threshold",
@@ -43,7 +38,6 @@ class ClimdexRMM(Process):
                 max_occurs=1,
                 data_type="float",
             ),
-            vector_name,
             log_level,
         ]
 
@@ -78,10 +72,8 @@ class ClimdexRMM(Process):
             return climdex.climdex_rnnmm(ci, threshold)
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, threshold, vector_name, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
-        r_valid_name(vector_name)
+        output_file, threshold, loglevel = collect_literal_inputs(request)
+        climdex_input = request.inputs["climdex_input"]
 
         log_handler(
             self,
@@ -91,41 +83,50 @@ class ClimdexRMM(Process):
             log_level=loglevel,
             process_step="start",
         )
+        climdex = get_package("climdex.pcic")
+        vectors = []
+
+        for i in range(len(climdex_input)):
+            log_handler(
+                self,
+                response,
+                f"Loading climdexInput from R data file {i}",
+                logger,
+                log_level=loglevel,
+                process_step="load_rdata",
+            )
+            cis = load_cis(climdex_input[i].file)
+
+            log_handler(
+                self,
+                response,
+                f"Processing the annual count of days where daily precipitation is more than {threshold}mm per day for file {i}",
+                logger,
+                log_level=loglevel,
+                process_step="process",
+            )
+
+            for ci_name, ci in cis.items():
+                try:
+                    robjects.r.assign("ci", ci)
+                    count_days = self.threshold_func(threshold, ci)
+                except RRuntimeError as e:
+                    raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
+
+                vector_name = f"r{threshold}mm{i}_{ci_name}"
+                robjects.r.assign(vector_name, count_days)
+                vectors.append(vector_name)
 
         log_handler(
             self,
             response,
-            "Loading climdexInput from R data file",
-            logger,
-            log_level=loglevel,
-            process_step="load_rdata",
-        )
-        ci = load_ci(climdex_input, ci_name)
-
-        log_handler(
-            self,
-            response,
-            f"Processing the annual count of days where daily precipitation is more than {threshold}mm per day",
-            logger,
-            log_level=loglevel,
-            process_step="process",
-        )
-
-        try:
-            count_days = self.threshold_func(threshold, ci)
-        except RRuntimeError as e:
-            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
-
-        log_handler(
-            self,
-            response,
-            f"Saving climdex.r{threshold}mm output as R data file",
+            f"Saving climdex.r{threshold}mm outputs to R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, count_days, output_path)
+        robjects.r["save"](*vectors, file=output_path)
 
         log_handler(
             self,

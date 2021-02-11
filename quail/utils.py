@@ -11,7 +11,6 @@ from tempfile import NamedTemporaryFile
 
 # PCIC libraries
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
-from wps_tools.error_handling import custom_process_error
 
 
 logger = logging.getLogger("PYWPS")
@@ -46,7 +45,19 @@ def validate_vector(vector):
         )
 
 
-def get_robj(r_file, obj_name):
+def get_ClimdexInputs(r_file):
+    """Returns a dictionary of all ClimdexInput Objects from an Rdata file."""
+    robjs = list(robjects.r(f"load(file='{r_file}')"))
+    cis = {
+        ci: robjects.r(ci) for ci in robjs if robjects.r(ci).rclass[0] == "climdexInput"
+    }
+    if len(cis) == 0:
+        raise IndexError
+    else:
+        return cis
+
+
+def load_cis(r_file):
     """RDS and RDA files have the same mimetype, so the pyWPS ClimdexInput
     is unable to tell them apart and apply the correct suffix. The R function
     `load()` can only read Rdata files and `readRDS()` can only read RDS
@@ -55,7 +66,38 @@ def get_robj(r_file, obj_name):
     and finally if that fails, raises a ProcessError.
     """
     try:
-        return load_rdata_to_python(r_file, obj_name)
+        return get_ClimdexInputs(r_file)
+    except (RRuntimeError, ProcessError, IndexError):
+        pass
+
+    try:
+        return {"ci": load_rds_ci(r_file)}
+    except (RRuntimeError, ProcessError) as e:
+        raise ProcessError(
+            f"{type(e).__name__}: Data file must be a RDS file or "
+            "a Rdata file containing a ClimdexInput object of the given name"
+        )
+
+
+def load_rds_ci(r_file):
+    """Loads an object from an RDS file and checks that is a ClimdexInput object"""
+    ci = robjects.r(f"readRDS('{r_file}')")
+    if ci.rclass[0] == "climdexInput":
+        return ci
+    else:
+        raise ProcessError
+
+
+def get_robj(r_file, object_name):
+    """RDS and RDA files have the same mimetype, so the pyWPS ClimdexInput
+    is unable to tell them apart and apply the correct suffix. The R function
+    `load()` can only read Rdata files and `readRDS()` can only read RDS
+    files. Without the input having a suffix, this function passes the input
+    to `load()`, then, if that raises an exception, passes it to `readRDS()`,
+    and finally if that fails, raises a ProcessError.
+    """
+    try:
+        return load_rdata_to_python(r_file, object_name)
     except (RRuntimeError, ProcessError, IndexError):
         pass
 
@@ -66,16 +108,6 @@ def get_robj(r_file, obj_name):
             f"{type(e).__name__}: Data file must be a RDS file or "
             "a Rdata file containing an object of the given name"
         )
-
-
-def load_ci(r_file, ci_name):
-    ci = get_robj(r_file, ci_name)
-    robjects.r.assign("ci", ci)
-
-    if ci.rclass[0] == "climdexInput":
-        return ci
-    else:
-        raise ProcessError("Input for ci-name is not a valid climdexInput object")
 
 
 # Testing

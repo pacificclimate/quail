@@ -1,6 +1,6 @@
 import sys, inspect, re, collections
 from rpy2 import robjects
-from pywps import Process, LiteralOutput
+from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
@@ -8,8 +8,8 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args
 from wps_tools.R import get_package
-from quail.utils import logger, load_ci, collect_literal_inputs
-from quail.io import climdex_input, ci_name, output_file
+from quail.utils import logger, get_robj
+from quail.io import output_file
 
 
 class GetIndices(Process):
@@ -25,8 +25,24 @@ class GetIndices(Process):
             **{"load_rdata": 10},
         )
         inputs = [
-            climdex_input,
-            ci_name,
+            ComplexInput(
+                "climdex_input",
+                "climdexInput file",
+                abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
+                min_occurs=1,
+                max_occurs=1,
+                supported_formats=[Format("application/x-gzip", encoding="base64")],
+            ),
+            LiteralInput(
+                "ci_name",
+                "climdexInput name",
+                abstract="Name of the climdexInput object. Only needed when using Rdata input. "
+                "For RDS input it may be left as the default value.",
+                default="ci",
+                min_occurs=1,
+                max_occurs=1,
+                data_type="string",
+            ),
             output_file,
             log_level,
         ]
@@ -109,7 +125,7 @@ class GetIndices(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        ci = load_ci(climdex_input, ci_name)
+        ci = get_robj(climdex_input, ci_name)
 
         log_handler(
             self,
@@ -121,6 +137,7 @@ class GetIndices(Process):
         )
 
         try:
+            robjects.r.assign("ci", ci)
             avail_indices = climdex.climdex_get_available_indices(ci, False)
         except RRuntimeError as e:
             raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")

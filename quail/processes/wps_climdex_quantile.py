@@ -13,7 +13,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector, get_robj
+from quail.utils import logger, collect_literal_inputs, validate_vector
 from quail.io import output_file
 
 

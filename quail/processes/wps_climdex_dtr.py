@@ -6,10 +6,10 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
-from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
-from quail.utils import logger, load_ci, collect_literal_inputs
-from quail.io import climdex_input, ci_name, output_file, freq
+from wps_tools.io import log_level, rda_output
+from wps_tools.R import get_package
+from quail.utils import logger, load_cis, collect_literal_inputs
+from quail.io import climdex_input, output_file, freq
 
 
 class ClimdexDTR(Process):
@@ -28,9 +28,7 @@ class ClimdexDTR(Process):
         )
         inputs = [
             climdex_input,
-            ci_name,
             output_file,
-            vector_name,
             freq,
             log_level,
         ]
@@ -56,10 +54,8 @@ class ClimdexDTR(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, ci_name, output_file, vector_name, freq, loglevel = [
-            arg[0] for arg in collect_args(request, self.workdir).values()
-        ]
-        r_valid_name(vector_name)
+        output_file, freq, loglevel = collect_literal_inputs(request)
+        climdex_input = request.inputs["climdex_input"]
 
         log_handler(
             self,
@@ -70,41 +66,48 @@ class ClimdexDTR(Process):
             process_step="start",
         )
         climdex = get_package("climdex.pcic")
+        vectors = []
+
+        for i in range(len(climdex_input)):
+            log_handler(
+                self,
+                response,
+                f"Loading climdexInputs from R data file {i}",
+                logger,
+                log_level=loglevel,
+                process_step="load_rdata",
+            )
+            cis = load_cis(climdex_input[i].file)
+
+            log_handler(
+                self,
+                response,
+                f"Processing the mean daily diurnal temperature range {i}",
+                logger,
+                log_level=loglevel,
+                process_step="process",
+            )
+
+            for ci_name, ci in cis.items():
+                try:
+                    dtr = climdex.climdex_dtr(ci, freq)
+                except RRuntimeError as e:
+                    raise ProcessError(msg=f"{type(e).__name__} for file {i}: {str(e)}")
+
+            vector_name = f"dtr{i}_{ci_name}"
+            robjects.r.assign(vector_name, dtr)
+            vectors.append(vector_name)
 
         log_handler(
             self,
             response,
-            "Loading climdexInput from R data file",
-            logger,
-            log_level=loglevel,
-            process_step="load_rdata",
-        )
-        ci = load_ci(climdex_input, ci_name)
-
-        log_handler(
-            self,
-            response,
-            "Processing the mean daily diurnal temperature range",
-            logger,
-            log_level=loglevel,
-            process_step="process",
-        )
-
-        try:
-            dtr = climdex.climdex_dtr(ci, freq)
-        except RRuntimeError as e:
-            raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
-
-        log_handler(
-            self,
-            response,
-            "Saving dtr vector to R data file",
+            "Saving dtr vectors to Rdata file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",
         )
         output_path = os.path.join(self.workdir, output_file)
-        save_python_to_rdata(vector_name, dtr, output_path)
+        robjects.r["save"](*vectors, file=output_path)
 
         log_handler(
             self,
