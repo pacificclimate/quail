@@ -32,9 +32,24 @@ def build_params(climdex_input, threshold, output_file):
         ),
     ],
 )
-def test_wps_climdex_ptot_single(climdex_input, threshold):
+def test_wps_climdex_ptot(climdex_input, threshold):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(climdex_input, threshold, out_file.name)
         run_wps_process(ClimdexPtot(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "threshold"),
+    [
+        (local_path("expected_ptot.rda"), None),
+        (local_path("bad_file_type.gz"), 95),
+    ],
+)
+def test_wps_climdex_ptot_err(climdex_input, threshold):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, threshold, out_file.name)
+        process_err_test(ClimdexPtot, datainputs)

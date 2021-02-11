@@ -49,3 +49,24 @@ def test_wps_climdex_gsl(climdex_input, gsl_mode):
     ) as out_file:
         datainputs = build_params(climdex_input, gsl_mode, out_file.name)
         run_wps_process(ClimdexGSL(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "gsl_mode"),
+    [
+        (
+            local_path("expected_gsl.rda"),
+            "GSL",
+        ),
+        (
+            local_path("bad_file_type.gz"),
+            "GSL",
+        ),
+    ],
+)
+def test_wps_climdex_gsl_err(climdex_input, gsl_mode):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, gsl_mode, out_file.name)
+        process_err_test(ClimdexGSL, datainputs)

@@ -28,3 +28,18 @@ def test_wps_climdex_sdii(climdex_input):
     ) as out_file:
         datainputs = build_params(climdex_input, out_file.name)
         run_wps_process(ClimdexSDII(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input"),
+    [
+        local_path("expected_sdii.rda"),
+        local_path("bad_file_type.gz"),
+    ],
+)
+def test_wps_climdex_sdii_err(climdex_input):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, out_file.name)
+        process_err_test(ClimdexSDII, datainputs)

@@ -43,3 +43,18 @@ def test_wps_climdex_temp_pctl(climdex_input, func, freq):
     ) as out_file:
         datainputs = build_params(climdex_input, func, freq, out_file.name)
         run_wps_process(ClimdexTempPctl(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "func", "freq"),
+    [
+        (local_path("expected_temp_pctl.rda"), "tn10p", "monthly"),
+        (local_path("bad_file_type.gz"), "tn10p", "annual"),
+    ],
+)
+def test_wps_climdex_temp_pctl_err(climdex_input, func, freq):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, func, freq, out_file.name)
+        process_err_test(ClimdexTempPctl, datainputs)

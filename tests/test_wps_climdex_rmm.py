@@ -36,3 +36,18 @@ def test_wps_climdex_rmm(climdex_input, threshold):
     ) as out_file:
         datainputs = build_params(climdex_input, threshold, out_file.name)
         run_wps_process(ClimdexRMM(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "threshold"),
+    [
+        (local_path("expected_rmm.rda"), 10.0),
+        (local_path("bad_file_tyoe.gz"), 20.0),
+    ],
+)
+def test_wps_climdex_rmm_err(climdex_input, threshold):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, threshold, out_file.name)
+        process_err_test(ClimdexRMM, datainputs)

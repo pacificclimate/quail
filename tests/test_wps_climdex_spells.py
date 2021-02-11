@@ -38,9 +38,24 @@ def build_params(climdex_input, func, span_years, output_file):
         ),
     ],
 )
-def test_wps_climdex_spells_rds(climdex_input, func, span_years):
+def test_wps_climdex_spells(climdex_input, func, span_years):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(climdex_input, func, span_years, out_file.name)
         run_wps_process(ClimdexSpells(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "func", "span_years"),
+    [
+        (local_path("expected_spells_data.rda"), "wsdi", False),
+        (local_path("bad_file_type.gz"), "wsdi", True),
+    ],
+)
+def test_wps_climdex_spells_err(climdex_input, func, span_years):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, func, span_years, out_file.name)
+        process_err_test(ClimdexSpells, datainputs)

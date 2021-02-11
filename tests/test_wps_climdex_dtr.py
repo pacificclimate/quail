@@ -36,3 +36,18 @@ def test_wps_climdex_dtr(climdex_input, freq):
     ) as out_file:
         datainputs = build_params(climdex_input, freq, out_file.name)
         run_wps_process(ClimdexDTR(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "freq"),
+    [
+        (local_path("expected_dtr.rda"), "monthly"),
+        (local_path("bad_file_type.gz"), "annual"),
+    ],
+)
+def test_wps_climdex_dtr_err(climdex_input, freq):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, freq, out_file.name)
+        process_err_test(ClimdexDTR, datainputs)

@@ -38,3 +38,18 @@ def test_wps_climdex_rxnday(climdex_input, freq, num_days):
     ) as out_file:
         datainputs = build_params(climdex_input, freq, num_days, out_file.name)
         run_wps_process(ClimdexRxnday(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "freq", "num_days"),
+    [
+        (local_path("expected_rxnday.rda"), "monthly", 1),
+        (local_path("bad_file_type.gz"), "annual", 1),
+    ],
+)
+def test_wps_climdex_rxnday_err(climdex_input, freq, num_days):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, freq, num_days, out_file.name)
+        process_err_test(ClimdexRxnday, datainputs)

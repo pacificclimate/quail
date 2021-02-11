@@ -37,9 +37,24 @@ def build_params(climdex_input, month_type, freq, output_file):
         ),
     ],
 )
-def test_wps_climdex_mmdmt_single(climdex_input, month_type, freq):
+def test_wps_climdex_mmdmt(climdex_input, month_type, freq):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
         datainputs = build_params(climdex_input, month_type, freq, out_file.name)
         run_wps_process(ClimdexMMDMT(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "month_type", "freq"),
+    [
+        (local_path("expected_mmdmt_data.rda"), "txx", "monthly"),
+        (local_path("bad_file_type.gz"), "txx", "annual"),
+    ],
+)
+def test_wps_climdex_mmdmt_err(climdex_input, month_type, freq):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, month_type, freq, out_file.name)
+        process_err_test(ClimdexMMDMT, datainputs)

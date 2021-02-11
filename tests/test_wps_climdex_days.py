@@ -1,5 +1,6 @@
 import pytest
 from tempfile import NamedTemporaryFile
+import gzip
 
 from wps_tools.testing import local_path, run_wps_process, process_err_test
 from quail.processes.wps_climdex_days import ClimdexDays
@@ -49,3 +50,21 @@ def test_wps_climdex_days(climdex_input, days_type):
     ) as out_file:
         datainputs = build_params(climdex_input, days_type, out_file.name)
         run_wps_process(ClimdexDays(), datainputs)
+
+
+@pytest.mark.parametrize(
+    ("climdex_input", "days_type"),
+    [
+        (
+            local_path("expected_days_data.rda"),
+            "su",
+        ),
+        (local_path("bad_file_type.gz"), "id"),
+    ],
+)
+def test_wps_climdex_days_err(climdex_input, days_type):
+    with NamedTemporaryFile(
+        suffix=".rda", prefix="output_", dir="/tmp", delete=True
+    ) as out_file:
+        datainputs = build_params(climdex_input, days_type, out_file.name)
+        process_err_test(ClimdexDays, datainputs)
