@@ -61,7 +61,6 @@ def get_ClimdexInputs(r_file):
     cis = {
         ci: robjects.r(ci) for ci in robjs if robjects.r(ci).rclass[0] == "climdexInput"
     }
-
     if len(cis) == 0:
         raise IndexError
     else:
@@ -97,6 +96,28 @@ def load_rds_ci(r_file):
         return ci
     else:
         raise ProcessError
+
+
+def get_robj(r_file, object_name):
+    """RDS and RDA files have the same mimetype, so the pyWPS ClimdexInput
+    is unable to tell them apart and apply the correct suffix. The R function
+    `load()` can only read Rdata files and `readRDS()` can only read RDS
+    files. Without the input having a suffix, this function passes the input
+    to `load()`, then, if that raises an exception, passes it to `readRDS()`,
+    and finally if that fails, raises a ProcessError.
+    """
+    try:
+        return load_rdata_to_python(r_file, object_name)
+    except (RRuntimeError, ProcessError, IndexError):
+        pass
+
+    try:
+        return robjects.r(f"readRDS('{r_file}')")
+    except (RRuntimeError, ProcessError) as e:
+        raise ProcessError(
+            f"{type(e).__name__}: Data file must be a RDS file or "
+            "a Rdata file containing an object of the given name"
+        )
 
 
 # Testing

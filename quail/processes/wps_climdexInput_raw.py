@@ -163,20 +163,6 @@ class ClimdexInputRaw(Process):
     def generate_dates(
         self, request, filename, obj_name, date_fields, date_format, cal
     ):
-        def get_robj(filename, obj_name):
-            try:
-                return load_rdata_to_python(filename, object_name)
-            except (RRuntimeError, ProcessError, IndexError):
-                pass
-
-            try:
-                return robjects.r(f"readRDS('{filename}')")
-            except (RRuntimeError, ProcessError) as e:
-                raise ProcessError(
-                    f"{type(e).__name__}: Data file must be a RDS file or "
-                    "a Rdata file containing an object of the given name"
-                )
-
         df = get_robj(filename, obj_name)
         robjects.r.assign(obj_name, df)
 

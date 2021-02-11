@@ -3,15 +3,11 @@ from tempfile import NamedTemporaryFile
 
 from wps_tools.testing import run_wps_process, local_path, process_err_test
 from quail.processes.wps_climdex_ptot import ClimdexPtot
+from .common import build_file_input
 
 
-def build_params(climdex_input, ci_name, threshold, vector_name, output_file):
-    params = (
-        f"climdex_input=@xlink:href={climdex_input};"
-        f"ci_name={ci_name};"
-        f"output_file={output_file};"
-        f"vector_name={vector_name};"
-    )
+def build_params(climdex_input, threshold, output_file):
+    params = f"{build_file_input(climdex_input)};" f"output_file={output_file};"
     if threshold:
         params += f"threshold={threshold};"
 
@@ -19,68 +15,26 @@ def build_params(climdex_input, ci_name, threshold, vector_name, output_file):
 
 
 @pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "threshold", "vector_name"),
+    ("climdex_input", "threshold"),
     [
-        (local_path("climdexInput.rda"), "ci", None, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", 95, "vector_name"),
-        (local_path("climdexInput.rda"), "ci", 99, "vector_name"),
-        (local_path("climdexInput.rds"), "ci", None, "vector_name"),
-        (local_path("climdexInput.rds"), "ci", 99, "vector_name"),
+        (local_path("climdexInput.rda"), None),
+        (local_path("climdexInput.rda"), 95),
+        (local_path("climdexInput.rda"), 99),
+        (local_path("climdexInput.rds"), None),
+        (local_path("climdexInput.rds"), 99),
+        (
+            [
+                local_path("climdexInput.rda"),
+                local_path("climdexInput.rds"),
+                local_path("climdex_input_multiple.rda"),
+            ],
+            95,
+        ),
     ],
 )
-def test_wps_climdex_ptot(climdex_input, ci_name, threshold, vector_name):
+def test_wps_climdex_ptot_single(climdex_input, threshold):
     with NamedTemporaryFile(
         suffix=".rda", prefix="output_", dir="/tmp", delete=True
     ) as out_file:
-        datainputs = build_params(
-            climdex_input, ci_name, threshold, vector_name, out_file.name
-        )
+        datainputs = build_params(climdex_input, threshold, out_file.name)
         run_wps_process(ClimdexPtot(), datainputs)
-
-
-@pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "threshold", "vector_name"),
-    [
-        (
-            local_path("climdexInput.rda"),
-            "ci",
-            95,
-            "vector name",
-        ),
-    ],
-)
-def test_wps_climdex_ptot_vector_err(climdex_input, ci_name, threshold, vector_name):
-    with NamedTemporaryFile(
-        suffix=".rda", prefix="output_", dir="/tmp", delete=True
-    ) as out_file:
-        datainputs = build_params(
-            climdex_input, ci_name, threshold, vector_name, out_file.name
-        )
-        process_err_test(ClimdexPtot, datainputs)
-
-
-@pytest.mark.parametrize(
-    ("climdex_input", "ci_name", "threshold", "vector_name"),
-    [
-        (
-            local_path("climdexInput.rda"),
-            "not_ci",
-            95,
-            "vector_name",
-        ),
-        (
-            local_path("expected_ptot.rda"),
-            "expected_r99ptot",
-            99,
-            "vector_name",
-        ),
-    ],
-)
-def test_wps_climdex_ptot_ci_err(climdex_input, ci_name, threshold, vector_name):
-    with NamedTemporaryFile(
-        suffix=".rda", prefix="output_", dir="/tmp", delete=True
-    ) as out_file:
-        datainputs = build_params(
-            climdex_input, ci_name, threshold, vector_name, out_file.name
-        )
-        process_err_test(ClimdexPtot, datainputs)

@@ -41,3 +41,13 @@ def get_output(doc):
             output[identifier_el.text] = data_el[0].text
 
     return output
+
+
+def build_file_input(climdex_input):
+    if isinstance(climdex_input, str):  # Single input file
+        return f"climdex_input=@xlink:href={climdex_input};"
+    else:
+        ci_input = ""
+        for ci in climdex_input:
+            ci_input += f"climdex_input=@xlink:href={ci};"
+        return ci_input

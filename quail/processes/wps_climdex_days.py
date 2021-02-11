@@ -80,7 +80,7 @@ class ClimdexDays(Process):
         )
 
     def _handler(self, request, response):
-        output_file, days_type, loglevel = collect_literal_inputs
+        output_file, days_type, loglevel = collect_literal_inputs(request)
         climdex_input = request.inputs["climdex_input"]
 
         log_handler(
