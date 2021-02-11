@@ -9,7 +9,7 @@ from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, collect_args
 from wps_tools.R import get_package
 from quail.utils import logger, get_robj
-from quail.io import climdex_input, ci_name, output_file
+from quail.io import output_file
 
 
 class GetIndices(Process):

@@ -10,17 +10,6 @@ climdex_input = ComplexInput(
     supported_formats=[Format("application/x-gzip", encoding="base64")],
 )
 
-ci_name = LiteralInput(
-    "ci_name",
-    "climdexInput name",
-    abstract="Name of the climdexInput object. Only needed when using Rdata input. "
-    "For RDS input it may be left as the default value.",
-    default="ci",
-    min_occurs=1,
-    max_occurs=100,
-    data_type="string",
-)
-
 output_file = LiteralInput(
     "output_file",
     "Output file name",

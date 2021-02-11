@@ -7,7 +7,6 @@ from quail.utils import (
     load_rds_ci,
     load_cis,
     validate_vector,
-    get_ClimdexInputs,
 )
 
 

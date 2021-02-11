@@ -10,9 +10,7 @@ from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
 
 # PCIC libraries
-from wps_tools.io import collect_args
 from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
-from wps_tools.error_handling import custom_process_error
 
 
 logger = logging.getLogger("PYWPS")
