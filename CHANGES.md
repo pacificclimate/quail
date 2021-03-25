@@ -1,5 +1,10 @@
 # Changes
 
+## 0.6.0
+*2021-03-25*
+
+* Handle multiple inputs
+
 ## 0.5.0
 *2021-02-08*
 
