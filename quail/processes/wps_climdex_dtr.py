@@ -8,8 +8,8 @@ from pywps.app.Common import Metadata
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, rda_output
 from wps_tools.R import get_package
-from quail.utils import logger, load_cis, collect_literal_inputs
-from quail.io import climdex_input, output_file, freq
+from quail.utils import logger, load_cis, process_inputs
+from quail.io import dtr_inputs
 
 
 class ClimdexDTR(Process):
@@ -26,13 +26,7 @@ class ClimdexDTR(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            climdex_input,
-            output_file,
-            freq,
-            log_level,
-        ]
-
+        inputs = dtr_inputs
         outputs = [rda_output]
 
         super(ClimdexDTR, self).__init__(
@@ -54,8 +48,7 @@ class ClimdexDTR(Process):
         )
 
     def _handler(self, request, response):
-        output_file, freq, loglevel = collect_literal_inputs(request)
-        climdex_input = request.inputs["climdex_input"]
+        climdex_input, freq, loglevel, output_file = process_inputs(request.inputs, dtr_inputs, self.workdir)
 
         log_handler(
             self,
@@ -68,21 +61,24 @@ class ClimdexDTR(Process):
         climdex = get_package("climdex.pcic")
         vectors = []
 
-        for i in range(len(climdex_input)):
+        counter = 1
+        total = len(climdex_inputs)
+
+        for climdex_input in climdex_inputs:
             log_handler(
                 self,
                 response,
-                f"Loading climdexInputs from R data file {i}",
+                f"Loading climdexInputs from R data file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="load_rdata",
             )
-            cis = load_cis(climdex_input[i].file)
+            cis = load_cis(climdex_input)
 
             log_handler(
                 self,
                 response,
-                f"Processing the mean daily diurnal temperature range {i}",
+                f"Processing the mean daily diurnal temperature range {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="process",
@@ -92,11 +88,14 @@ class ClimdexDTR(Process):
                 try:
                     dtr = climdex.climdex_dtr(ci, freq)
                 except RRuntimeError as e:
-                    raise ProcessError(msg=f"{type(e).__name__} for file {i}: {str(e)}")
+                    raise ProcessError(
+                        msg=f"{type(e).__name__} for file {climdex_input}: {str(e)}"
+                    )
 
-            vector_name = f"dtr{i}_{ci_name}"
-            robjects.r.assign(vector_name, dtr)
-            vectors.append(vector_name)
+                vector_name = f"dtr{counter}_{ci_name}"
+                robjects.r.assign(vector_name, dtr)
+                vectors.append(vector_name)
+            counter += 1
 
         log_handler(
             self,
