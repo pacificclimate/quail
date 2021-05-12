@@ -12,26 +12,8 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector, get_robj
-from quail.io import (
-    tmax_column,
-    tmin_column,
-    prec_column,
-    tavg_column,
-    base_range,
-    cal,
-    date_fields,
-    date_format,
-    n,
-    northern_hemisphere,
-    quantiles,
-    temp_qtiles,
-    prec_qtiles,
-    max_missing_days,
-    min_base_data_fraction_present,
-    output_file,
-    ci_output,
-)
+from quail.utils import logger, validate_vectors, get_robj, process_inputs
+from quail.io import climdexInput_raw_inputs, ci_output
 
 
 class ClimdexInputRaw(Process):
@@ -47,99 +29,8 @@ class ClimdexInputRaw(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            ComplexInput(
-                "tmax_file",
-                "daily maximum temperature data file",
-                abstract="Name of file containing daily maximum temperature data.",
-                min_occurs=0,
-                max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", encoding="base64"),
-                ],
-            ),
-            ComplexInput(
-                "tmin_file",
-                "daily minimum temperature data file",
-                abstract="Name of file containing daily minimum temperature data.",
-                min_occurs=0,
-                max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", encoding="base64"),
-                ],
-            ),
-            ComplexInput(
-                "prec_file",
-                "daily total precipitation data file",
-                abstract="Name of file containing daily total precipitation data.",
-                min_occurs=1,
-                max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", encoding="base64"),
-                ],
-            ),
-            ComplexInput(
-                "tavg_file",
-                "mean temperature data file",
-                abstract="Name of file containing daily mean temperature data.",
-                min_occurs=0,
-                max_occurs=1,
-                supported_formats=[
-                    Format("application/x-gzip", encoding="base64"),
-                ],
-            ),
-            LiteralInput(
-                "tmax_name",
-                "daily maximum temperature object name",
-                default="tmax",
-                abstract="In a Rda file, the name of the R object containing daily "
-                "maximum temperature data. You may leave as default for RDS files.",
-                data_type="string",
-            ),
-            LiteralInput(
-                "tmin_name",
-                "daily minimum temperature data file",
-                default="tmin",
-                abstract="In a Rda file, the name of the R object containing daily "
-                "minimum temperature data. You may leave as default for RDS files.",
-                data_type="string",
-            ),
-            LiteralInput(
-                "prec_name",
-                "daily total precipitation data file",
-                default="prec",
-                abstract="In a Rda file, the name of the R object containing daily "
-                "mean temperature data. You may leave as default for RDS files.",
-                data_type="string",
-            ),
-            LiteralInput(
-                "tavg_name",
-                "mean temperature data file",
-                default="tavg",
-                abstract="In a Rda file, the name of the R object containing daily total "
-                "precipitation data. You may leave as default for RDS files.",
-                data_type="string",
-            ),
-            tmax_column,
-            tmin_column,
-            prec_column,
-            tavg_column,
-            base_range,
-            cal,
-            date_fields,
-            date_format,
-            n,
-            northern_hemisphere,
-            quantiles,
-            temp_qtiles,
-            prec_qtiles,
-            max_missing_days,
-            min_base_data_fraction_present,
-            output_file,
-            vector_name,
-            log_level,
-        ]
 
+        inputs = climdexInput_raw_inputs
         outputs = [ci_output]
 
         super(ClimdexInputRaw, self).__init__(
@@ -194,17 +85,18 @@ class ClimdexInputRaw(Process):
         date_fields,
         date_format,
         cal,
+        prec_file,
+        tavg_file,
+        tmax_file,
+        tmin_file,
     ):
-        args = collect_args(request, self.workdir)
-        prec_file = args["prec_file"][0]
         prec_dates = self.generate_dates(
             request, prec_file, prec_name, date_fields, date_format, cal
         )
         prec = self.column(prec_name, prec_column, "prec")
 
-        if "tavg_file" in args.keys():
+        if tavg_file:
             # use tavg data if provided
-            tavg_file = args["tavg_file"][0]
             tavg_dates = self.generate_dates(
                 request, tavg_file, tavg_name, date_fields, date_format, cal
             )
@@ -217,11 +109,8 @@ class ClimdexInputRaw(Process):
                 "prec_dates": prec_dates,
             }
 
-        elif "tmax_file" in args.keys() and "tmin_file" in args.keys():
+        elif tmax_file and tmin_file:
             # use tmax and tmin data if tavg is not provided
-            tmax_file = args["tmax_file"][0]
-            tmin_file = args["tmin_file"][0]
-
             tmax_dates = self.generate_dates(
                 request, tmax_file, tmax_name, date_fields, date_format, cal
             )
@@ -243,39 +132,43 @@ class ClimdexInputRaw(Process):
 
     def _handler(self, request, response):
         (
-            tmax_name,
-            tmin_name,
-            prec_name,
-            tavg_name,
-            tmax_column,
-            tmin_column,
-            prec_column,
-            tavg_column,
             base_range,
             cal,
             date_fields,
             date_format,
-            n,
-            northern_hemisphere,
-            quantiles,
-            temp_qtiles,
-            prec_qtiles,
+            loglevel,
             max_missing_days,
             min_base_data_fraction_present,
+            n,
+            northern_hemisphere,
             output_file,
+            prec_column,
+            prec_file,
+            prec_name,
+            prec_qtiles,
+            quantiles,
+            tavg_column,
+            tavg_file,
+            tavg_name,
+            temp_qtiles,
+            tmax_column,
+            tmax_file,
+            tmax_name,
+            tmin_column,
+            tmin_file,
+            tmin_name,
             vector_name,
-            loglevel,
-        ) = collect_literal_inputs(request)
-        [
-            validate_vector(vector)
-            for vector in [
+        ) = process_inputs(request.inputs, climdexInput_raw_inputs, self.workdir)
+
+        validate_vectors(
+            [
                 base_range,
                 date_fields,
                 temp_qtiles,
                 prec_qtiles,
                 max_missing_days,
             ]
-        ]
+        )
 
         log_handler(
             self,
@@ -309,6 +202,10 @@ class ClimdexInputRaw(Process):
             date_fields,
             date_format,
             cal,
+            prec_file,
+            tavg_file,
+            tmax_file,
+            tmin_file,
         )
 
         log_handler(
