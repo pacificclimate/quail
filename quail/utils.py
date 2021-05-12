@@ -10,7 +10,8 @@ from pkg_resources import resource_filename
 from tempfile import NamedTemporaryFile
 
 # PCIC libraries
-from wps_tools.output_handling import rda_to_vector, load_rdata_to_python
+from wps_tools.R import get_robjects, load_rdata_to_python
+from wps_tools.io import collect_args
 
 
 logger = logging.getLogger("PYWPS")
@@ -24,25 +25,17 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def collect_literal_inputs(request):
-    literal_inputs = [
-        request.inputs[k][0].data
-        for k in request.inputs.keys()
-        if "data_type" in vars(request.inputs[k][0]).keys() and "_content" not in k
-    ]
-    return literal_inputs
+def validate_vectors(vectors):
+    for vector in vectors:
+        try:
+            vect = robjects.r(vector)
+            if not robjects.r["is.vector"](vect)[0]:
+                raise ProcessError("Invalid type passed for vector")
 
-
-def validate_vector(vector):
-    try:
-        vect = robjects.r(vector)
-        if not robjects.r["is.vector"](vect)[0]:
-            raise ProcessError("Invalid type passed for vector")
-
-    except RParsingError as e:
-        raise ProcessError(
-            msg=f"{type(e).__name__}: Invalid vector format, follow R vector syntax"
-        )
+        except RParsingError as e:
+            raise ProcessError(
+                msg=f"{type(e).__name__}: Invalid vector format, follow R vector syntax"
+            )
 
 
 def get_ClimdexInputs(r_file):
@@ -114,10 +107,10 @@ def get_robj(r_file, object_name):
 
 
 def test_rda_output(url, vector_name, expected_file, expected_vector_name):
-    output_vector = rda_to_vector(url, vector_name)
+    output_vector = get_robjects(url, vector_name)
     local_path = resource_filename("tests", f"data/{expected_file}")
     expected_url = f"file://{local_path}"
-    expected_vector = rda_to_vector(expected_url, expected_vector_name)
+    expected_vector = get_robjects(expected_url, expected_vector_name)
 
     for index in range(len(expected_vector)):
         assert str(output_vector[index]) == str(expected_vector[index])
@@ -159,3 +152,20 @@ def test_ci_output(url, vector_name, expected_file, expected_vector_name):
 
     # Clear R global env
     robjects.r("rm(list=ls())")
+
+
+def process_inputs(request_inputs, expected_inputs, workdir):
+    requested = request_inputs.keys()
+    all = [expected.identifier for expected in expected_inputs]
+    missing_inputs = list(set(all) - set(requested))
+
+    collected = collect_args(request_inputs, workdir)
+    for missing_input in missing_inputs:
+        collected[missing_input] = None
+
+    # NOTE: If you want to find out the order of the variables, just uncomment
+    #       these lines.
+    var_order = [name for name, value in sorted(collected.items())]
+    print(var_order)
+
+    return [value for name, value in sorted(collected.items())]
