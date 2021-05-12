@@ -13,7 +13,7 @@ from wps_tools.R import (
     r_valid_name,
 )
 from quail.utils import logger, validate_vectors, get_robj, process_inputs
-from quail.io import climdexInput_raw_inputs, ci_output
+from quail.io import raw_inputs, ci_output
 
 
 class ClimdexInputRaw(Process):
@@ -30,7 +30,7 @@ class ClimdexInputRaw(Process):
             },
         )
 
-        inputs = climdexInput_raw_inputs
+        inputs = raw_inputs
         outputs = [ci_output]
 
         super(ClimdexInputRaw, self).__init__(
@@ -158,7 +158,7 @@ class ClimdexInputRaw(Process):
             tmin_file,
             tmin_name,
             vector_name,
-        ) = process_inputs(request.inputs, climdexInput_raw_inputs, self.workdir)
+        ) = process_inputs(request.inputs, raw_inputs, self.workdir)
 
         validate_vectors(
             [

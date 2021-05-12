@@ -10,7 +10,7 @@ from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
 
 from quail.utils import logger, validate_vectors, process_inputs
-from quail.io import climdexInput_csv_inputs, ci_output
+from quail.io import csv_inputs, ci_output
 
 
 class ClimdexInputCSV(Process):
@@ -26,7 +26,7 @@ class ClimdexInputCSV(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = climdexInput_csv_inputs
+        inputs = csv_inputs
         outputs = [ci_output]
 
         super(ClimdexInputCSV, self).__init__(
@@ -157,7 +157,7 @@ class ClimdexInputCSV(Process):
             tmin_column,
             tmin_file_content,
             vector_name,
-        ) = process_inputs(request.inputs, climdexInput_csv_inputs, self.workdir)
+        ) = process_inputs(request.inputs, csv_inputs, self.workdir)
 
         validate_vectors(
             [
