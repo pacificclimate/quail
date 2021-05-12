@@ -62,9 +62,9 @@ class ClimdexDTR(Process):
         vectors = []
 
         counter = 1
-        total = len(climdex_inputs)
+        total = len(climdex_input)
 
-        for climdex_input in climdex_inputs:
+        for input in climdex_input:
             log_handler(
                 self,
                 response,
@@ -73,7 +73,7 @@ class ClimdexDTR(Process):
                 log_level=loglevel,
                 process_step="load_rdata",
             )
-            cis = load_cis(climdex_input)
+            cis = load_cis(input)
 
             log_handler(
                 self,
@@ -89,7 +89,7 @@ class ClimdexDTR(Process):
                     dtr = climdex.climdex_dtr(ci, freq)
                 except RRuntimeError as e:
                     raise ProcessError(
-                        msg=f"{type(e).__name__} for file {climdex_input}: {str(e)}"
+                        msg=f"{type(e).__name__} for file {input}: {str(e)}"
                     )
 
                 vector_name = f"dtr{counter}_{ci_name}"
