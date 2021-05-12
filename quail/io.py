@@ -1,4 +1,5 @@
 from pywps import LiteralInput, ComplexInput, ComplexOutput, Format
+from wps_tools.io import log_level, collect_args
 
 
 climdex_input = ComplexInput(
@@ -179,3 +180,186 @@ freq = LiteralInput(
     max_occurs=1,
     data_type="string",
 )
+
+tmax_file_content = LiteralInput(
+    "tmax_file_content",
+    "daily maximum temperature data file content",
+    abstract="Content of file with daily maximum temperature data "
+    "(temporary alternative to taking file).",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
+
+tmin_file_content = LiteralInput(
+    "tmin_file_content",
+    "daily minimum temperature data file",
+    abstract="Content of file with daily minimum temperature data "
+    "(temporary alternative to taking file).",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
+
+prec_file_content = LiteralInput(
+    "prec_file_content",
+    "daily total precipitation data file content",
+    abstract="Content of file with daily total precipitation data "
+    "(temporary alternative to taking file).",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+tavg_file_content = LiteralInput(
+    "tavg_file_content",
+    "mean temperature data file content",
+    abstract="Content of file with daily mean temperature data "
+    "(temporary alternative to taking file).",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
+
+na_strings = LiteralInput(
+    "na_strings",
+    "climdexInput name",
+    abstract="Strings used for NA values; passed to read.csv",
+    default="NULL",
+    data_type="string",
+)
+
+tmax_file = ComplexInput(
+    "tmax_file",
+    "daily maximum temperature data file",
+    abstract="Name of file containing daily maximum temperature data.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+tmin_file = ComplexInput(
+    "tmin_file",
+    "daily minimum temperature data file",
+    abstract="Name of file containing daily minimum temperature data.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+prec_file = ComplexInput(
+    "prec_file",
+    "daily total precipitation data file",
+    abstract="Name of file containing daily total precipitation data.",
+    min_occurs=1,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+tavg_file = ComplexInput(
+    "tavg_file",
+    "mean temperature data file",
+    abstract="Name of file containing daily mean temperature data.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+tmax_name = LiteralInput(
+    "tmax_name",
+    "daily maximum temperature object name",
+    default="tmax",
+    abstract="In a Rda file, the name of the R object containing daily "
+    "maximum temperature data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+tmin_name = LiteralInput(
+    "tmin_name",
+    "daily minimum temperature data file",
+    default="tmin",
+    abstract="In a Rda file, the name of the R object containing daily "
+    "minimum temperature data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+prec_name = LiteralInput(
+    "prec_name",
+    "daily total precipitation data file",
+    default="prec",
+    abstract="In a Rda file, the name of the R object containing daily "
+    "mean temperature data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+tavg_name = LiteralInput(
+    "tavg_name",
+    "mean temperature data file",
+    default="tavg",
+    abstract="In a Rda file, the name of the R object containing daily total "
+    "precipitation data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+climdexInput_csv_inputs = [
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
+    tavg_file_content,
+    na_strings,
+    tmax_column,
+    tmin_column,
+    prec_column,
+    tavg_column,
+    base_range,
+    cal,
+    date_fields,
+    date_format,
+    n,
+    northern_hemisphere,
+    quantiles,
+    temp_qtiles,
+    prec_qtiles,
+    max_missing_days,
+    min_base_data_fraction_present,
+    output_file,
+    vector_name,
+    log_level,
+]
+
+climdexInput_raw_inputs = [
+    tmax_file,
+    tmin_file,
+    prec_file,
+    tavg_file,
+    tmax_name,
+    tmin_name,
+    prec_name,
+    tavg_name,
+    tmax_column,
+    tmin_column,
+    prec_column,
+    tavg_column,
+    base_range,
+    cal,
+    date_fields,
+    date_format,
+    n,
+    northern_hemisphere,
+    quantiles,
+    temp_qtiles,
+    prec_qtiles,
+    max_missing_days,
+    min_base_data_fraction_present,
+    output_file,
+    vector_name,
+    log_level,
+]
