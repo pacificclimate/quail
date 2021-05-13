@@ -450,3 +450,21 @@ mmdmt_inputs = [
     freq,
     log_level,
 ]
+
+threshold = LiteralInput(
+    "threshold",
+    "Threshold",
+    abstract="Daily precipitation threshold",
+    allowed_values=[0, 95, 99],
+    default=0,
+    min_occurs=0,
+    max_occurs=1,
+    data_type="integer",
+)
+
+ptot_inputs = [
+    climdex_input,
+    output_file,
+    threshold,
+    log_level,
+]
