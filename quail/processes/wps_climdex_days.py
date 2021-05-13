@@ -1,12 +1,12 @@
 import os
 from rpy2 import robjects
 from rpy2.rinterface_lib.embedded import RRuntimeError
-from pywps import Process, LiteralInput
+from pywps import Process
 from pywps.app.exceptions import ProcessError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import collect_args, log_level, rda_output
+from wps_tools.io import rda_output
 from quail.utils import logger, load_cis, process_inputs
 from quail.io import days_inputs
 

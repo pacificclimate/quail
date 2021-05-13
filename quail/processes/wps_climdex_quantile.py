@@ -1,12 +1,12 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
+from pywps import Process, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.io import rda_output
 from wps_tools.R import (
     get_package,
     load_rdata_to_python,
@@ -60,15 +60,6 @@ class ClimdexQuantile(Process):
             status_supported=True,
         )
 
-    def collect_args_wrapper(self, request):
-        literal_inputs = collect_literal_inputs(request)
-        if "data_file" in collect_args(request.inputs, self.workdir).keys():
-            data_file = collect_args(request.inputs, self.workdir)["data_file"][0]
-        else:
-            data_file = None
-
-        return [data_file] + literal_inputs
-
     def unpack_data_file(self, data_file, data_vector):
         try:
             return load_rdata_to_python(data_file, data_vector)
@@ -115,7 +106,7 @@ class ClimdexQuantile(Process):
         log_handler(
             self,
             response,
-            f"Processing climdex.quantile",
+            "Processing climdex.quantile",
             logger,
             log_level=loglevel,
             process_step="process",
@@ -130,7 +121,7 @@ class ClimdexQuantile(Process):
         log_handler(
             self,
             response,
-            f"Saving quantile as R data file",
+            "Saving quantile as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",

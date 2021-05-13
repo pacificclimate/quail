@@ -1,12 +1,11 @@
 import sys, inspect, re, collections
 from rpy2 import robjects
-from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
+from pywps import Process, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args
 from wps_tools.R import get_package
 from quail.utils import logger, get_robj, process_inputs
 from quail.io import avail_indices_inputs
@@ -103,7 +102,7 @@ class GetIndices(Process):
         log_handler(
             self,
             response,
-            f"Processing climdex_get_available_indices",
+            "Processing climdex_get_available_indices",
             logger,
             log_level=loglevel,
             process_step="process",

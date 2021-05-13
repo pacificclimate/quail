@@ -1,7 +1,7 @@
 import os, csv
 from rpy2 import robjects
 from tempfile import NamedTemporaryFile as TempFile
-from pywps import Process, LiteralInput
+from pywps import Process
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
@@ -205,7 +205,7 @@ class ClimdexInputCSV(Process):
         log_handler(
             self,
             response,
-            f"Processing climdexInput.csv",
+            "Processing climdexInput.csv",
             logger,
             log_level=loglevel,
             process_step="process",
@@ -234,7 +234,7 @@ class ClimdexInputCSV(Process):
         log_handler(
             self,
             response,
-            f"Saving climdexInput as R data file",
+            "Saving climdexInput as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",

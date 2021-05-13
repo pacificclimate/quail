@@ -1,12 +1,11 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput, ComplexInput, Format
+from pywps import Process
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, vector_name
 from wps_tools.R import (
     get_package,
     save_python_to_rdata,
@@ -211,7 +210,7 @@ class ClimdexInputRaw(Process):
         log_handler(
             self,
             response,
-            f"Processing climdexInput.raw",
+            "Processing climdexInput.raw",
             logger,
             log_level=loglevel,
             process_step="process",
@@ -235,7 +234,7 @@ class ClimdexInputRaw(Process):
         log_handler(
             self,
             response,
-            f"Saving climdexInput as R data file",
+            "Saving climdexInput as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",

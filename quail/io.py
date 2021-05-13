@@ -1,5 +1,5 @@
 from pywps import LiteralInput, ComplexInput, ComplexOutput, Format
-from wps_tools.io import log_level, collect_args
+from wps_tools.io import log_level
 
 
 climdex_input = ComplexInput(

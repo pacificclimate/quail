@@ -6,7 +6,7 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, rda_output
+from wps_tools.io import rda_output
 from wps_tools.R import get_package
 from quail.utils import logger, load_cis, process_inputs
 from quail.io import sdii_inputs
