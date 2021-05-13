@@ -426,6 +426,25 @@ center_mean_on_last_day = LiteralInput(
     data_type="boolean",
 )
 
+
+func = LiteralInput(
+    "func",
+    "Function to compute",
+    abstract="Compute climdex.wsdi (Warm spell duration index)",
+    allowed_values=["wsdi", "csdi", "cdd", "cwd"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+span_years = LiteralInput(
+    "span_years",
+    "Spells can span years",
+    abstract="Specifies whether spells can cross year boundaries",
+    default=False,
+    data_type="boolean",
+)
+
 csv_inputs = [
     tmax_file_content,
     tmin_file_content,
@@ -552,5 +571,13 @@ rxnday_inputs = [
 sdii_inputs = [
     climdex_input,
     output_file,
+    log_level,
+]
+
+spells_inputs = [
+    climdex_input,
+    output_file,
+    func,
+    span_years,
     log_level,
 ]
