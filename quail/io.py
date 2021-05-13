@@ -11,6 +11,15 @@ climdex_input = ComplexInput(
     supported_formats=[Format("application/x-gzip", encoding="base64")],
 )
 
+climdex_single_input = ComplexInput(
+    "climdex_input",
+    "climdexInput file",
+    abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
+    min_occurs=1,
+    max_occurs=1,
+    supported_formats=[Format("application/x-gzip", encoding="base64")],
+)
+
 output_file = LiteralInput(
     "output_file",
     "Output file name",
@@ -309,7 +318,28 @@ tavg_name = LiteralInput(
     data_type="string",
 )
 
-climdexInput_csv_inputs = [
+days_type = LiteralInput(
+    "days_type",
+    "Day type to compute",
+    abstract="Day type condition to compute",
+    allowed_values=["su", "id", "fd", "tr"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+ci_name = LiteralInput(
+    "ci_name",
+    "climdexInput name",
+    abstract="Name of the climdexInput object. Only needed when using Rdata input. "
+    "For RDS input it may be left as the default value.",
+    default="ci",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+csv_inputs = [
     tmax_file_content,
     tmin_file_content,
     prec_file_content,
@@ -335,7 +365,7 @@ climdexInput_csv_inputs = [
     log_level,
 ]
 
-climdexInput_raw_inputs = [
+raw_inputs = [
     tmax_file,
     tmin_file,
     prec_file,
@@ -361,5 +391,26 @@ climdexInput_raw_inputs = [
     min_base_data_fraction_present,
     output_file,
     vector_name,
+    log_level,
+]
+
+days_inputs = [
+    climdex_input,
+    output_file,
+    days_type,
+    log_level,
+]
+
+dtr_inputs = [
+    climdex_input,
+    output_file,
+    freq,
+    log_level,
+]
+
+avail_indices_inputs = [
+    climdex_single_input,
+    ci_name,
+    output_file,
     log_level,
 ]
