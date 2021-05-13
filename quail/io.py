@@ -339,6 +339,17 @@ ci_name = LiteralInput(
     data_type="string",
 )
 
+gsl_mode = LiteralInput(
+    "gsl_mode",
+    "GSL mode",
+    abstract="Growing season length method to use. The three alternate modes provided ('GSL_first', 'GSL_max', and 'GSL_sum') are for testing purposes only.",
+    default="GSL",
+    min_occurs=0,
+    max_occurs=1,
+    allowed_values=["GSL", "GSL_first", "GSL_max", "GSL_sum"],
+    data_type="string",
+)
+
 csv_inputs = [
     tmax_file_content,
     tmin_file_content,
@@ -413,4 +424,11 @@ avail_indices_inputs = [
     ci_name,
     output_file,
     log_level,
+]
+
+gsl_inputs = [
+    climdex_input,
+    output_file,
+    gsl_mode,
+    log_level
 ]
