@@ -399,6 +399,15 @@ quantiles_vector = LiteralInput(
     data_type="string",
 )
 
+mm_threshold = LiteralInput(
+    "threshold",
+    "Threshold",
+    abstract="mm threshold for daily precipitation",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="float",
+)
+
 csv_inputs = [
     tmax_file_content,
     tmin_file_content,
@@ -503,5 +512,12 @@ quantile_inputs = [
     quantiles_vector,
     output_file,
     vector_name,
+    log_level,
+]
+
+rmm_inputs = [
+    climdex_input,
+    output_file,
+    mm_threshold,
     log_level,
 ]
