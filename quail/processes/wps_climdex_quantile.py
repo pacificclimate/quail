@@ -13,8 +13,8 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector
-from quail.io import output_file
+from quail.utils import logger, validate_vectors, process_inputs
+from quail.io import quantile_inputs
 
 
 class ClimdexQuantile(Process):
@@ -31,37 +31,7 @@ class ClimdexQuantile(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            ComplexInput(
-                "data_file",
-                "Rda Data File",
-                abstract="Path to the file containing data to compute quantiles on.",
-                min_occurs=0,
-                max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64")],
-            ),
-            LiteralInput(
-                "data_vector",
-                "Data Vector",
-                abstract="R double vector data to compute quantiles on. Only neeed when data_rds is used.",
-                default="data_vector",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "quantiles_vector",
-                "Quantiles_vector",
-                abstract="Quantiles to be computed",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            output_file,
-            vector_name,
-            log_level,
-        ]
-
+        inputs = quantile_inputs
         outputs = [
             LiteralOutput(
                 "output_vector",
@@ -92,8 +62,8 @@ class ClimdexQuantile(Process):
 
     def collect_args_wrapper(self, request):
         literal_inputs = collect_literal_inputs(request)
-        if "data_file" in collect_args(request, self.workdir).keys():
-            data_file = collect_args(request, self.workdir)["data_file"][0]
+        if "data_file" in collect_args(request.inputs, self.workdir).keys():
+            data_file = collect_args(request.inputs, self.workdir)["data_file"][0]
         else:
             data_file = None
 
@@ -114,15 +84,8 @@ class ClimdexQuantile(Process):
             )
 
     def _handler(self, request, response):
-        (
-            data_file,
-            data_vector,
-            quantiles_vector,
-            output_file,
-            vector_name,
-            loglevel,
-        ) = self.collect_args_wrapper(request)
-        validate_vector(quantiles_vector)
+        data_file, data_vector, loglevel, output_file, quantiles_vector, vector_name = process_inputs(request.inputs, quantile_inputs, self.workdir)
+        validate_vectors([quantiles_vector])
         r_valid_name(vector_name)
 
         log_handler(

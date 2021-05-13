@@ -360,6 +360,45 @@ month_type = LiteralInput(
     data_type="string",
 )
 
+threshold = LiteralInput(
+    "threshold",
+    "Threshold",
+    abstract="Daily precipitation threshold",
+    allowed_values=[0, 95, 99],
+    default=0,
+    min_occurs=0,
+    max_occurs=1,
+    data_type="integer",
+)
+
+data_file = ComplexInput(
+    "data_file",
+    "Rda Data File",
+    abstract="Path to the file containing data to compute quantiles on.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[Format("application/x-gzip", encoding="base64")],
+)
+
+data_vector = LiteralInput(
+    "data_vector",
+    "Data Vector",
+    abstract="R double vector data to compute quantiles on. Only neeed when data_rds is used.",
+    default="data_vector",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+quantiles_vector = LiteralInput(
+    "quantiles_vector",
+    "Quantiles_vector",
+    abstract="Quantiles to be computed",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
 csv_inputs = [
     tmax_file_content,
     tmin_file_content,
@@ -451,20 +490,18 @@ mmdmt_inputs = [
     log_level,
 ]
 
-threshold = LiteralInput(
-    "threshold",
-    "Threshold",
-    abstract="Daily precipitation threshold",
-    allowed_values=[0, 95, 99],
-    default=0,
-    min_occurs=0,
-    max_occurs=1,
-    data_type="integer",
-)
-
 ptot_inputs = [
     climdex_input,
     output_file,
     threshold,
+    log_level,
+]
+
+quantile_inputs = [
+    data_file,
+    data_vector,
+    quantiles_vector,
+    output_file,
+    vector_name,
     log_level,
 ]
