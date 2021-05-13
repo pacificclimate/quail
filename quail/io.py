@@ -548,3 +548,9 @@ rxnday_inputs = [
     center_mean_on_last_day,
     log_level,
 ]
+
+sdii_inputs = [
+    climdex_input,
+    output_file,
+    log_level,
+]
