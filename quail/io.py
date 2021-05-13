@@ -350,6 +350,16 @@ gsl_mode = LiteralInput(
     data_type="string",
 )
 
+month_type = LiteralInput(
+    "month_type",
+    "Month type to compute",
+    abstract="Min/ max daily temperature type to compute",
+    allowed_values=["txx", "tnx", "txn", "tnn"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
 csv_inputs = [
     tmax_file_content,
     tmin_file_content,
@@ -431,4 +441,12 @@ gsl_inputs = [
     output_file,
     gsl_mode,
     log_level
+]
+
+mmdmt_inputs = [
+    climdex_input,
+    output_file,
+    month_type,
+    freq,
+    log_level,
 ]
