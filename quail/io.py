@@ -408,6 +408,24 @@ mm_threshold = LiteralInput(
     data_type="float",
 )
 
+num_days = LiteralInput(
+    "num_days",
+    "Number of days of precipitation",
+    abstract="Compute rx[1]day or rx[5]day",
+    allowed_values=[1, 5],
+    data_type="positiveInteger",
+)
+
+center_mean_on_last_day = LiteralInput(
+    "center_mean_on_last_day",
+    "Center mean on last day",
+    abstract="Whether to center the 5-day running mean on the last day of the window, insteadof the center day.",
+    min_occurs=0,
+    max_occurs=1,
+    default=False,
+    data_type="boolean",
+)
+
 csv_inputs = [
     tmax_file_content,
     tmin_file_content,
@@ -519,5 +537,14 @@ rmm_inputs = [
     climdex_input,
     output_file,
     mm_threshold,
+    log_level,
+]
+
+rxnday_inputs = [
+    climdex_input,
+    output_file,
+    freq,
+    num_days,
+    center_mean_on_last_day,
     log_level,
 ]

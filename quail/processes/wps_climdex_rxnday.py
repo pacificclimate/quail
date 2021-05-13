@@ -8,8 +8,8 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.io import log_level, rda_output
 from wps_tools.R import get_package
-from quail.utils import logger, load_cis, collect_literal_inputs
-from quail.io import climdex_input, output_file, freq
+from quail.utils import logger, load_cis, process_inputs
+from quail.io import rxnday_inputs
 
 
 class ClimdexRxnday(Process):
@@ -27,29 +27,7 @@ class ClimdexRxnday(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            climdex_input,
-            output_file,
-            freq,
-            LiteralInput(
-                "num_days",
-                "Number of days of precipitation",
-                abstract="Compute rx[1]day or rx[5]day",
-                allowed_values=[1, 5],
-                data_type="positiveInteger",
-            ),
-            LiteralInput(
-                "center_mean_on_last_day",
-                "Center mean on last day",
-                abstract="Whether to center the 5-day running mean on the last day of the window, insteadof the center day.",
-                min_occurs=0,
-                max_occurs=1,
-                default=False,
-                data_type="boolean",
-            ),
-            log_level,
-        ]
-
+        inputs = rxnday_inputs
         outputs = [rda_output]
 
         super(ClimdexRxnday, self).__init__(
@@ -80,14 +58,7 @@ class ClimdexRxnday(Process):
             return climdex.climdex_rx5day(ci, freq, center_mean_on_last_day)
 
     def _handler(self, request, response):
-        (
-            output_file,
-            freq,
-            num_days,
-            center_mean_on_last_day,
-            loglevel,
-        ) = collect_literal_inputs(request)
-        climdex_input = request.inputs["climdex_input"]
+        center_mean_on_last_day, climdex_input, freq, loglevel, num_days, output_file = process_inputs(request.inputs, rxnday_inputs, self.workdir)
 
         log_handler(
             self,
@@ -100,21 +71,24 @@ class ClimdexRxnday(Process):
         robjects.r("library(climdex.pcic)")
         vectors = []
 
-        for i in range(len(climdex_input)):
+        counter = 1
+        total = len(climdex_input)
+
+        for input in climdex_input:
             log_handler(
                 self,
                 response,
-                f"Loading climdexInput from R data file {i}",
+                f"Loading climdexInput from R data file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="load_rdata",
             )
-            cis = load_cis(climdex_input[i].file)
+            cis = load_cis(input)
 
             log_handler(
                 self,
                 response,
-                f"Processing Monthly Maximum {num_days}-day Precipitation for file {i}",
+                f"Processing Monthly Maximum {num_days}-day Precipitation for file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="process",
@@ -129,9 +103,10 @@ class ClimdexRxnday(Process):
                 except RRuntimeError as e:
                     raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
-                vector_name = f"rx{num_days}day{i}_{ci_name}"
+                vector_name = f"rx{num_days}day{counter}_{ci_name}"
                 robjects.r.assign(vector_name, rxnday)
                 vectors.append(vector_name)
+            counter += 1
 
         log_handler(
             self,
