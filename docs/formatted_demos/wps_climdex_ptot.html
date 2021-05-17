@@ -10,9 +10,9 @@
 
 <style type="text/css">
     pre { line-height: 125%; }
-td.linenos pre { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-span.linenos { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-td.linenos pre.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 .highlight .hll { background-color: var(--jp-cell-editor-active-background) }
 .highlight { background: var(--jp-cell-editor-background); color: var(--jp-mirror-editor-variable-color) }
@@ -14270,7 +14270,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -14281,8 +14281,8 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
 
+<span class="kn">from</span> <span class="nn">wps_tools.R</span> <span class="kn">import</span> <span class="n">rda_to_vector</span><span class="p">,</span> <span class="n">construct_r_out</span><span class="p">,</span> <span class="n">test_rda_output</span>
 <span class="kn">from</span> <span class="nn">wps_tools.testing</span> <span class="kn">import</span> <span class="n">get_target_url</span>
-<span class="kn">from</span> <span class="nn">quail.utils</span> <span class="kn">import</span> <span class="n">test_rda_output</span>
 </pre></div>
 
      </div>
@@ -14293,7 +14293,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Ensure we are in the working directory with access to the data</span>
@@ -14309,7 +14309,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
@@ -14346,7 +14346,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">quail</span> <span class="o">=</span> <span class="n">WPSClient</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -14365,7 +14365,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
@@ -14393,12 +14393,11 @@ quail.climdex_ptot<span class="o">?</span>
 <div class="jp-RenderedText jp-OutputArea-output " data-mime-type="text/plain">
 <pre><span class="ansi-red-fg">Signature:</span>
 quail<span class="ansi-blue-fg">.</span>climdex_ptot<span class="ansi-blue-fg">(</span>
-    climdex_input<span class="ansi-blue-fg">,</span>
-    ci_name<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    climdex_input<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
     loglevel<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;INFO&#39;</span><span class="ansi-blue-fg">,</span>
     output_file<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output.rda&#39;</span><span class="ansi-blue-fg">,</span>
     threshold<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span>
-    vector_name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output_vector&#39;</span><span class="ansi-blue-fg">,</span>
+    output_formats<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
 <span class="ansi-blue-fg">)</span>
 <span class="ansi-red-fg">Docstring:</span>
 Total daily precipitation exceeding threshold
@@ -14406,15 +14405,11 @@ Total daily precipitation exceeding threshold
 Parameters
 ----------
 climdex_input : ComplexData:mimetype:`application/x-gzip`
-    Rdata (.rda) file containing R Object of type climdexInput
-ci_name : string
-    Name of the climdexInput object
+    RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput
 output_file : string
     Filename to store the output Rdata (extension .rda)
 threshold : {&#39;0&#39;, &#39;95&#39;, &#39;99&#39;}integer
     Daily precipitation threshold
-vector_name : string
-    Name to label the output vector
 loglevel : {&#39;CRITICAL&#39;, &#39;ERROR&#39;, &#39;WARNING&#39;, &#39;INFO&#39;, &#39;DEBUG&#39;, &#39;NOTSET&#39;}string
     Logging level
 
@@ -14422,7 +14417,7 @@ Returns
 -------
 rda_output : ComplexData:mimetype:`application/x-gzip`
     Rda file containing R output data
-<span class="ansi-red-fg">File:</span>      ~/code/birds/quail/&lt;/tmp/quail-venv/lib/python3.8/site-packages/birdy/client/base.py-10&gt;
+<span class="ansi-red-fg">File:</span>      ~/github/pcic/quail/&lt;/tmp/quail-venv/lib/python3.8/site-packages/birdy/client/base.py-10&gt;
 <span class="ansi-red-fg">Type:</span>      method
 </pre>
 </div>
@@ -14441,14 +14436,12 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;prcptot_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_ptot</span><span class="p">(</span>
             <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;prcptot&quot;</span><span class="p">,</span>
             <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 <span class="n">prcptot_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -14462,34 +14455,8 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Run-wps_climdex_ptot-Process-for-climdex.r95ptot()">Run wps_climdex_ptot Process for climdex.r95ptot()<a class="anchor-link" href="#Run-wps_climdex_ptot-Process-for-climdex.r95ptot()">&#182;</a></h3>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;r95ptot_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_ptot</span><span class="p">(</span>
-            <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;r95ptot&quot;</span><span class="p">,</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
-            <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="p">)</span>
-<span class="n">r95ptot_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Run-wps_climdex_ptot-Process-for-climdex.r99ptot()">Run wps_climdex_ptot Process for climdex.r99ptot()<a class="anchor-link" href="#Run-wps_climdex_ptot-Process-for-climdex.r99ptot()">&#182;</a></h3>
+<p>You can also use rds input</p>
+<h3 id="Run-wps_climdex_ptot-Process-for-climdex.r99ptot()-with-rds-input">Run wps_climdex_ptot Process for climdex.r99ptot() with rds input<a class="anchor-link" href="#Run-wps_climdex_ptot-Process-for-climdex.r99ptot()-with-rds-input">&#182;</a></h3>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
@@ -14499,9 +14466,7 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;r99ptot_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_ptot</span><span class="p">(</span>
-            <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;r99ptot&quot;</span><span class="p">,</span>
+            <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rds&quot;</span><span class="p">),</span>
             <span class="n">threshold</span><span class="o">=</span><span class="mi">99</span><span class="p">,</span>
             <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
@@ -14516,23 +14481,53 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Access the output with <strong>rda_to_vector()</strong> or <strong>auto_construct_outputs()</strong> from <strong>wps_tools.output_handling</strong></p>
-
+<p>You can use multiple input files</p>
+<h3 id="Run-wps_climdex_ptot-Process-for-climdex.r95ptot()-with-multiple-input-files">Run wps_climdex_ptot Process for climdex.r95ptot() with multiple input files<a class="anchor-link" href="#Run-wps_climdex_ptot-Process-for-climdex.r95ptot()-with-multiple-input-files">&#182;</a></h3>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">wps_tools.output_handling</span> <span class="kn">import</span> <span class="n">rda_to_vector</span><span class="p">,</span> <span class="n">auto_construct_outputs</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">climdex_inputs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rds&quot;</span><span class="p">),</span>
+    <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
+    <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdex_input_multiple.rda&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;r95ptot_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_ptot</span><span class="p">(</span>
+            <span class="n">climdex_input</span><span class="o">=</span><span class="n">climdex_inputs</span><span class="p">,</span>
+            <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
+        <span class="p">)</span>
+<span class="n">r95ptot_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
 
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Access the output with <strong>rda_to_vector</strong> or <strong>construct_r_out</strong> from <strong>wps_tools.R</strong></p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
 <span class="c1"># use print() to see whole vector</span>
-<span class="n">prcptot</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">prcptot_url</span><span class="p">,</span> <span class="s2">&quot;prcptot&quot;</span><span class="p">)</span>
+<span class="n">prcptot</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">prcptot_url</span><span class="p">,</span> <span class="s2">&quot;prc0_ci&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prcptot</span><span class="se">\n</span><span class="si">{</span><span class="n">prcptot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">r95ptot</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">r95ptot_url</span><span class="p">,</span> <span class="s2">&quot;r95ptot&quot;</span><span class="p">)</span>
+<span class="n">r95ptot</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">r95ptot_url</span><span class="p">,</span> <span class="s2">&quot;r950_ci&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;r95ptot</span><span class="se">\n</span><span class="si">{</span><span class="n">r95ptot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">r99ptot</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">r99ptot_url</span><span class="p">,</span> <span class="s2">&quot;r99ptot&quot;</span><span class="p">)</span>
+<span class="n">r99ptot</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">r99ptot_url</span><span class="p">,</span> <span class="s2">&quot;r990_ci&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;r99ptot</span><span class="se">\n</span><span class="si">{</span><span class="n">r99ptot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -14596,10 +14591,11 @@ r99ptot
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">auto_construct_outputs</span><span class="p">([</span><span class="n">prcptot_url</span><span class="p">,</span> <span class="n">r95ptot_url</span><span class="p">,</span> <span class="n">r99ptot_url</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
+<span class="n">construct_r_out</span><span class="p">([</span><span class="n">prcptot_url</span><span class="p">,</span> <span class="n">r95ptot_url</span><span class="p">,</span> <span class="n">r99ptot_url</span><span class="p">])</span>
 </pre></div>
 
      </div>
@@ -14615,18 +14611,24 @@ r99ptot
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
 
 
 
 
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>[R object with classes: (&#39;numeric&#39;,) mapped to:
- [     nan, 803.699996,      nan,      nan, ..., 921.899999,      nan, 1105.500000,      nan],
- R object with classes: (&#39;numeric&#39;,) mapped to:
- [     nan, 226.599997,      nan,      nan, ..., 155.400000,      nan, 335.500000,      nan],
- R object with classes: (&#39;numeric&#39;,) mapped to:
- [     nan, 152.399997,      nan,      nan, ..., 0.000000,      nan, 169.000000,      nan]]</pre>
+<pre>[[R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan, 803.699996,      nan,      nan, ..., 921.899999,      nan, 1105.500000,      nan]],
+ [R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan, 226.599997,      nan,      nan, ..., 155.400000,      nan, 335.500000,      nan],
+  R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan, 226.599997,      nan,      nan, ..., 155.400000,      nan, 335.500000,      nan],
+  R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan, 226.599997,      nan,      nan, ..., 155.400000,      nan, 335.500000,      nan],
+  R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan, 181.899997,      nan,      nan, ..., 155.400000,      nan, 312.500000,      nan]],
+ [R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan, 152.399997,      nan,      nan, ..., 0.000000,      nan, 169.000000,      nan]]]</pre>
 </div>
 
 </div>
@@ -14643,19 +14645,19 @@ r99ptot
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_rda_output</span><span class="p">(</span>
-    <span class="n">prcptot_url</span><span class="p">,</span> <span class="s2">&quot;prcptot&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_ptot.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_prcptot&quot;</span>
+    <span class="n">prcptot_url</span><span class="p">,</span> <span class="s2">&quot;prc0_ci&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_ptot.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_prcptot&quot;</span>
     <span class="p">)</span>
 
 <span class="n">test_rda_output</span><span class="p">(</span>
-    <span class="n">r95ptot_url</span><span class="p">,</span> <span class="s2">&quot;r95ptot&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_ptot.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_r95ptot&quot;</span>
+    <span class="n">r95ptot_url</span><span class="p">,</span> <span class="s2">&quot;r950_ci&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_ptot.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_r95ptot&quot;</span>
     <span class="p">)</span>
 
 <span class="n">test_rda_output</span><span class="p">(</span>
-    <span class="n">r99ptot_url</span><span class="p">,</span> <span class="s2">&quot;r99ptot&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_ptot.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_r99ptot&quot;</span>
+    <span class="n">r99ptot_url</span><span class="p">,</span> <span class="s2">&quot;r990_ci&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_ptot.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_r99ptot&quot;</span>
     <span class="p">)</span>
 </pre></div>
 

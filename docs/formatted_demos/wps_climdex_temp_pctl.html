@@ -10,9 +10,9 @@
 
 <style type="text/css">
     pre { line-height: 125%; }
-td.linenos pre { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-span.linenos { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-td.linenos pre.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 .highlight .hll { background-color: var(--jp-cell-editor-active-background) }
 .highlight { background: var(--jp-cell-editor-background); color: var(--jp-mirror-editor-variable-color) }
@@ -14271,7 +14271,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -14282,8 +14282,8 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
 
+<span class="kn">from</span> <span class="nn">wps_tools.R</span> <span class="kn">import</span> <span class="n">rda_to_vector</span><span class="p">,</span> <span class="n">construct_r_out</span><span class="p">,</span> <span class="n">test_rda_output</span>
 <span class="kn">from</span> <span class="nn">wps_tools.testing</span> <span class="kn">import</span> <span class="n">get_target_url</span>
-<span class="kn">from</span> <span class="nn">quail.utils</span> <span class="kn">import</span> <span class="n">test_rda_output</span>
 </pre></div>
 
      </div>
@@ -14294,7 +14294,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Ensure we are in the working directory with access to the data</span>
@@ -14310,7 +14310,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
@@ -14347,7 +14347,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">quail</span> <span class="o">=</span> <span class="n">WPSClient</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -14366,7 +14366,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
@@ -14395,12 +14395,11 @@ quail.climdex_temp_pctl<span class="o">?</span>
 <pre><span class="ansi-red-fg">Signature:</span>
 quail<span class="ansi-blue-fg">.</span>climdex_temp_pctl<span class="ansi-blue-fg">(</span>
     climdex_input<span class="ansi-blue-fg">,</span>
-    ci_name<span class="ansi-blue-fg">,</span>
     func<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
     loglevel<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;INFO&#39;</span><span class="ansi-blue-fg">,</span>
     output_file<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output.rda&#39;</span><span class="ansi-blue-fg">,</span>
     freq<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;monthly&#39;</span><span class="ansi-blue-fg">,</span>
-    vector_name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output_vector&#39;</span><span class="ansi-blue-fg">,</span>
+    output_formats<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
 <span class="ansi-blue-fg">)</span>
 <span class="ansi-red-fg">Docstring:</span>
 Percent of Values Above/Below 10th/90th Percentile Daily Maximum/Minimum Temperature
@@ -14408,17 +14407,13 @@ Percent of Values Above/Below 10th/90th Percentile Daily Maximum/Minimum Tempera
 Parameters
 ----------
 climdex_input : ComplexData:mimetype:`application/x-gzip`
-    Rdata (.rda) file containing R Object of type climdexInput
-ci_name : string
-    Name of the climdexInput object
+    RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput
 output_file : string
     Filename to store the output Rdata (extension .rda)
 func : {&#39;tn10p&#39;, &#39;tn90p&#39;, &#39;tx10p&#39;, &#39;tx90p&#39;}string
     Percentile function to compute
 freq : {&#39;monthly&#39;, &#39;annual&#39;}string
     Time frequency to aggregate to
-vector_name : string
-    Name to label the output vector
 loglevel : {&#39;CRITICAL&#39;, &#39;ERROR&#39;, &#39;WARNING&#39;, &#39;INFO&#39;, &#39;DEBUG&#39;, &#39;NOTSET&#39;}string
     Logging level
 
@@ -14426,7 +14421,7 @@ Returns
 -------
 rda_output : ComplexData:mimetype:`application/x-gzip`
     Rda file containing R output data
-<span class="ansi-red-fg">File:</span>      ~/code/birds/quail/&lt;/tmp/quail-venv/lib/python3.8/site-packages/birdy/client/base.py-7&gt;
+<span class="ansi-red-fg">File:</span>      ~/github/pcic/quail/&lt;/tmp/quail-venv/lib/python3.8/site-packages/birdy/client/base.py-7&gt;
 <span class="ansi-red-fg">Type:</span>      method
 </pre>
 </div>
@@ -14450,16 +14445,14 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;tn10p_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_temp_pctl</span><span class="p">(</span>
             <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
             <span class="n">func</span><span class="o">=</span><span class="s2">&quot;tn10p&quot;</span><span class="p">,</span>
             <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;tn10p&quot;</span><span class="p">,</span>
             <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 <span class="n">tn10p_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -14483,16 +14476,14 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;tn90p_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_temp_pctl</span><span class="p">(</span>
             <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
             <span class="n">func</span><span class="o">=</span><span class="s2">&quot;tn90p&quot;</span><span class="p">,</span>
             <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;tn90p&quot;</span><span class="p">,</span>
             <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 <span class="n">tn90p_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -14511,21 +14502,20 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Run-wps_climdex_temp_pctl-Process-for-climdex.tx10p()">Run wps_climdex_temp_pctl Process for climdex.tx10p()<a class="anchor-link" href="#Run-wps_climdex_temp_pctl-Process-for-climdex.tx10p()">&#182;</a></h4>
+<p>You can also use rds input</p>
+<h4 id="Run-wps_climdex_temp_pctl-Process-for-climdex.tx10p()-with-Rds-input">Run wps_climdex_temp_pctl Process for climdex.tx10p() with Rds input<a class="anchor-link" href="#Run-wps_climdex_temp_pctl-Process-for-climdex.tx10p()-with-Rds-input">&#182;</a></h4>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;tx10p_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_temp_pctl</span><span class="p">(</span>
-            <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
+            <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rds&quot;</span><span class="p">),</span>
             <span class="n">func</span><span class="o">=</span><span class="s2">&quot;tx10p&quot;</span><span class="p">,</span>
             <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;tx10p&quot;</span><span class="p">,</span>
             <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 <span class="n">tx10p_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -14539,26 +14529,30 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>And You can have multiple inputs</p>
 <h2 id="Percent-of-Values-Above-90th-Percentile-Daily-Maximum-Temperature">Percent of Values Above 90th Percentile Daily Maximum Temperature<a class="anchor-link" href="#Percent-of-Values-Above-90th-Percentile-Daily-Maximum-Temperature">&#182;</a></h2>
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Run-wps_climdex_temp_pctl-Process-for-climdex.tx90p()">Run wps_climdex_temp_pctl Process for climdex.tx90p()<a class="anchor-link" href="#Run-wps_climdex_temp_pctl-Process-for-climdex.tx90p()">&#182;</a></h4>
+<h4 id="Run-wps_climdex_temp_pctl-Process-for-climdex.tx90p()-with-multiple-Inputs">Run wps_climdex_temp_pctl Process for climdex.tx90p() with multiple Inputs<a class="anchor-link" href="#Run-wps_climdex_temp_pctl-Process-for-climdex.tx90p()-with-multiple-Inputs">&#182;</a></h4>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;tx90p_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">climdex_inputs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rds&quot;</span><span class="p">),</span>
+    <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
+    <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdex_input_multiple.rda&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;tx90p_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_temp_pctl</span><span class="p">(</span>
-            <span class="n">climdex_input</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/climdexInput.rda&quot;</span><span class="p">),</span>
-            <span class="n">ci_name</span><span class="o">=</span><span class="s2">&quot;ci&quot;</span><span class="p">,</span>
+            <span class="n">climdex_input</span><span class="o">=</span><span class="n">climdex_inputs</span><span class="p">,</span>
             <span class="n">func</span><span class="o">=</span><span class="s2">&quot;tx90p&quot;</span><span class="p">,</span>
             <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
-            <span class="n">vector_name</span><span class="o">=</span><span class="s2">&quot;tx90p&quot;</span><span class="p">,</span>
             <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
 <span class="n">tx90p_url</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -14572,19 +14566,17 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Access the output with <strong>rda_to_vector()</strong> or <strong>auto_construct_outputs()</strong> from <strong>wps_tools.output_handling</strong></p>
+<p>Access the output with <strong>rda_to_vector</strong> or <strong>construct_r_out</strong> from <strong>wps_tools.R</strong></p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">wps_tools.output_handling</span> <span class="kn">import</span> <span class="n">rda_to_vector</span><span class="p">,</span> <span class="n">auto_construct_outputs</span>
-
-<span class="c1"># Eg/ Percent of Values Below 10th Percentile Daily Minimum Temperature</span>
-<span class="n">tn10p</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">tn10p_url</span><span class="p">,</span> <span class="s2">&quot;tn10p&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Eg/ Percent of Values Below 10th Percentile Daily Minimum Temperature</span>
+<span class="n">tn10p</span> <span class="o">=</span> <span class="n">rda_to_vector</span><span class="p">(</span><span class="n">tn10p_url</span><span class="p">,</span> <span class="s2">&quot;tn10p0_ci&quot;</span><span class="p">)</span>
 <span class="c1"># use print() to see vector</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tn10p</span><span class="se">\n</span><span class="si">{</span><span class="n">tn10p</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Showing the first 100 values</span>
 </pre></div>
@@ -14634,10 +14626,10 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">auto_construct_outputs</span><span class="p">([</span><span class="n">tn10p_url</span><span class="p">,</span> <span class="n">tn90p_url</span><span class="p">,</span> <span class="n">tx10p_url</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">construct_r_out</span><span class="p">([</span><span class="n">tn10p_url</span><span class="p">,</span> <span class="n">tn90p_url</span><span class="p">,</span> <span class="n">tx10p_url</span><span class="p">])</span>
 </pre></div>
 
      </div>
@@ -14653,18 +14645,18 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
 
 
 
 
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>[R object with classes: (&#39;numeric&#39;,) mapped to:
- [     nan,      nan,      nan,      nan, ..., 0.000000, 0.000000,      nan,      nan],
- R object with classes: (&#39;numeric&#39;,) mapped to:
- [     nan,      nan,      nan,      nan, ..., 3.333333, 0.000000,      nan,      nan],
- R object with classes: (&#39;numeric&#39;,) mapped to:
- [     nan,      nan,      nan,      nan, ..., 6.666667, 0.000000,      nan,      nan]]</pre>
+<pre>[[R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan,      nan,      nan,      nan, ..., 0.000000, 0.000000,      nan,      nan]],
+ [R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan,      nan,      nan,      nan, ..., 3.333333, 0.000000,      nan,      nan]],
+ [R object with classes: (&#39;numeric&#39;,) mapped to:
+  [     nan,      nan,      nan,      nan, ..., 6.666667, 0.000000,      nan,      nan]]]</pre>
 </div>
 
 </div>
@@ -14681,19 +14673,19 @@ rda_output : ComplexData:mimetype:`application/x-gzip`
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_rda_output</span><span class="p">(</span>
-    <span class="n">tn10p_url</span><span class="p">,</span> <span class="s2">&quot;tn10p&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_temp_pctl.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_tn10p&quot;</span>
+    <span class="n">tn10p_url</span><span class="p">,</span> <span class="s2">&quot;tn10p0_ci&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_temp_pctl.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_tn10p&quot;</span>
     <span class="p">)</span>
 
 <span class="n">test_rda_output</span><span class="p">(</span>
-    <span class="n">tn90p_url</span><span class="p">,</span> <span class="s2">&quot;tn90p&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_temp_pctl.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_tn90p&quot;</span>
+    <span class="n">tn90p_url</span><span class="p">,</span> <span class="s2">&quot;tn90p0_ci&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_temp_pctl.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_tn90p&quot;</span>
     <span class="p">)</span>
 
 <span class="n">test_rda_output</span><span class="p">(</span>
-    <span class="n">tx10p_url</span><span class="p">,</span> <span class="s2">&quot;tx10p&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_temp_pctl.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_tx10p&quot;</span>
+    <span class="n">tx10p_url</span><span class="p">,</span> <span class="s2">&quot;tx10p0_ci&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_temp_pctl.rda&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_tx10p&quot;</span>
     <span class="p">)</span>
 </pre></div>
 
