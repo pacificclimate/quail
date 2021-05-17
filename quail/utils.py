@@ -105,20 +105,6 @@ def get_robj(r_file, object_name):
 
 # Testing
 
-
-def test_rda_output(url, vector_name, expected_file, expected_vector_name):
-    output_vector = get_robjects(url, vector_name)
-    local_path = resource_filename("tests", f"data/{expected_file}")
-    expected_url = f"file://{local_path}"
-    expected_vector = get_robjects(expected_url, expected_vector_name)
-
-    for index in range(len(expected_vector)):
-        assert str(output_vector[index]) == str(expected_vector[index])
-
-    # Clear R global env
-    robjects.r("rm(list=ls())")
-
-
 def test_ci_output(url, vector_name, expected_file, expected_vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="tmp_copy", dir="/tmp", delete=True
