@@ -138,20 +138,3 @@ def test_ci_output(url, vector_name, expected_file, expected_vector_name):
 
     # Clear R global env
     robjects.r("rm(list=ls())")
-
-
-def process_inputs(request_inputs, expected_inputs, workdir):
-    requested = request_inputs.keys()
-    all = [expected.identifier for expected in expected_inputs]
-    missing_inputs = list(set(all) - set(requested))
-
-    collected = collect_args(request_inputs, workdir)
-    for missing_input in missing_inputs:
-        collected[missing_input] = None
-
-    # NOTE: If you want to find out the order of the variables, just uncomment
-    #       these lines.
-    var_order = [name for name, value in sorted(collected.items())]
-    print(var_order)
-
-    return [value for name, value in sorted(collected.items())]
