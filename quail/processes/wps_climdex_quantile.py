@@ -6,14 +6,14 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
+from wps_tools.io import rda_output, process_inputs_alpha
 from wps_tools.R import (
     get_package,
     load_rdata_to_python,
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, validate_vectors, process_inputs
+from quail.utils import logger, validate_vectors
 from quail.io import quantile_inputs
 
 
@@ -75,7 +75,7 @@ class ClimdexQuantile(Process):
             )
 
     def _handler(self, request, response):
-        data_file, data_vector, loglevel, output_file, quantiles_vector, vector_name = process_inputs(request.inputs, quantile_inputs, self.workdir)
+        data_file, data_vector, loglevel, output_file, quantiles_vector, vector_name = process_inputs_alpha(request.inputs, quantile_inputs, self.workdir)
         validate_vectors([quantiles_vector])
         r_valid_name(vector_name)
 

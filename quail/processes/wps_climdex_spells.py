@@ -6,8 +6,8 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
-from quail.utils import logger, load_cis, process_inputs
+from wps_tools.io import rda_output, process_inputs_alpha
+from quail.utils import logger, load_cis
 from quail.io import spells_inputs
 
 
@@ -51,7 +51,7 @@ class ClimdexSpells(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, func, loglevel, output_file, span_years = process_inputs(request.inputs, spells_inputs, self.workdir)
+        climdex_input, func, loglevel, output_file, span_years = process_inputs_alpha(request.inputs, spells_inputs, self.workdir)
 
         log_handler(
             self,

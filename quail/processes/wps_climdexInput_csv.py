@@ -8,8 +8,9 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
+from wps_tools.io import process_inputs_alpha
 
-from quail.utils import logger, validate_vectors, process_inputs
+from quail.utils import logger, validate_vectors
 from quail.io import csv_inputs, ci_output
 
 
@@ -157,7 +158,7 @@ class ClimdexInputCSV(Process):
             tmin_column,
             tmin_file_content,
             vector_name,
-        ) = process_inputs(request.inputs, csv_inputs, self.workdir)
+        ) = process_inputs_alpha(request.inputs, csv_inputs, self.workdir)
 
         validate_vectors(
             [

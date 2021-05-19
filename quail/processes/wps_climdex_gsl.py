@@ -7,9 +7,9 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
+from wps_tools.io import rda_output, process_inputs_alpha
 from wps_tools.R import get_package
-from quail.utils import logger, load_cis, process_inputs
+from quail.utils import logger, load_cis
 from quail.io import gsl_inputs
 
 
@@ -55,7 +55,7 @@ class ClimdexGSL(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, gsl_mode, loglevel, output_file = process_inputs(request.inputs, gsl_inputs, self.workdir)
+        climdex_input, gsl_mode, loglevel, output_file = process_inputs_alpha(request.inputs, gsl_inputs, self.workdir)
 
         log_handler(
             self,

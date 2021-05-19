@@ -11,7 +11,9 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, validate_vectors, get_robj, process_inputs
+from wps_tools import process_inputs_alpha
+
+from quail.utils import logger, validate_vectors, get_robj
 from quail.io import raw_inputs, ci_output
 
 
@@ -157,7 +159,7 @@ class ClimdexInputRaw(Process):
             tmin_file,
             tmin_name,
             vector_name,
-        ) = process_inputs(request.inputs, raw_inputs, self.workdir)
+        ) = process_inputs_alpha(request.inputs, raw_inputs, self.workdir)
 
         validate_vectors(
             [

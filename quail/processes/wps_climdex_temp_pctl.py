@@ -6,8 +6,8 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
-from quail.utils import logger, load_cis, process_inputs
+from wps_tools.io import rda_output, process_inputs_alpha
+from quail.utils import logger, load_cis
 from quail.io import temp_pctl_inputs
 
 
@@ -50,7 +50,7 @@ class ClimdexTempPctl(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, freq, func, loglevel, output_file = process_inputs(request.inputs, temp_pctl_inputs, self.workdir)
+        climdex_input, freq, func, loglevel, output_file = process_inputs_alpha(request.inputs, temp_pctl_inputs, self.workdir)
 
         log_handler(
             self,

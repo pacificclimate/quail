@@ -6,9 +6,9 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
+from wps_tools.io import rda_output, process_inputs_alpha
 from wps_tools.R import get_package
-from quail.utils import logger, load_cis, process_inputs
+from quail.utils import logger, load_cis
 from quail.io import mmdmt_inputs
 
 
@@ -56,7 +56,7 @@ class ClimdexMMDMT(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, freq, loglevel, month_type, output_file = process_inputs(request.inputs, mmdmt_inputs, self.workdir)
+        climdex_input, freq, loglevel, month_type, output_file = process_inputs_alpha(request.inputs, mmdmt_inputs, self.workdir)
 
         log_handler(
             self,

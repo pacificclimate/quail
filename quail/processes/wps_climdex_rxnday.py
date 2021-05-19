@@ -6,9 +6,9 @@ from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
+from wps_tools.io import rda_output, process_inputs_alpha
 from wps_tools.R import get_package
-from quail.utils import logger, load_cis, process_inputs
+from quail.utils import logger, load_cis
 from quail.io import rxnday_inputs
 
 
@@ -58,7 +58,7 @@ class ClimdexRxnday(Process):
             return climdex.climdex_rx5day(ci, freq, center_mean_on_last_day)
 
     def _handler(self, request, response):
-        center_mean_on_last_day, climdex_input, freq, loglevel, num_days, output_file = process_inputs(request.inputs, rxnday_inputs, self.workdir)
+        center_mean_on_last_day, climdex_input, freq, loglevel, num_days, output_file = process_inputs_alpha(request.inputs, rxnday_inputs, self.workdir)
 
         log_handler(
             self,

@@ -6,9 +6,9 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 from pywps.app.Common import Metadata
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import rda_output
+from wps_tools.io import rda_output, process_inputs_alpha
 from wps_tools.R import get_package
-from quail.utils import logger, load_cis, process_inputs
+from quail.utils import logger, load_cis
 from quail.io import rmm_inputs
 
 
@@ -59,7 +59,7 @@ class ClimdexRMM(Process):
             return climdex.climdex_rnnmm(ci, threshold)
 
     def _handler(self, request, response):
-        climdex_input, loglevel, output_file, threshold = process_inputs(request.inputs, rmm_inputs, self.workdir)
+        climdex_input, loglevel, output_file, threshold = process_inputs_alpha(request.inputs, rmm_inputs, self.workdir)
 
         log_handler(
             self,

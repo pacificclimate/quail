@@ -7,8 +7,8 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.R import get_package
-from quail.utils import logger, get_robj, process_inputs
-from quail.io import avail_indices_inputs
+from quail.utils import logger, get_robj
+from quail.io import avail_indices_inputs, process_inputs_alpha
 
 
 class GetIndices(Process):
@@ -77,7 +77,7 @@ class GetIndices(Process):
         return dict(processes)
 
     def _handler(self, request, response):
-        ci_name, climdex_single_input, loglevel, output_file = process_inputs(request.inputs, avail_indices_inputs, self.workdir)
+        ci_name, climdex_single_input, loglevel, output_file = process_inputs_alpha(request.inputs, avail_indices_inputs, self.workdir)
 
         log_handler(
             self,
