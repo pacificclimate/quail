@@ -11,7 +11,7 @@ from wps_tools.R import (
     save_python_to_rdata,
     r_valid_name,
 )
-from wps_tools import process_inputs_alpha
+from wps_tools.io import process_inputs_alpha
 
 from quail.utils import logger, validate_vectors, get_robj
 from quail.io import raw_inputs, ci_output

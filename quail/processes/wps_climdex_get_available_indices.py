@@ -7,8 +7,9 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
 from wps_tools.R import get_package
+from wps_tools.io import process_inputs_alpha
 from quail.utils import logger, get_robj
-from quail.io import avail_indices_inputs, process_inputs_alpha
+from quail.io import avail_indices_inputs
 
 
 class GetIndices(Process):
