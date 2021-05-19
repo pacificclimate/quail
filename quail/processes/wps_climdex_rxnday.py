@@ -58,7 +58,14 @@ class ClimdexRxnday(Process):
             return climdex.climdex_rx5day(ci, freq, center_mean_on_last_day)
 
     def _handler(self, request, response):
-        center_mean_on_last_day, climdex_input, freq, loglevel, num_days, output_file = process_inputs_alpha(request.inputs, rxnday_inputs, self.workdir)
+        (
+            center_mean_on_last_day,
+            climdex_input,
+            freq,
+            loglevel,
+            num_days,
+            output_file,
+        ) = process_inputs_alpha(request.inputs, rxnday_inputs, self.workdir)
 
         log_handler(
             self,

@@ -59,7 +59,9 @@ class ClimdexRMM(Process):
             return climdex.climdex_rnnmm(ci, threshold)
 
     def _handler(self, request, response):
-        climdex_input, loglevel, output_file, threshold = process_inputs_alpha(request.inputs, rmm_inputs, self.workdir)
+        climdex_input, loglevel, output_file, threshold = process_inputs_alpha(
+            request.inputs, rmm_inputs, self.workdir
+        )
 
         log_handler(
             self,

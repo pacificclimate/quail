@@ -65,7 +65,9 @@ class ClimdexDays(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, days_type, loglevel, output_file = process_inputs_alpha(request.inputs, days_inputs, self.workdir)
+        climdex_input, days_type, loglevel, output_file = process_inputs_alpha(
+            request.inputs, days_inputs, self.workdir
+        )
 
         log_handler(
             self,

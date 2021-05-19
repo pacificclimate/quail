@@ -51,7 +51,9 @@ class ClimdexSpells(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, func, loglevel, output_file, span_years = process_inputs_alpha(request.inputs, spells_inputs, self.workdir)
+        climdex_input, func, loglevel, output_file, span_years = process_inputs_alpha(
+            request.inputs, spells_inputs, self.workdir
+        )
 
         log_handler(
             self,

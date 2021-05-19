@@ -105,6 +105,7 @@ def get_robj(r_file, object_name):
 
 # Testing
 
+
 def test_ci_output(url, vector_name, expected_file, expected_vector_name):
     with NamedTemporaryFile(
         suffix=".rda", prefix="tmp_copy", dir="/tmp", delete=True

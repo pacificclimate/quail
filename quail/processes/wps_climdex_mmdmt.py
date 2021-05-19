@@ -56,7 +56,9 @@ class ClimdexMMDMT(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, freq, loglevel, month_type, output_file = process_inputs_alpha(request.inputs, mmdmt_inputs, self.workdir)
+        climdex_input, freq, loglevel, month_type, output_file = process_inputs_alpha(
+            request.inputs, mmdmt_inputs, self.workdir
+        )
 
         log_handler(
             self,

@@ -48,7 +48,9 @@ class ClimdexDTR(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, freq, loglevel, output_file = process_inputs_alpha(request.inputs, dtr_inputs, self.workdir)
+        climdex_input, freq, loglevel, output_file = process_inputs_alpha(
+            request.inputs, dtr_inputs, self.workdir
+        )
 
         log_handler(
             self,

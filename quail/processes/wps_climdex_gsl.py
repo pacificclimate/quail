@@ -55,7 +55,9 @@ class ClimdexGSL(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, gsl_mode, loglevel, output_file = process_inputs_alpha(request.inputs, gsl_inputs, self.workdir)
+        climdex_input, gsl_mode, loglevel, output_file = process_inputs_alpha(
+            request.inputs, gsl_inputs, self.workdir
+        )
 
         log_handler(
             self,

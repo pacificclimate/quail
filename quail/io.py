@@ -531,12 +531,7 @@ avail_indices_inputs = [
     log_level,
 ]
 
-gsl_inputs = [
-    climdex_input,
-    output_file,
-    gsl_mode,
-    log_level
-]
+gsl_inputs = [climdex_input, output_file, gsl_mode, log_level]
 
 mmdmt_inputs = [
     climdex_input,

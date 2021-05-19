@@ -51,7 +51,9 @@ class ClimdexSDII(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, loglevel, output_file = process_inputs_alpha(request.inputs, sdii_inputs, self.workdir)
+        climdex_input, loglevel, output_file = process_inputs_alpha(
+            request.inputs, sdii_inputs, self.workdir
+        )
 
         log_handler(
             self,

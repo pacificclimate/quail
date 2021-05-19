@@ -50,7 +50,9 @@ class ClimdexTempPctl(Process):
         )
 
     def _handler(self, request, response):
-        climdex_input, freq, func, loglevel, output_file = process_inputs_alpha(request.inputs, temp_pctl_inputs, self.workdir)
+        climdex_input, freq, func, loglevel, output_file = process_inputs_alpha(
+            request.inputs, temp_pctl_inputs, self.workdir
+        )
 
         log_handler(
             self,

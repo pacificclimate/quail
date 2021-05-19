@@ -78,7 +78,9 @@ class GetIndices(Process):
         return dict(processes)
 
     def _handler(self, request, response):
-        ci_name, climdex_single_input, loglevel, output_file = process_inputs_alpha(request.inputs, avail_indices_inputs, self.workdir)
+        ci_name, climdex_single_input, loglevel, output_file = process_inputs_alpha(
+            request.inputs, avail_indices_inputs, self.workdir
+        )
 
         log_handler(
             self,
