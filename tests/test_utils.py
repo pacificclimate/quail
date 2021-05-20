@@ -6,7 +6,7 @@ from quail.utils import (
     get_ClimdexInputs,
     load_rds_ci,
     load_cis,
-    validate_vector,
+    validate_vectors,
 )
 
 
@@ -79,20 +79,20 @@ def test_load_cis_err(r_file):
 
 
 @pytest.mark.parametrize(
-    ("vector"),
-    [("c('cats')"), ("c('cats', 'dogs')"), ("c(cats=1, dogs=2)")],
+    ("vectors"),
+    [[("c('cats')"), ("c('cats', 'dogs')"), ("c(cats=1, dogs=2)")]],
 )
-def test_validate_vector(vector):
-    validate_vector(vector)
+def test_validate_vectors(vectors):
+    validate_vectors(vectors)
 
 
 @pytest.mark.parametrize(
-    ("vector"),
-    [("()"), ("c'cats', 'dogs')")],
+    ("vectors"),
+    [[("()")], [("c'cats', 'dogs')")]],
 )
-def test_validate_vector_err(vector):
+def test_validate_vectors_err(vectors):
     with pytest.raises(ProcessError) as e:
-        validate_vector(vector)
+        validate_vectors(vectors)
     assert (
         str(vars(e)["_excinfo"][1])
         == "RParsingError: Invalid vector format, follow R vector syntax"

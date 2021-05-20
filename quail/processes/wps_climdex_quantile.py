@@ -1,20 +1,20 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
+from pywps import Process, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, rda_output, vector_name
+from wps_tools.io import rda_output, process_inputs_alpha
 from wps_tools.R import (
     get_package,
     load_rdata_to_python,
     save_python_to_rdata,
     r_valid_name,
 )
-from quail.utils import logger, collect_literal_inputs, validate_vector
-from quail.io import output_file
+from quail.utils import logger, validate_vectors
+from quail.io import quantile_inputs
 
 
 class ClimdexQuantile(Process):
@@ -31,37 +31,7 @@ class ClimdexQuantile(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            ComplexInput(
-                "data_file",
-                "Rda Data File",
-                abstract="Path to the file containing data to compute quantiles on.",
-                min_occurs=0,
-                max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64")],
-            ),
-            LiteralInput(
-                "data_vector",
-                "Data Vector",
-                abstract="R double vector data to compute quantiles on. Only neeed when data_rds is used.",
-                default="data_vector",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "quantiles_vector",
-                "Quantiles_vector",
-                abstract="Quantiles to be computed",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            output_file,
-            vector_name,
-            log_level,
-        ]
-
+        inputs = quantile_inputs
         outputs = [
             LiteralOutput(
                 "output_vector",
@@ -90,15 +60,6 @@ class ClimdexQuantile(Process):
             status_supported=True,
         )
 
-    def collect_args_wrapper(self, request):
-        literal_inputs = collect_literal_inputs(request)
-        if "data_file" in collect_args(request, self.workdir).keys():
-            data_file = collect_args(request, self.workdir)["data_file"][0]
-        else:
-            data_file = None
-
-        return [data_file] + literal_inputs
-
     def unpack_data_file(self, data_file, data_vector):
         try:
             return load_rdata_to_python(data_file, data_vector)
@@ -117,12 +78,12 @@ class ClimdexQuantile(Process):
         (
             data_file,
             data_vector,
-            quantiles_vector,
-            output_file,
-            vector_name,
             loglevel,
-        ) = self.collect_args_wrapper(request)
-        validate_vector(quantiles_vector)
+            output_file,
+            quantiles_vector,
+            vector_name,
+        ) = process_inputs_alpha(request.inputs, quantile_inputs, self.workdir)
+        validate_vectors([quantiles_vector])
         r_valid_name(vector_name)
 
         log_handler(
@@ -152,7 +113,7 @@ class ClimdexQuantile(Process):
         log_handler(
             self,
             response,
-            f"Processing climdex.quantile",
+            "Processing climdex.quantile",
             logger,
             log_level=loglevel,
             process_step="process",
@@ -167,7 +128,7 @@ class ClimdexQuantile(Process):
         log_handler(
             self,
             response,
-            f"Saving quantile as R data file",
+            "Saving quantile as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",

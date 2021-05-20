@@ -10,9 +10,9 @@
 
 <style type="text/css">
     pre { line-height: 125%; }
-td.linenos pre { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-span.linenos { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-td.linenos pre.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 .highlight .hll { background-color: var(--jp-cell-editor-active-background) }
 .highlight { background: var(--jp-cell-editor-background); color: var(--jp-mirror-editor-variable-color) }
@@ -14276,6 +14276,7 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 <span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
 
+<span class="kn">from</span> <span class="nn">wps_tools.file_handling</span> <span class="kn">import</span> <span class="n">csv_handler</span>
 <span class="kn">from</span> <span class="nn">wps_tools.testing</span> <span class="kn">import</span> <span class="n">get_target_url</span>
 <span class="kn">from</span> <span class="nn">quail.utils</span> <span class="kn">import</span> <span class="n">test_ci_output</span>
 </pre></div>
@@ -14341,7 +14342,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">quail</span> <span class="o">=</span> <span class="n">WPSClient</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -14357,10 +14358,10 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h4 id="Help-for-individual-processes-can-be-diplayed-using-the-?-command-(ex/-bird.process?)">Help for individual processes can be diplayed using the ? command (ex/ bird.process?)<a class="anchor-link" href="#Help-for-individual-processes-can-be-diplayed-using-the-?-command-(ex/-bird.process?)">&#182;</a></h4>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
@@ -14372,6 +14373,114 @@ quail.climdex_input_csv<span class="o">?</span>
 </div>
 </div>
 
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output " data-mime-type="text/plain">
+<pre><span class="ansi-red-fg">Signature:</span>
+quail<span class="ansi-blue-fg">.</span>climdex_input_csv<span class="ansi-blue-fg">(</span>
+    prec_file_content<span class="ansi-blue-fg">,</span>
+    na_strings<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;NULL&#39;</span><span class="ansi-blue-fg">,</span>
+    tmax_column<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;tmax&#39;</span><span class="ansi-blue-fg">,</span>
+    tmin_column<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;tmin&#39;</span><span class="ansi-blue-fg">,</span>
+    prec_column<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;prec&#39;</span><span class="ansi-blue-fg">,</span>
+    tavg_column<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;tavg&#39;</span><span class="ansi-blue-fg">,</span>
+    base_range<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;c(1961, 1990)&#39;</span><span class="ansi-blue-fg">,</span>
+    cal<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;gregorian&#39;</span><span class="ansi-blue-fg">,</span>
+    date_fields<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#34;c(&#39;year&#39;, &#39;jday&#39;)&#34;</span><span class="ansi-blue-fg">,</span>
+    date_format<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;%Y %j&#39;</span><span class="ansi-blue-fg">,</span>
+    n<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">5</span><span class="ansi-blue-fg">,</span>
+    northern_hemisphere<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+    quantiles<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;NULL&#39;</span><span class="ansi-blue-fg">,</span>
+    temp_qtiles<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;c(0.1, 0.9)&#39;</span><span class="ansi-blue-fg">,</span>
+    prec_qtiles<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;c(0.95, 0.99)&#39;</span><span class="ansi-blue-fg">,</span>
+    max_missing_days<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;c(annual = 15, monthly =3)&#39;</span><span class="ansi-blue-fg">,</span>
+    min_base_data_fraction_present<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0.1</span><span class="ansi-blue-fg">,</span>
+    loglevel<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;INFO&#39;</span><span class="ansi-blue-fg">,</span>
+    tmax_file_content<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    tmin_file_content<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    tavg_file_content<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    output_file<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output.rda&#39;</span><span class="ansi-blue-fg">,</span>
+    vector_name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output_vector&#39;</span><span class="ansi-blue-fg">,</span>
+    output_formats<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">Docstring:</span>
+Process for creating climdexInput object from CSV files
+
+Parameters
+----------
+tmax_file_content : string
+    Content of file with daily maximum temperature data (temporary alternative to taking file).
+tmin_file_content : string
+    Content of file with daily minimum temperature data (temporary alternative to taking file).
+prec_file_content : string
+    Content of file with daily total precipitation data (temporary alternative to taking file).
+tavg_file_content : string
+    Content of file with daily mean temperature data (temporary alternative to taking file).
+na_strings : string
+    Strings used for NA values; passed to read.csv
+tmax_column : string
+    Column name for tmax data.
+tmin_column : string
+    Column name for tmin data.
+prec_column : string
+    Column name for prec data.
+tavg_column : string
+    Column name for tavg data.
+base_range : string
+    Years to use for the baseline
+cal : string
+    The calendar type used in the input files.
+date_fields : string
+    Vector of names consisting of the columns to be concatenated together with spaces.
+date_format : string
+    Date format as taken by strptime.
+n : integer
+    Number of days to use as window for daily quantiles.
+northern_hemisphere : boolean
+    Number of days to use as window for daily quantiles.
+quantiles : string
+    Threshold quantiles for supplied variables.
+temp_qtiles : string
+    Quantiles to calculate for temperature variables
+prec_qtiles : string
+    Quantiles to calculate for precipitation
+max_missing_days : string
+    Vector containing thresholds for number of days allowed missing per year (annual) and per month (monthly).
+min_base_data_fraction_present : float
+    Minimum fraction of base data that must be present for quantile to be calculated for a particular day
+output_file : string
+    Filename to store the output Rdata (extension .rda)
+vector_name : string
+    Name to label the output vector
+loglevel : {&#39;CRITICAL&#39;, &#39;ERROR&#39;, &#39;WARNING&#39;, &#39;INFO&#39;, &#39;DEBUG&#39;, &#39;NOTSET&#39;}string
+    Logging level
+
+Returns
+-------
+climdexinput : ComplexData:mimetype:`application/x-gzip`
+    Output R data file for generated climdexInput
+<span class="ansi-red-fg">File:</span>      ~/github/pcic/quail/&lt;/tmp/quail-venv/lib/python3.8/site-packages/birdy/client/base.py-2&gt;
+<span class="ansi-red-fg">Type:</span>      method
+</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
@@ -14380,14 +14489,17 @@ quail.climdex_input_csv<span class="o">?</span>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rda&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;summer_days_&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">quail</span><span class="o">.</span><span class="n">climdex_input_csv</span><span class="p">(</span>
-            <span class="n">tmax_file</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/1018935_MAX_TEMP.csv&quot;</span><span class="p">),</span>
-            <span class="n">tmin_file</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/1018935_MIN_TEMP.csv&quot;</span><span class="p">),</span>
-            <span class="n">prec_file</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/1018935_ONE_DAY_PRECIPITATION.csv&quot;</span><span class="p">),</span>
+            <span class="n">tmax_file_content</span><span class="o">=</span><span class="n">csv_handler</span><span class="p">(</span>
+                <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/1018935_MAX_TEMP.csv&quot;</span><span class="p">)),</span>
+            <span class="n">tmin_file_content</span><span class="o">=</span><span class="n">csv_handler</span><span class="p">(</span>
+                <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/1018935_MIN_TEMP.csv&quot;</span><span class="p">)),</span>
+            <span class="n">prec_file_content</span><span class="o">=</span><span class="n">csv_handler</span><span class="p">(</span>
+                <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;tests&quot;</span><span class="p">,</span><span class="s2">&quot;data/1018935_ONE_DAY_PRECIPITATION.csv&quot;</span><span class="p">)),</span>
             <span class="n">tmax_column</span><span class="o">=</span><span class="s1">&#39;MAX_TEMP&#39;</span><span class="p">,</span>
             <span class="n">tmin_column</span><span class="o">=</span><span class="s1">&#39;MIN_TEMP&#39;</span><span class="p">,</span>
             <span class="n">prec_column</span><span class="o">=</span><span class="s1">&#39;ONE_DAY_PRECIPITATION&#39;</span><span class="p">,</span>
@@ -14405,7 +14517,7 @@ quail.climdex_input_csv<span class="o">?</span>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_ci_output</span><span class="p">(</span>

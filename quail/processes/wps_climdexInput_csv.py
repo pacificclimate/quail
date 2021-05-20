@@ -1,35 +1,17 @@
 import os, csv
 from rpy2 import robjects
 from tempfile import NamedTemporaryFile as TempFile
-from pywps import Process, LiteralInput
+from pywps import Process
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args, vector_name
 from wps_tools.R import get_package, save_python_to_rdata, r_valid_name
+from wps_tools.io import process_inputs_alpha
 
-from quail.utils import logger, collect_literal_inputs, validate_vector
-from quail.io import (
-    tmax_column,
-    tmin_column,
-    prec_column,
-    tavg_column,
-    base_range,
-    cal,
-    date_fields,
-    date_format,
-    n,
-    northern_hemisphere,
-    quantiles,
-    temp_qtiles,
-    prec_qtiles,
-    max_missing_days,
-    min_base_data_fraction_present,
-    output_file,
-    ci_output,
-)
+from quail.utils import logger, validate_vectors
+from quail.io import csv_inputs, ci_output
 
 
 class ClimdexInputCSV(Process):
@@ -45,70 +27,7 @@ class ClimdexInputCSV(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            LiteralInput(
-                "tmax_file_content",
-                "daily maximum temperature data file content",
-                abstract="Content of file with daily maximum temperature data "
-                "(temporary alternative to taking file).",
-                min_occurs=0,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "tmin_file_content",
-                "daily minimum temperature data file",
-                abstract="Content of file with daily minimum temperature data "
-                "(temporary alternative to taking file).",
-                min_occurs=0,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "prec_file_content",
-                "daily total precipitation data file content",
-                abstract="Content of file with daily total precipitation data "
-                "(temporary alternative to taking file).",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "tavg_file_content",
-                "mean temperature data file content",
-                abstract="Content of file with daily mean temperature data "
-                "(temporary alternative to taking file).",
-                min_occurs=0,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "na_strings",
-                "climdexInput name",
-                abstract="Strings used for NA values; passed to read.csv",
-                default="NULL",
-                data_type="string",
-            ),
-            tmax_column,
-            tmin_column,
-            prec_column,
-            tavg_column,
-            base_range,
-            cal,
-            date_fields,
-            date_format,
-            n,
-            northern_hemisphere,
-            quantiles,
-            temp_qtiles,
-            prec_qtiles,
-            max_missing_days,
-            min_base_data_fraction_present,
-            output_file,
-            vector_name,
-            log_level,
-        ]
-
+        inputs = csv_inputs
         outputs = [ci_output]
 
         super(ClimdexInputCSV, self).__init__(
@@ -129,7 +48,9 @@ class ClimdexInputCSV(Process):
             status_supported=True,
         )
 
-    def prepare_csv_files(self, args):
+    def prepare_csv_files(
+        self, prec_file_content, tavg_file_content, tmax_file_content, tmin_file_content
+    ):
         def write_csv(content):
             file_ = TempFile(mode="w+", suffix=".csv")
             file_.write(content)
@@ -137,15 +58,15 @@ class ClimdexInputCSV(Process):
 
             return file_
 
-        prec_file = write_csv(args["prec_file_content"][0])
+        prec_file = write_csv(prec_file_content)
 
-        if "tavg_file_content" in args.keys():
-            tavg_file = write_csv(args["tavg_file_content"][0])
+        if tavg_file_content:
+            tavg_file = write_csv(tavg_file_content)
             return {"prec_file": prec_file, "tavg_file": tavg_file}
 
-        elif "tmax_file_content" in args.keys() and "tmin_file_content" in args.keys():
-            tmax_file = write_csv(args["tmax_file_content"][0])
-            tmin_file = write_csv(args["tmin_file_content"][0])
+        elif tmax_file_content and tmin_file_content:
+            tmax_file = write_csv(tmax_file_content)
+            tmin_file = write_csv(tmin_file_content)
             return {
                 "prec_file": prec_file,
                 "tmin_file": tmin_file,
@@ -214,36 +135,40 @@ class ClimdexInputCSV(Process):
 
     def _handler(self, request, response):
         (
-            na_strings,
-            tmax_column,
-            tmin_column,
-            prec_column,
-            tavg_column,
             base_range,
             cal,
             date_fields,
             date_format,
-            n,
-            northern_hemisphere,
-            quantiles,
-            temp_qtiles,
-            prec_qtiles,
+            loglevel,
             max_missing_days,
             min_base_data_fraction_present,
+            n,
+            na_strings,
+            northern_hemisphere,
             output_file,
+            prec_column,
+            prec_file_content,
+            prec_qtiles,
+            quantiles,
+            tavg_column,
+            tavg_file_content,
+            temp_qtiles,
+            tmax_column,
+            tmax_file_content,
+            tmin_column,
+            tmin_file_content,
             vector_name,
-            loglevel,
-        ) = collect_literal_inputs(request)
-        [
-            validate_vector(vector)
-            for vector in [
+        ) = process_inputs_alpha(request.inputs, csv_inputs, self.workdir)
+
+        validate_vectors(
+            [
                 base_range,
                 date_fields,
                 temp_qtiles,
                 prec_qtiles,
                 max_missing_days,
             ]
-        ]
+        )
 
         log_handler(
             self,
@@ -265,8 +190,9 @@ class ClimdexInputCSV(Process):
             process_step="prepare_params",
         )
 
-        args = collect_args(request, self.workdir)
-        data_files = self.prepare_csv_files(args)
+        data_files = self.prepare_csv_files(
+            prec_file_content, tavg_file_content, tmax_file_content, tmin_file_content
+        )
         params = self.prepare_parameters(
             data_files,
             date_fields,
@@ -280,7 +206,7 @@ class ClimdexInputCSV(Process):
         log_handler(
             self,
             response,
-            f"Processing climdexInput.csv",
+            "Processing climdexInput.csv",
             logger,
             log_level=loglevel,
             process_step="process",
@@ -309,7 +235,7 @@ class ClimdexInputCSV(Process):
         log_handler(
             self,
             response,
-            f"Saving climdexInput as R data file",
+            "Saving climdexInput as R data file",
             logger,
             log_level=loglevel,
             process_step="save_rdata",

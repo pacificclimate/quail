@@ -10,9 +10,9 @@
 
 <style type="text/css">
     pre { line-height: 125%; }
-td.linenos pre { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-span.linenos { color: #000000; background-color: #f0f0f0; padding-left: 5px; padding-right: 5px; }
-td.linenos pre.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 .highlight .hll { background-color: var(--jp-cell-editor-active-background) }
 .highlight { background: var(--jp-cell-editor-background); color: var(--jp-mirror-editor-variable-color) }
@@ -14413,7 +14413,8 @@ quail<span class="ansi-blue-fg">.</span>climdex_input_raw<span class="ansi-blue-
     tmin_file<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
     tavg_file<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
     output_file<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output.rda&#39;</span><span class="ansi-blue-fg">,</span>
-    vector_name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;days&#39;</span><span class="ansi-blue-fg">,</span>
+    vector_name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;output_vector&#39;</span><span class="ansi-blue-fg">,</span>
+    output_formats<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
 <span class="ansi-blue-fg">)</span>
 <span class="ansi-red-fg">Docstring:</span>
 Process for creating climdexInput object from data already ingested into R
@@ -14429,13 +14430,13 @@ prec_file : ComplexData:mimetype:`application/x-gzip`
 tavg_file : ComplexData:mimetype:`application/x-gzip`
     Name of file containing daily mean temperature data.
 tmax_name : string
-    Name of R object containing daily maximum temperature data.
+    In a Rda file, the name of the R object containing daily maximum temperature data. You may leave as default for RDS files.
 tmin_name : string
-    Name of R object containing daily minimum temperature data.
+    In a Rda file, the name of the R object containing daily minimum temperature data. You may leave as default for RDS files.
 prec_name : string
-    Name of R object containing daily mean temperature data.
+    In a Rda file, the name of the R object containing daily mean temperature data. You may leave as default for RDS files.
 tavg_name : string
-    Name of R object containing daily total precipitation data.
+    In a Rda file, the name of the R object containing daily total precipitation data. You may leave as default for RDS files.
 tmax_column : string
     Column name for tmax data.
 tmin_column : string
@@ -14477,7 +14478,7 @@ Returns
 -------
 climdexinput : ComplexData:mimetype:`application/x-gzip`
     Output R data file for generated climdexInput
-<span class="ansi-red-fg">File:</span>      ~/Desktop/quail/&lt;/home/sangwonl/Desktop/quail/venv/lib/python3.7/site-packages/birdy/client/base.py-3&gt;
+<span class="ansi-red-fg">File:</span>      ~/github/pcic/quail/&lt;/tmp/quail-venv/lib/python3.8/site-packages/birdy/client/base.py-3&gt;
 <span class="ansi-red-fg">Type:</span>      method
 </pre>
 </div>

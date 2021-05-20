@@ -1,14 +1,14 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput
+from pywps import Process
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, rda_output
-from quail.utils import logger, load_cis, collect_literal_inputs
-from quail.io import climdex_input, output_file
+from wps_tools.io import rda_output, process_inputs_alpha
+from quail.utils import logger, load_cis
+from quail.io import spells_inputs
 
 
 class ClimdexSpells(Process):
@@ -29,28 +29,7 @@ class ClimdexSpells(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            climdex_input,
-            output_file,
-            LiteralInput(
-                "func",
-                "Function to compute",
-                abstract="Compute climdex.wsdi (Warm spell duration index)",
-                allowed_values=["wsdi", "csdi", "cdd", "cwd"],
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            LiteralInput(
-                "span_years",
-                "Spells can span years",
-                abstract="Specifies whether spells can cross year boundaries",
-                default=False,
-                data_type="boolean",
-            ),
-            log_level,
-        ]
-
+        inputs = spells_inputs
         outputs = [rda_output]
 
         super(ClimdexSpells, self).__init__(
@@ -72,13 +51,9 @@ class ClimdexSpells(Process):
         )
 
     def _handler(self, request, response):
-        (
-            output_file,
-            func,
-            span_years,
-            loglevel,
-        ) = collect_literal_inputs(request)
-        climdex_input = request.inputs["climdex_input"]
+        climdex_input, func, loglevel, output_file, span_years = process_inputs_alpha(
+            request.inputs, spells_inputs, self.workdir
+        )
 
         log_handler(
             self,
@@ -91,21 +66,24 @@ class ClimdexSpells(Process):
         robjects.r("library(climdex.pcic)")
         vectors = []
 
-        for i in range(len(climdex_input)):
+        counter = 1
+        total = len(climdex_input)
+
+        for input in climdex_input:
             log_handler(
                 self,
                 response,
-                f"Loading climdexInput from R data file {i}",
+                f"Loading climdexInput from R data file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="load_rdata",
             )
-            cis = load_cis(climdex_input[i].file)
+            cis = load_cis(input)
 
             log_handler(
                 self,
                 response,
-                f"Processing climdex.{func} for each year for file {i}",
+                f"Processing climdex.{func} for each year for file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="process",
@@ -119,9 +97,10 @@ class ClimdexSpells(Process):
                 except RRuntimeError as e:
                     raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
-                vector_name = f"{func}{i}_{ci_name}"
+                vector_name = f"{func}{counter}_{ci_name}"
                 robjects.r.assign(vector_name, spells)
                 vectors.append(vector_name)
+            counter += 1
 
         log_handler(
             self,

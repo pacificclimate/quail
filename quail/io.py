@@ -1,4 +1,5 @@
 from pywps import LiteralInput, ComplexInput, ComplexOutput, Format
+from wps_tools.io import log_level
 
 
 climdex_input = ComplexInput(
@@ -7,6 +8,15 @@ climdex_input = ComplexInput(
     abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
     min_occurs=1,
     max_occurs=100,
+    supported_formats=[Format("application/x-gzip", encoding="base64")],
+)
+
+climdex_single_input = ComplexInput(
+    "climdex_input",
+    "climdexInput file",
+    abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
+    min_occurs=1,
+    max_occurs=1,
     supported_formats=[Format("application/x-gzip", encoding="base64")],
 )
 
@@ -179,3 +189,408 @@ freq = LiteralInput(
     max_occurs=1,
     data_type="string",
 )
+
+tmax_file_content = LiteralInput(
+    "tmax_file_content",
+    "daily maximum temperature data file content",
+    abstract="Content of file with daily maximum temperature data "
+    "(temporary alternative to taking file).",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
+
+tmin_file_content = LiteralInput(
+    "tmin_file_content",
+    "daily minimum temperature data file",
+    abstract="Content of file with daily minimum temperature data "
+    "(temporary alternative to taking file).",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
+
+prec_file_content = LiteralInput(
+    "prec_file_content",
+    "daily total precipitation data file content",
+    abstract="Content of file with daily total precipitation data "
+    "(temporary alternative to taking file).",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+tavg_file_content = LiteralInput(
+    "tavg_file_content",
+    "mean temperature data file content",
+    abstract="Content of file with daily mean temperature data "
+    "(temporary alternative to taking file).",
+    min_occurs=0,
+    max_occurs=1,
+    data_type="string",
+)
+
+na_strings = LiteralInput(
+    "na_strings",
+    "climdexInput name",
+    abstract="Strings used for NA values; passed to read.csv",
+    default="NULL",
+    data_type="string",
+)
+
+tmax_file = ComplexInput(
+    "tmax_file",
+    "daily maximum temperature data file",
+    abstract="Name of file containing daily maximum temperature data.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+tmin_file = ComplexInput(
+    "tmin_file",
+    "daily minimum temperature data file",
+    abstract="Name of file containing daily minimum temperature data.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+prec_file = ComplexInput(
+    "prec_file",
+    "daily total precipitation data file",
+    abstract="Name of file containing daily total precipitation data.",
+    min_occurs=1,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+tavg_file = ComplexInput(
+    "tavg_file",
+    "mean temperature data file",
+    abstract="Name of file containing daily mean temperature data.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[
+        Format("application/x-gzip", encoding="base64"),
+    ],
+)
+
+tmax_name = LiteralInput(
+    "tmax_name",
+    "daily maximum temperature object name",
+    default="tmax",
+    abstract="In a Rda file, the name of the R object containing daily "
+    "maximum temperature data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+tmin_name = LiteralInput(
+    "tmin_name",
+    "daily minimum temperature data file",
+    default="tmin",
+    abstract="In a Rda file, the name of the R object containing daily "
+    "minimum temperature data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+prec_name = LiteralInput(
+    "prec_name",
+    "daily total precipitation data file",
+    default="prec",
+    abstract="In a Rda file, the name of the R object containing daily "
+    "mean temperature data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+tavg_name = LiteralInput(
+    "tavg_name",
+    "mean temperature data file",
+    default="tavg",
+    abstract="In a Rda file, the name of the R object containing daily total "
+    "precipitation data. You may leave as default for RDS files.",
+    data_type="string",
+)
+
+days_type = LiteralInput(
+    "days_type",
+    "Day type to compute",
+    abstract="Day type condition to compute",
+    allowed_values=["su", "id", "fd", "tr"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+ci_name = LiteralInput(
+    "ci_name",
+    "climdexInput name",
+    abstract="Name of the climdexInput object. Only needed when using Rdata input. "
+    "For RDS input it may be left as the default value.",
+    default="ci",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+gsl_mode = LiteralInput(
+    "gsl_mode",
+    "GSL mode",
+    abstract="Growing season length method to use. The three alternate modes provided ('GSL_first', 'GSL_max', and 'GSL_sum') are for testing purposes only.",
+    default="GSL",
+    min_occurs=0,
+    max_occurs=1,
+    allowed_values=["GSL", "GSL_first", "GSL_max", "GSL_sum"],
+    data_type="string",
+)
+
+month_type = LiteralInput(
+    "month_type",
+    "Month type to compute",
+    abstract="Min/ max daily temperature type to compute",
+    allowed_values=["txx", "tnx", "txn", "tnn"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+threshold = LiteralInput(
+    "threshold",
+    "Threshold",
+    abstract="Daily precipitation threshold",
+    allowed_values=[0, 95, 99],
+    default=0,
+    min_occurs=0,
+    max_occurs=1,
+    data_type="integer",
+)
+
+data_file = ComplexInput(
+    "data_file",
+    "Rda Data File",
+    abstract="Path to the file containing data to compute quantiles on.",
+    min_occurs=0,
+    max_occurs=1,
+    supported_formats=[Format("application/x-gzip", encoding="base64")],
+)
+
+data_vector = LiteralInput(
+    "data_vector",
+    "Data Vector",
+    abstract="R double vector data to compute quantiles on. Only neeed when data_rds is used.",
+    default="data_vector",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+quantiles_vector = LiteralInput(
+    "quantiles_vector",
+    "Quantiles_vector",
+    abstract="Quantiles to be computed",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+mm_threshold = LiteralInput(
+    "threshold",
+    "Threshold",
+    abstract="mm threshold for daily precipitation",
+    min_occurs=1,
+    max_occurs=1,
+    data_type="float",
+)
+
+num_days = LiteralInput(
+    "num_days",
+    "Number of days of precipitation",
+    abstract="Compute rx[1]day or rx[5]day",
+    allowed_values=[1, 5],
+    data_type="positiveInteger",
+)
+
+center_mean_on_last_day = LiteralInput(
+    "center_mean_on_last_day",
+    "Center mean on last day",
+    abstract="Whether to center the 5-day running mean on the last day of the window, insteadof the center day.",
+    min_occurs=0,
+    max_occurs=1,
+    default=False,
+    data_type="boolean",
+)
+
+
+wsdi_func = LiteralInput(
+    "func",
+    "Function to compute",
+    abstract="Compute climdex.wsdi (Warm spell duration index)",
+    allowed_values=["wsdi", "csdi", "cdd", "cwd"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+span_years = LiteralInput(
+    "span_years",
+    "Spells can span years",
+    abstract="Specifies whether spells can cross year boundaries",
+    default=False,
+    data_type="boolean",
+)
+
+temp_pctl_func = LiteralInput(
+    "func",
+    "Function to compute",
+    abstract="Percentile function to compute",
+    allowed_values=["tn10p", "tn90p", "tx10p", "tx90p"],
+    min_occurs=1,
+    max_occurs=1,
+    data_type="string",
+)
+
+csv_inputs = [
+    tmax_file_content,
+    tmin_file_content,
+    prec_file_content,
+    tavg_file_content,
+    na_strings,
+    tmax_column,
+    tmin_column,
+    prec_column,
+    tavg_column,
+    base_range,
+    cal,
+    date_fields,
+    date_format,
+    n,
+    northern_hemisphere,
+    quantiles,
+    temp_qtiles,
+    prec_qtiles,
+    max_missing_days,
+    min_base_data_fraction_present,
+    output_file,
+    vector_name,
+    log_level,
+]
+
+raw_inputs = [
+    tmax_file,
+    tmin_file,
+    prec_file,
+    tavg_file,
+    tmax_name,
+    tmin_name,
+    prec_name,
+    tavg_name,
+    tmax_column,
+    tmin_column,
+    prec_column,
+    tavg_column,
+    base_range,
+    cal,
+    date_fields,
+    date_format,
+    n,
+    northern_hemisphere,
+    quantiles,
+    temp_qtiles,
+    prec_qtiles,
+    max_missing_days,
+    min_base_data_fraction_present,
+    output_file,
+    vector_name,
+    log_level,
+]
+
+days_inputs = [
+    climdex_input,
+    output_file,
+    days_type,
+    log_level,
+]
+
+dtr_inputs = [
+    climdex_input,
+    output_file,
+    freq,
+    log_level,
+]
+
+avail_indices_inputs = [
+    climdex_single_input,
+    ci_name,
+    output_file,
+    log_level,
+]
+
+gsl_inputs = [climdex_input, output_file, gsl_mode, log_level]
+
+mmdmt_inputs = [
+    climdex_input,
+    output_file,
+    month_type,
+    freq,
+    log_level,
+]
+
+ptot_inputs = [
+    climdex_input,
+    output_file,
+    threshold,
+    log_level,
+]
+
+quantile_inputs = [
+    data_file,
+    data_vector,
+    quantiles_vector,
+    output_file,
+    vector_name,
+    log_level,
+]
+
+rmm_inputs = [
+    climdex_input,
+    output_file,
+    mm_threshold,
+    log_level,
+]
+
+rxnday_inputs = [
+    climdex_input,
+    output_file,
+    freq,
+    num_days,
+    center_mean_on_last_day,
+    log_level,
+]
+
+sdii_inputs = [
+    climdex_input,
+    output_file,
+    log_level,
+]
+
+spells_inputs = [
+    climdex_input,
+    output_file,
+    wsdi_func,
+    span_years,
+    log_level,
+]
+
+temp_pctl_inputs = [
+    climdex_input,
+    output_file,
+    temp_pctl_func,
+    freq,
+    log_level,
+]

@@ -1,15 +1,15 @@
 import sys, inspect, re, collections
 from rpy2 import robjects
-from pywps import Process, LiteralInput, LiteralOutput, ComplexInput, Format
+from pywps import Process, LiteralOutput
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, collect_args
 from wps_tools.R import get_package
+from wps_tools.io import process_inputs_alpha
 from quail.utils import logger, get_robj
-from quail.io import output_file
+from quail.io import avail_indices_inputs
 
 
 class GetIndices(Process):
@@ -24,29 +24,7 @@ class GetIndices(Process):
             common_status_percentages,
             **{"load_rdata": 10},
         )
-        inputs = [
-            ComplexInput(
-                "climdex_input",
-                "climdexInput file",
-                abstract="RDS or Rdata (.rds, .rda, .rdata) file containing R Object of type climdexInput",
-                min_occurs=1,
-                max_occurs=1,
-                supported_formats=[Format("application/x-gzip", encoding="base64")],
-            ),
-            LiteralInput(
-                "ci_name",
-                "climdexInput name",
-                abstract="Name of the climdexInput object. Only needed when using Rdata input. "
-                "For RDS input it may be left as the default value.",
-                default="ci",
-                min_occurs=1,
-                max_occurs=1,
-                data_type="string",
-            ),
-            output_file,
-            log_level,
-        ]
-
+        inputs = avail_indices_inputs
         outputs = [
             LiteralOutput(
                 "avail_processes",
@@ -100,12 +78,9 @@ class GetIndices(Process):
         return dict(processes)
 
     def _handler(self, request, response):
-        (
-            climdex_input,
-            ci_name,
-            output_file,
-            loglevel,
-        ) = [arg[0] for arg in collect_args(request, self.workdir).values()]
+        ci_name, climdex_single_input, loglevel, output_file = process_inputs_alpha(
+            request.inputs, avail_indices_inputs, self.workdir
+        )
 
         log_handler(
             self,
@@ -125,12 +100,12 @@ class GetIndices(Process):
             log_level=loglevel,
             process_step="load_rdata",
         )
-        ci = get_robj(climdex_input, ci_name)
+        ci = get_robj(climdex_single_input, ci_name)
 
         log_handler(
             self,
             response,
-            f"Processing climdex_get_available_indices",
+            "Processing climdex_get_available_indices",
             logger,
             log_level=loglevel,
             process_step="process",

@@ -1,14 +1,14 @@
 import os
 from rpy2 import robjects
-from pywps import Process, LiteralInput
+from pywps import Process
 from pywps.app.Common import Metadata
 from pywps.app.exceptions import ProcessError
 from rpy2.rinterface_lib.embedded import RRuntimeError
 
 from wps_tools.logging import log_handler, common_status_percentages
-from wps_tools.io import log_level, rda_output
-from quail.utils import logger, load_cis, collect_literal_inputs
-from quail.io import climdex_input, output_file
+from wps_tools.io import rda_output, process_inputs_alpha
+from quail.utils import logger, load_cis
+from quail.io import ptot_inputs
 
 
 class ClimdexPtot(Process):
@@ -28,22 +28,7 @@ class ClimdexPtot(Process):
                 "save_rdata": 90,
             },
         )
-        inputs = [
-            climdex_input,
-            output_file,
-            LiteralInput(
-                "threshold",
-                "Threshold",
-                abstract="Daily precipitation threshold",
-                allowed_values=[0, 95, 99],
-                default=0,
-                min_occurs=0,
-                max_occurs=1,
-                data_type="integer",
-            ),
-            log_level,
-        ]
-
+        inputs = ptot_inputs
         outputs = [rda_output]
 
         super(ClimdexPtot, self).__init__(
@@ -71,8 +56,9 @@ class ClimdexPtot(Process):
             return f"r{threshold}"
 
     def _handler(self, request, response):
-        output_file, threshold, loglevel = collect_literal_inputs(request)
-        climdex_input = request.inputs["climdex_input"]
+        climdex_input, loglevel, output_file, threshold = process_inputs_alpha(
+            request.inputs, ptot_inputs, self.workdir
+        )
 
         log_handler(
             self,
@@ -85,22 +71,24 @@ class ClimdexPtot(Process):
         robjects.r("library(climdex.pcic)")
         func = self.get_func(threshold)
         vectors = []
+        counter = 1
+        total = len(climdex_input)
 
-        for i in range(len(climdex_input)):
+        for input in climdex_input:
             log_handler(
                 self,
                 response,
-                f"Loading climdexInput from R data file {i}",
+                f"Loading climdexInput from R data file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="load_rdata",
             )
-            cis = load_cis(climdex_input[i].file)
+            cis = load_cis(input)
 
             log_handler(
                 self,
                 response,
-                f"Processing climdex.{func}ptot for file {i}",
+                f"Processing climdex.{func}ptot for file {counter}/{total}",
                 logger,
                 log_level=loglevel,
                 process_step="process",
@@ -113,9 +101,10 @@ class ClimdexPtot(Process):
                 except RRuntimeError as e:
                     raise ProcessError(msg=f"{type(e).__name__}: {str(e)}")
 
-                vector_name = f"{func}{i}_{ci_name}"
+                vector_name = f"{func}{counter}_{ci_name}"
                 robjects.r.assign(vector_name, mothly_pct)
                 vectors.append(vector_name)
+            counter += 1
 
         log_handler(
             self,
