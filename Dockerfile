@@ -1,15 +1,10 @@
-FROM rocker/r-ver:4.0.3 AS builder
+FROM rocker/r-ver:4.0.3 AS build
 
-ENV PIP_INDEX_URL="https://pypi.pacificclimate.org/simple/"
-
-COPY requirements.txt r_requirements.txt install_pkgs.R ./
+COPY r_requirements.txt install_pkgs.R ./
 
 # Install python and R packages
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-    # Install pip
-    python3-pip \
-    # Install libraries for R packages installation
     libssl-dev \
     libxml2-dev \
     libudunits2-dev \
@@ -23,52 +18,37 @@ RUN apt-get update && \
     libharfbuzz-dev \
     libfribidi-dev \
     libcurl4-openssl-dev && \
-    # Install R packages
-    Rscript install_pkgs.R r_requirements.txt && \
-    # Install python packages
-    pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt --ignore-installed --user && \
-    # Install gunicorn
-    pip3 install gunicorn --user
+  Rscript install_pkgs.R r_requirements.txt
 
+FROM rocker/r-ver:4.0.3
 
-# vim:set ft=dockerfile:
-FROM rocker/r-ver:4.0.3 AS prod
-MAINTAINER https://github.com/pacificclimate/quail
-LABEL Description="quail WPS" Vendor="pacificclimate" Version="0.7.0"
+LABEL Maintainer="https://github.com/pacificclimate/quail" \
+  Description="quail WPS" \
+  Vendor="pacificclimate" \
+  Version="0.7.0"
+
+WORKDIR /tmp
+
+# Copy R packages
+ARG R_FILEPATH=/root/R/x86_64-pc-linux-gnu-library/4.0
+
+COPY --from=build ${R_FILEPATH}/PCICt ${R_FILEPATH}/PCICt
+COPY --from=build ${R_FILEPATH}/climdex.pcic ${R_FILEPATH}/climdex.pcic
+COPY --from=build ${R_FILEPATH}/Rcpp ${R_FILEPATH}/Rcpp
+
+# Add path to libR.so to the environment variable LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib/R/lib:$LD_LIBRARY_PATH
+ENV PIP_INDEX_URL="https://pypi.pacificclimate.org/simple/"
+
+COPY . /tmp
+COPY requirements.txt ./
 
 # Install Python
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      python3.8 \
-      python3-pip
-
-# COPY Python packages from builder
-COPY --from=builder /root/.local /root/.local
-
-# Copy R packages in r_requirements.txt and their dependencies
-# Directories cannot be recursively copied
-COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/PCICt \
-  /root/R/x86_64-pc-linux-gnu-library/4.0/PCICt
-COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/climdex.pcic \
-  /root/R/x86_64-pc-linux-gnu-library/4.0/climdex.pcic
-COPY --from=builder /root/R/x86_64-pc-linux-gnu-library/4.0/Rcpp \
-  /root/R/x86_64-pc-linux-gnu-library/4.0/Rcpp
-
-# Make sure scripts in .local are usable
-ENV PATH=/root/.local/bin:$PATH
-# Add path to libR.so to the environment variable LD_LIBRARY_PATH
-ENV LD_LIBRARY_PATH=/usr/local/lib/R/lib:$LD_LIBRARY_PATH
-
-WORKDIR /code
-
-COPY ./quail /code/quail
+  apt-get install -y --no-install-recommends python3.8 python3-pip && \
+  pip install -U pip && \
+  pip install -r requirements.txt && \
+  pip install gunicorn
 
 EXPOSE 5000
-
 CMD gunicorn --bind=0.0.0.0:5000 quail.wsgi:application
-
-# docker build -t pcic/quail .
-# docker run -p 5000:5000 pcic/quail
-# http://localhost:5000/wps?request=GetCapabilities&service=WPS
-# http://localhost:5000/wps?request=DescribeProcess&service=WPS&identifier=all&version=1.0.0
