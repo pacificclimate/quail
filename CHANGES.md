@@ -1,5 +1,11 @@
 # Changes
 
+## 0.7.1
+*2021-06-10*
+
+* Clean up `Dockerfile`
+* Fix index in notebooks
+
 ## 0.7.0
 *2021-05-20*
 

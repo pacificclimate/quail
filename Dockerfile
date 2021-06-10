@@ -25,7 +25,7 @@ FROM rocker/r-ver:4.0.3
 LABEL Maintainer="https://github.com/pacificclimate/quail" \
   Description="quail WPS" \
   Vendor="pacificclimate" \
-  Version="0.7.0"
+  Version="0.7.1"
 
 WORKDIR /tmp
 
