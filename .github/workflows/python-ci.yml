@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --fix-missing  r-base libgit2-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev libssl-dev libnetcdf-dev
+          sudo apt-get install r-base libgit2-dev libudunits2-dev libnetcdf-dev libcurl4-openssl-dev libssl-dev libfontconfig1-dev libxml2-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           poetry install --extras "dev"

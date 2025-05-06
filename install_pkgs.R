@@ -16,16 +16,17 @@ deps <- toml_data$tool$quail$`r-dependencies`
 
 
 # Install devtools
-install.packages("remotes", repos = "https://cloud.r-project.org")
+install.packages("devtools", dependencies = TRUE)
+library(devtools)
 
 # Install packages with versions
 for (pkg in names(deps)) {
     ver <- deps[[pkg]]
     if (!(pkg %in% rownames(installed.packages()))) {
         if (is.null(ver) || ver == "*" || ver == "") {
-            remotes::install_version(pkg)
+            install_version(pkg)
         } else {
-            remotes::install_version(pkg, version = ver)
+            install_version(pkg, version = ver)
         }
     }
 }
