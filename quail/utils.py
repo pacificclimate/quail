@@ -6,7 +6,7 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 # Libraries for test functions
 from urllib.request import urlretrieve
-from pkg_resources import resource_filename
+from importlib.resources import files
 from tempfile import NamedTemporaryFile
 
 # PCIC libraries
@@ -128,9 +128,7 @@ def test_ci_output(url, vector_name, expected_file, expected_vector_name):
         output_slot = robjects.r(f"{vector_name}@{slot}")
 
         robjects.r(
-            "load(file='{}')".format(
-                resource_filename("tests", f"data/{expected_file}")
-            )
+            f"load(file='{(files('tests') / 'data' / expected_file).resolve()}')"
         )
         expected_slot = robjects.r(f"{expected_vector_name}@{slot}")
 

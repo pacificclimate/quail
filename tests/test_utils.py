@@ -1,5 +1,5 @@
 import pytest
-from pkg_resources import resource_filename
+from importlib.resources import files
 from pywps.app.exceptions import ProcessError
 
 from quail.utils import (
@@ -13,8 +13,8 @@ from quail.utils import (
 @pytest.mark.parametrize(
     ("r_file"),
     [
-        resource_filename("tests", "data/climdexInput.rda"),
-        resource_filename("tests", "data/climdex_input_multiple.rda"),
+        str(files("tests") / "data/climdexInput.rda"),
+        str(files("tests") / "data/climdex_input_multiple.rda"),
     ],
 )
 def test_get_ClimdexInputs(r_file):
@@ -27,8 +27,8 @@ def test_get_ClimdexInputs(r_file):
 @pytest.mark.parametrize(
     ("r_file"),
     [
-        resource_filename("tests", "data/expected_days_data.rda"),
-        resource_filename("tests", "data/expected_gsl.rda"),
+        str(files("tests") / "data/expected_days_data.rda"),
+        str(files("tests") / "data/expected_gsl.rda"),
     ],
 )
 def test_get_ClimdexInputs_err(r_file):
@@ -39,7 +39,7 @@ def test_get_ClimdexInputs_err(r_file):
 @pytest.mark.parametrize(
     ("r_file"),
     [
-        resource_filename("tests", "data/climdexInput.rds"),
+        str(files("tests") / "data/climdexInput.rds"),
     ],
 )
 def test_load_rds_ci(r_file):
@@ -50,9 +50,9 @@ def test_load_rds_ci(r_file):
 @pytest.mark.parametrize(
     ("r_file"),
     [
-        resource_filename("tests", "data/climdexInput.rda"),
-        resource_filename("tests", "data/climdexInput.rds"),
-        resource_filename("tests", "data/climdex_input_multiple.rda"),
+        str(files("tests") / "data/climdexInput.rda"),
+        str(files("tests") / "data/climdexInput.rds"),
+        str(files("tests") / "data/climdex_input_multiple.rda"),
     ],
 )
 def test_load_cis(r_file):
@@ -65,8 +65,8 @@ def test_load_cis(r_file):
 @pytest.mark.parametrize(
     ("r_file"),
     [
-        resource_filename("tests", "data/expected_days_data.rda"),
-        resource_filename("tests", "data/1018935_MAX_TEMP.csv"),
+        str(files("tests") / "data/expected_days_data.rda"),
+        str(files("tests") / "data/1018935_MAX_TEMP.csv"),
     ],
 )
 def test_load_cis_err(r_file):
@@ -88,7 +88,7 @@ def test_validate_vectors(vectors):
 
 @pytest.mark.parametrize(
     ("vectors"),
-    [[("()")], [("c'cats', 'dogs')")]],
+    [["()"], ["c'cats', 'dogs')"]],
 )
 def test_validate_vectors_err(vectors):
     with pytest.raises(ProcessError) as e:
