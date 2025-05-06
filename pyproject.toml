@@ -1,0 +1,219 @@
+[project]
+name = "quail"
+version = "0.7.1"
+description = "A Web Processing Service for Climate Data Analysis."
+authors = [{ name = "Nikola Rados", email = "nrados@uvic.ca" }]
+license = { text = "GNU General Public License v3 (GPLv3)" }
+readme = "README.md"
+requires-python = ">=3.10, <=3.12"
+keywords = ["wps", "pywps", "birdhouse", "quail"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: POSIX",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Atmospheric Science",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+]
+
+dependencies = [
+  "pywps==4.2.6",
+  "jinja2",
+  "click",
+  "psutil",
+  "rpy2==3.3.6",
+  "nchelpers==5.5.7",
+  "werkzeug==1.0.1",
+  "wps_tools[r]==2.0.0",
+  "gunicorn>=20.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=6.0",
+  "flake8",
+  "pytest-flake8",
+  "ipython",
+  "pytest-notebook",
+  "nbsphinx",
+  "nbval>=0.9.6",
+  "nbconvert",
+  "Sphinx==2.4.4",
+  "bumpversion",
+  "twine",
+  "cruft",
+  # Changing dependencies above this comment will create merge conflicts when updating the cookiecutter template with cruft. Add extra requirements below this line.
+  "nbclient~=0.5.10",
+  "black",
+  "birdhouse-birdy",
+  "jupyterlab",
+]
+
+[project.scripts]
+quail = "quail.cli:cli"
+
+[project.urls]
+homepage = "http://www.pacificclimate.org/"
+repository = "https://github.com/pacificclimate/quail"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.quail.r-dependencies]
+PCICt = "0.5.4.1"
+# climdex.pcic = "1.1.11"
+
+
+[[tool.poetry.source]]
+name = "pcic"
+url = "https://pypi.pacificclimate.org/simple"
+priority = "supplemental"
+
+[tool.pytest.ini_options]
+markers = [
+  "online: marks tests that use online resources (deselect with '-m \"not online\"')",
+  "slow: marks tests that are slow (deselect with '-m \"not slow\"')",
+]
+
+[[tool.poetry.include]]
+path = "*.txt"
+format = ["sdist", "wheel"]
+
+[[tool.poetry.include]]
+path = "*.md"
+format = ["sdist", "wheel"]
+
+[[tool.poetry.include]]
+path = "quail"
+format = ["sdist", "wheel"]
+
+[tool.poe.tasks]
+
+# ── System & R deps ─────────────────────────────────────────
+
+[tool.poe.tasks.install-apt]
+cmd = "sudo apt-get install libudunits2-dev libnetcdf-dev"
+help = "Install required system libraries for R packages"
+
+[tool.poe.tasks.install-r-pkgs]
+cmd = "Rscript install_pkgs.R"
+help = "Install required R packages "
+
+# ── Python env via Poetry ────────────────────────────────────
+
+[tool.poe.tasks.install]
+cmd = "poetry install"
+help = "Install Python project dependencies using Poetry"
+
+[tool.poe.tasks.develop]
+cmd = "poetry install --extras dev"
+help = "Install development dependencies using Poetry"
+
+[tool.poe.tasks.start]
+cmd = "poetry run quail start -d"
+help = "Start the Quail service in detached mode"
+
+[tool.poe.tasks.stop]
+cmd = "poetry run quail stop"
+help = "Stop the quail service"
+
+[tool.poe.tasks.restart]
+sequence = ["stop", "start"]
+help = "Restart the Quail service"
+
+[tool.poe.tasks.status]
+cmd = "poetry run quail status"
+help = "Show the status of the Quail service"
+
+[tool.poe.tasks.dist]
+cmd = "poetry build"
+help = "Build a distribution package for the project"
+
+# ── Tests & lint ─────────────────────────────────────────────
+
+[tool.poe.tasks.test]
+cmd = "pytest -v -m 'not slow and not online' tests/"
+help = "Run fast, offline unit tests"
+
+[tool.poe.tasks.test-all]
+cmd = "pytest -v tests/"
+help = "Run all tests, including online ones"
+
+[tool.poe.tasks.lint]
+cmd = "black . --check"
+help = "Check code formatting using Black"
+
+# ── Notebook tasks ──────────────────────────────────────────
+
+[tool.poe.tasks.prepare-notebooks]
+cmd = "curl -L https://github.com/Ouranosinc/PAVICS-e2e-workflow-tests/raw/master/notebooks/output-sanitize.cfg -o docs/output-sanitize.cfg --silent"
+help = "Download the output sanitizer config for notebook tests"
+
+[tool.poe.tasks.test-notebooks]
+sequence = ["prepare-notebooks", "test-notebooks-local"]
+help = "Run all local notebook tests with sanitized output"
+
+[tool.poe.tasks.test-notebooks-local]
+cmd = "pytest --nbval --verbose notebooks/ --sanitize-with docs/output-sanitize.cfg --ignore notebooks/.ipynb_checkpoints"
+env = { LOCAL_URL = "http://localhost:5000" }
+help = "Run notebook tests locally using nbval with sanitization"
+
+# [tool.poe.tasks.test-notebooks-prod]
+# sequence = ["prepare-notebooks", "test-notebooks-prod-run"]
+# help = "Run notebook tests against the production environment"
+
+# [tool.poe.tasks.test-notebooks-prod-run]
+# cmd = "pytest --nbval --verbose notebooks/ --sanitize-with docs/output-sanitize.cfg --ignore notebooks/.ipynb_checkpoints"
+
+# [tool.poe.tasks.test-notebooks-dev]
+# sequence = ["prepare-notebooks", "test-notebooks-dev-run"]
+# help = "Run notebook tests against the dev environment"
+
+# [tool.poe.tasks.test-notebooks-dev-run]
+# cmd = "pytest --nbval --verbose notebooks/ --sanitize-with docs/output-sanitize.cfg --ignore notebooks/.ipynb_checkpoints"
+# env = { DEV_URL = "http://docker-dev03.pcic.uvic.ca:30103/wps" }
+
+# [tool.poe.tasks.test-notebooks-custom]
+# sequence = ["prepare-notebooks", "run-custom-port-test"]
+# help = "Run notebook tests against a custom dev server port"
+
+# [tool.poe.tasks.run-custom-port-test]
+# shell = "read -p 'Target port: ' PORT && env DEV_URL=http://docker-dev03.pcic.uvic.ca:$PORT/wps pytest --nbval --verbose notebooks/ --sanitize-with docs/output-sanitize.cfg --ignore notebooks/.ipynb_checkpoints"
+
+# ── Documentation ────────────────────────────────────────────
+
+[tool.poe.tasks.docs]
+cmd = "jupyter nbconvert --to html notebooks/* --output-dir docs/formatted_demos/"
+help = "Convert notebooks to HTML for documentation"
+
+[tool.bumpversion]
+current_version = "0.7.1"
+commit = true
+tag = true
+
+[tool.bumpversion.file_patterns]
+"quail/__version__.py" = [
+  "__version__ = '{current_version}'",
+  "__version__ = '{new_version}'",
+]
+"docs/source/conf.py" = ["version|release = {current_version}", "{new_version}"]
+"Dockerfile" = ["Version=\"{current_version}\"", "Version=\"{new_version}\""]
+".cruft.json" = [
+  "\"version\": \"{current_version}\"",
+  "\"version\": \"{new_version}\"",
+]
+
+[tool.flake8]
+max-line-length = 120
+exclude = [".git", "__pycache__", "docs/source/conf.py", "build", "dist", "src"]
+
+[tool.doc8]
+ignore-path = ["docs/build", "docs/source/_templates", "docs/source/_static"]
+max-line-length = 120
