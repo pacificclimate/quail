@@ -47,7 +47,7 @@ ENV POETRY_HOME="/opt/poetry"
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 RUN apt-get update && \
-  apt-get install -y --no-install-recommends python3 python3-pip && \
+  apt-get install -y --no-install-recommends python3 python3-pip curl  && \
   curl -sSL https://install.python-poetry.org | python3
 
 
