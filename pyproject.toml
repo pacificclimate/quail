@@ -32,6 +32,7 @@ dependencies = [
   "werkzeug==1.0.1",
   "wps_tools[r]==2.0.0",
   "gunicorn>=20.1.0",
+  "setuptools",
 ]
 
 [project.optional-dependencies]
