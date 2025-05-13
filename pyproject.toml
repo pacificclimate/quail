@@ -28,11 +28,12 @@ dependencies = [
   "click",
   "psutil",
   "rpy2==3.3.6",
-  "nchelpers==5.5.7",
+  "nchelpers==5.5.11",
   "werkzeug==1.0.1",
-  "wps_tools[r]==2.0.0",
+  "wps_tools[r]==2.1.3",
   "gunicorn>=20.1.0",
   "setuptools",
+  "pyproj (>=3.7.1,<4.0.0)",
 ]
 
 [project.optional-dependencies]
