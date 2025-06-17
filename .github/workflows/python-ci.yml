@@ -30,6 +30,7 @@ jobs:
 
       - name: Install R packages
         run: Rscript install_pkgs.R
+
       - name: Test with pytest (full)
         if: github.ref == 'refs/heads/master'
         run: |

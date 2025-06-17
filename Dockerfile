@@ -52,7 +52,6 @@ RUN apt-get update && \
 
 
 RUN poetry config virtualenvs.in-project true && \
-  poetry lock && \
   poetry install
 
 EXPOSE 5000

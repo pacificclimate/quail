@@ -14,23 +14,23 @@ toml_data <- RcppTOML::parseTOML("pyproject.toml")
 # Extract dependencies
 deps <- toml_data$tool$quail$`r-dependencies`
 
+if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes", repos = "https://cloud.r-project.org")
+}
 
-# Install devtools
-install.packages("devtools", dependencies = TRUE)
-library(devtools)
-
-# Install packages with versions
+# Install packages with versions using remotes
 for (pkg in names(deps)) {
     ver <- deps[[pkg]]
     if (!(pkg %in% rownames(installed.packages()))) {
         if (is.null(ver) || ver == "*" || ver == "") {
-            install_version(pkg)
+            install.packages(pkg, repos = "https://cloud.r-project.org")
         } else {
-            install_version(pkg, version = ver)
+            remotes::install_version(pkg, version = ver, repos = "https://cloud.r-project.org")
         }
     }
 }
 
-install.packages("githubinstall")
-library(githubinstall)
-gh_install_packages("pacificclimate/climdex.pcic", ref = "daf4790") # TODO in climdex.pcic: Release tag v.1.1.11 and update ref
+
+remotes::install_github("pacificclimate/climdex.pcic@daf4790",
+    dependencies = TRUE,
+)
