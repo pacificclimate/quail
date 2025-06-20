@@ -1,6 +1,6 @@
 [project]
 name = "quail"
-version = "0.7.1"
+version = "0.7.2"
 description = "A Web Processing Service for Climate Data Analysis."
 authors = [{ name = "Nikola Rados", email = "nrados@uvic.ca" }]
 license = { text = "GNU General Public License v3 (GPLv3)" }
@@ -195,7 +195,7 @@ cmd = "jupyter nbconvert --to html notebooks/* --output-dir docs/formatted_demos
 help = "Convert notebooks to HTML for documentation"
 
 [tool.bumpversion]
-current_version = "0.7.1"
+current_version = "0.7.2"
 commit = true
 tag = true
 

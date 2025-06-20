@@ -1,5 +1,10 @@
 # Changes
 
+## 0.7.2
+*2025-06-20*
+
+* Maintenance updates [#94](https://github.com/pacificclimate/quail/pull/94)
+
 ## 0.7.1
 *2021-06-10*
 
