@@ -1,2 +1,0 @@
-PCICt==0.5.4.1
-climdex.pcic==1.1.11
